@@ -10,7 +10,7 @@ public abstract class AbstractApplication {
 		this.args = args;
 	}
 	
-	public abstract String execute(File workingDir, String stdin);
+	//public abstract String execute(File workingDir, String stdin);
 	
 	public int getStatusCode() {
 		return statusCode;
