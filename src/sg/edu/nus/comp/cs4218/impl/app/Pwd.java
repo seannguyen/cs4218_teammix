@@ -11,8 +11,13 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.PwdException;
 
 public class Pwd implements Application{
-
-    public String getStringForDirectory(String directory) throws PwdException {
+    protected Environment environment;
+    
+    public Pwd(String currentDirectory) {
+      environment.currentDirectory = currentDirectory;
+    }
+    
+    protected String converDirectoryToString(String directory) throws PwdException {
       File checkDirectory = new File(directory);
         //Error Handling
         if(checkDirectory == null || !checkDirectory.exists() || !checkDirectory.isDirectory()){
@@ -26,7 +31,7 @@ public class Pwd implements Application{
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
       if (args.length == 1){
         try {
-          stdout.write(getStringForDirectory(Environment.currentDirectory).getBytes());
+          stdout.write(converDirectoryToString(environment.currentDirectory).getBytes());
         } catch (IOException e) {
           e.printStackTrace();
         }

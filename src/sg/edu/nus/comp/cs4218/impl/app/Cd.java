@@ -4,16 +4,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Stack;
 
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CdException;
-import sg.edu.nus.comp.cs4218.util.common_util;
 
 public class Cd implements Application{
-  private Environment environment;
+  protected Environment environment;
   
-  public File changeDirectory(String newDirectory) throws CdException {
+  public Cd(String currentDirectory) {
+    environment.currentDirectory = currentDirectory;
+  }
+  
+  protected File changeDirectory(String newDirectory) throws CdException {
       if (newDirectory != null){
           File newDir = new File(newDirectory);
           if (newDir.isDirectory()){
@@ -25,6 +30,41 @@ public class Cd implements Application{
       return null;
   }
 
+  protected static String formatDirectory(String curAbsoluteDir, String newRelativeDir){
+    String separator = File.separator;
+    if(File.separator.equals("\\")){
+        separator =("\\\\");
+    }
+    if (curAbsoluteDir != null ){
+        Stack<String> newAbsoluteDir = new Stack<String>();
+        newAbsoluteDir.addAll(Arrays.asList(curAbsoluteDir.split(separator)));
+        if (newRelativeDir != null){
+            for(String token: Arrays.asList(newRelativeDir.split(separator))){
+                if (!token.equals("")){
+                    if (token.equals("..")){            // transverse up 
+                        newAbsoluteDir.pop();
+                    }else if ((token.equals("."))){     // remain 
+                    }else{                              // transverse down
+                        newAbsoluteDir.push(token);
+                    }
+                }
+            }
+        }
+        
+        StringBuilder newWorkingDir = new StringBuilder();
+        if (System.getProperty("os.name").toLowerCase().indexOf("mac") > 0){
+            newWorkingDir.append(File.separator);       // mac os directory format
+        }
+        for (int i = 0; i<newAbsoluteDir.size(); i++){
+            newWorkingDir.append(newAbsoluteDir.get(i));
+                newWorkingDir.append(File.separator);
+        }
+        return newWorkingDir.toString();
+    }else{
+        return "";
+    }
+  }
+  
   @Override
   public void run(String[] args, InputStream stdin, OutputStream stdout) throws CdException {
     File newDirectory = null;
@@ -36,7 +76,7 @@ public class Cd implements Application{
         }else if (Paths.get(args[1]).isAbsolute()){
           newDirectory = changeDirectory(args[1]);
         }else{
-          newDirectory = changeDirectory(common_util.formatDirectory(environment.currentDirectory, args[1]));
+          newDirectory = changeDirectory(formatDirectory(environment.currentDirectory, args[1]));
         }
     }else{
       throw new CdException("Invalid arguments");
