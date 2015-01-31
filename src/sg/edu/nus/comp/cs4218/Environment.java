@@ -7,7 +7,7 @@ public final class Environment {
 	 * For this reason, we use Environment.currentDirectory instead.
 	 */
 	public static volatile String currentDirectory = System.getProperty("user.dir");
-	
+	public static boolean running = true;
 	
 	private Environment() {
 	};
