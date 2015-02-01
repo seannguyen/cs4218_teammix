@@ -7,24 +7,41 @@ import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class Parser {
-	public Command parseCommand (String commandLine) throws ShellException {
+	public Command parseCommandLine (String commandLine) throws ShellException {
 		Vector <String> preprocessedLine = preprocessCommandLine(commandLine);
-		Command  command = parseCall(preprocessedLine);
+		Command  command = parseSequence(preprocessedLine);
 		return command;
 	}
 
 	//PRIVATE HELPER METHODS
 	
-//	private Vector <Vector <Command>> parseCommandLine(String commandline) {
-//		Vector <String> processedLine = preprocessCommandLine(commandline);
-//		return parseSequence(processedLine);
-//	}
-//
-//	private Vector <Vector <Command>> parseSequence (Vector <String> sequenceLine) {
-//		Vector <Vector <Command>> seq = new Vector<Vector<Command>>(); 
-//		seq.add(parsePipe(sequenceLine));
-//		return seq;
-//	}
+	private Command parseSequence (Vector <String> sequenceLine) throws ShellException {
+		int lastSemiColon = -1;
+		SequenceCommand seqCommand = new SequenceCommand();
+		for (int i = 0; i < sequenceLine.size(); i++) {
+			if (sequenceLine.get(i) == Configurations.SEMICOLON) {
+				Vector <String> callLine = new Vector<String>();
+				if (lastSemiColon >= 0) {
+					callLine = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i));
+				} else {
+					callLine = new Vector<String>(sequenceLine.subList(0, i));
+				}
+				lastSemiColon = i;
+				Command command = parseCall(callLine);
+				seqCommand.addCommand(command);
+			} else if (i == sequenceLine.size() - 1) {
+				Vector <String> commandPhase;
+				if (lastSemiColon >= 0) {
+					commandPhase = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i +1));
+				} else {
+					commandPhase = sequenceLine;
+				}
+				Command command = parseCall(commandPhase);
+				seqCommand.addCommand(command);
+			}
+		}
+		return seqCommand;
+	}
 //	
 //	private Vector <Command> parsePipe (Vector <String> pipeLine) {
 //		Vector <Command> pipe = new Vector<Command>(); 
@@ -33,8 +50,8 @@ public class Parser {
 //	}
 //	
 	private Command parseCall(Vector <String> callLine) throws ShellException {
-		if (callLine.isEmpty()) {
-			error();
+		if (callLine.size() == 0) {
+			return new CallCommand("", null);
 		}
 		String appName = callLine.get(0);
 		callLine.remove(0);
@@ -43,15 +60,39 @@ public class Parser {
 	}
 	
 	private Vector <String> preprocessCommandLine (String line) throws ShellException{
-		Vector <String> extractedQuotes = extractQuote(line);
-		Vector <String> phases = splitBySpace(extractedQuotes);
-		for (int i = 0; i < phases.size(); i++) {
-			if (phases.get(i).length() == 0) {
-				phases.remove(i);
+		Vector <String> result = extractQuote(line);
+		result = splitBySpace(result);
+		result = extractSemiColon(result);
+		for (int i = 0; i < result.size(); i++) {
+			if (result.get(i).length() == 0) {
+				result.remove(i);
 				i--;
 			}
 		}
-		return phases;
+		return result;
+	}
+	
+	private Vector <String> extractSemiColon (Vector <String> input) {
+		Vector <String> result = new Vector<String>();
+		for (int i = 0; i < input.size(); i++) {
+			String element = input.get(i);
+			if (element.length() == 0 || isQuote(element.charAt(0))) {
+				result.add(element);
+			} else {
+				if (element.charAt(0) == Configurations.SEMICOLONCHAR) {
+					result.add(Configurations.SEMICOLON);
+				}
+				Vector <String> splitedPhases = new Vector<String>(Arrays.asList(element.split(Configurations.SEMICOLON)));
+				for (int j = 1; j < splitedPhases.size(); j += 2) {
+					splitedPhases.insertElementAt(Configurations.SEMICOLON, j);
+				}
+				result.addAll(splitedPhases);
+				if (element.charAt(element.length() - 1) == Configurations.SEMICOLONCHAR && element.length() != 1) {
+					result.add(Configurations.SEMICOLON);
+				}
+			}
+		}
+		return result;
 	}
 	
 	private Vector <String> splitBySpace (Vector <String> input) {

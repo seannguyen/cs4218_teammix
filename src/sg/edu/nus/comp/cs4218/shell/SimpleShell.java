@@ -14,7 +14,7 @@ public class SimpleShell implements Shell {
 	public void parseAndEvaluate(String cmdline, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
 		Parser parser = new Parser();
-		Command command = parser.parseCommand(cmdline);
+		Command command = parser.parseCommandLine(cmdline);
 		command.evaluate(null, stdout);
 	}
 

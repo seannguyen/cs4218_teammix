@@ -8,4 +8,6 @@ public final class Configurations {
 	public static final char QUOTE_SINGLE = '\'';
 	public static final char QUOTE_DOUBLE = '\"';
 	public static final char QUOTE_BACK = '`';
+	public static final String SEMICOLON = ";";
+	public static final char SEMICOLONCHAR = ';';
 }

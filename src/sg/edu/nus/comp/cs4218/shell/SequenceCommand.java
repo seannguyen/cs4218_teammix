@@ -2,23 +2,32 @@ package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class SequenceCommand implements Command {
-
+	//Attributes
+	Vector <Command> commands = new Vector<Command>();
+	
 	@Override
 	public void evaluate(InputStream stdin, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < commands.size(); i++) {
+			Command command = commands.get(i);
+			command.evaluate(stdin, stdout);
+		}
 	}
 
 	@Override
 	public void terminate() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void addCommand (Command command) {
+		commands.add(command);
 	}
 
 }
