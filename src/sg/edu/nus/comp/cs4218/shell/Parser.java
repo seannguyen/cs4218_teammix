@@ -1,6 +1,7 @@
 package sg.edu.nus.comp.cs4218.shell;
 
 import java.util.Arrays;
+import java.util.Stack;
 import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Configurations;
@@ -114,26 +115,34 @@ public class Parser {
 	
 	private Vector <String> extractQuote (String input) throws ShellException {
 		Vector <String> result = new Vector<String>();
-		boolean insideQuote = false;
-		int lastQuoteIndex = 0;
+		Stack <Character> quotes = new Stack<Character>();
+		int lastQuoteIndex = -1;
 		for (int i = 0; i < input.length(); i++) {
-			if (!insideQuote && isQuote(input.charAt(i))) {
-				result.add(input.substring(lastQuoteIndex, i));
-				lastQuoteIndex = i;
-				insideQuote = !insideQuote;
-			} else if (insideQuote && input.charAt(i) == input.charAt(lastQuoteIndex)) {
-				result.add(input.substring(lastQuoteIndex, i + 1));
-				lastQuoteIndex = i;
-				insideQuote = !insideQuote;
-			} else if (i == input.length() - 1) {
-				if (isQuote(input.charAt(lastQuoteIndex))) {
-					result.add(input.substring(lastQuoteIndex + 1, i + 1));
-				} else {
-					result.add(input);
+			if (quotes.isEmpty()) {
+				if (isQuote(input.charAt(i))) {
+					result.add(input.substring(lastQuoteIndex + 1, i));
+					lastQuoteIndex = i;
+					quotes.push(input.charAt(i));
+				} else if (i == input.length() - 1) {
+					if (lastQuoteIndex >= 0) {
+						result.add(input.substring(lastQuoteIndex + 1, i + 1));
+					} else {
+						result.add(input);
+					}		
+				}
+			} else {
+				if (quotes.peek() == Configurations.QUOTE_DOUBLE && input.charAt(i) == Configurations.QUOTE_BACK) {
+					quotes.push(Configurations.QUOTE_BACK);
+				} else if (input.charAt(i) == Configurations.QUOTE_BACK && quotes.size() > 1) {
+					quotes.pop();
+				} else if (input.charAt(i) == quotes.peek()) {
+					quotes.pop();
+					result.add(input.substring(lastQuoteIndex, i + 1));
+					lastQuoteIndex = i;
 				}
 			}
 		}
-		if (insideQuote) {
+		if (quotes.size() != 0) {
 			error();
 		}
 		return result;
