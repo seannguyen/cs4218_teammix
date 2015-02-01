@@ -23,7 +23,8 @@ public class SimpleShell implements Shell {
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
 		while (Environment.running) {
-			System.out.printf(Configurations.MESSAGE_PROMPT);
+			//System.out.printf(Configurations.MESSAGE_PROMPT);
+			System.out.printf(Environment.currentDirectory + ">");
 			String line  = input.nextLine();
 			shell.parseAndEvaluate(line, System.out);
 		}
