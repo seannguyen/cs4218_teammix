@@ -1,4 +1,4 @@
-package sg.edu.nus.comp.cs4218;
+package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.InputStream;
 import java.io.OutputStream;
