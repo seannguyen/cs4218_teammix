@@ -1,10 +1,7 @@
 package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
