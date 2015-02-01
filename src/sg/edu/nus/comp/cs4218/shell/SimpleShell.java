@@ -7,6 +7,7 @@ import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.app.*;
 
 public class SimpleShell implements Shell {
 	//public methods
@@ -20,6 +21,12 @@ public class SimpleShell implements Shell {
 
 	public static void main(String[] args) throws AbstractApplicationException, ShellException {
 		System.out.println(Configurations.MESSAGE_WELCOME);
+		//initialize apps in environment
+		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new Cd(Environment.currentDirectory));
+		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new Ls(Environment.currentDirectory));
+		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO, new Echo());
+		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new Pwd(Environment.currentDirectory));
+		//setup shell
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
 		while (Environment.running) {
