@@ -14,9 +14,15 @@ public class SimpleShell implements Shell {
 	@Override
 	public void parseAndEvaluate(String cmdline, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
-		Parser parser = new Parser();
-		Command command = parser.parseCommandLine(cmdline);
-		command.evaluate(null, stdout);
+		try {
+			Parser parser = new Parser();
+			Command command = parser.parseCommandLine(cmdline);
+			command.evaluate(null, stdout);
+		} catch (ShellException shellError) {
+			System.out.println(shellError.getMessage());
+		} catch (AbstractApplicationException appError) {
+			System.out.println(appError.getMessage());
+		}
 	}
 
 	public static void main(String[] args) throws AbstractApplicationException, ShellException {

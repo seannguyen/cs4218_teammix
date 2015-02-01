@@ -4,6 +4,7 @@ public final class Configurations {
 	public static final String MESSAGE_WELCOME = "WELCOME TO CS4128 SHELL";
 	public static final String MESSAGE_PROMPT = "shell > ";
 	public static final String MESSAGE_ERROR_PARSING = "Your Command Line is Invalid";
+	public static final String MESSAGE_ERROR_APP = "Application Error:";
 	public static final String MESSAGE_ERROR_APPMISSING = "Command Not Found";
 	
 	public static final char QUOTE_SINGLE = '\'';
