@@ -11,10 +11,7 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 public class Echo implements Application{
-	public Echo(String[] args) throws EchoException {
-		if(args == null || args.length == 0 || !args.equals("echo")) {
-			throw new EchoException("Error");
-		}
+	public Echo() {
 	}
 
 	@Override
