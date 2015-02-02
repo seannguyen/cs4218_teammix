@@ -40,6 +40,7 @@ public class SimpleShell implements Shell {
 			System.out.printf(Environment.currentDirectory + ">");
 			String line  = input.nextLine();
 			shell.parseAndEvaluate(line, System.out);
+			System.out.println();
 		}
 		input.close();
 	}
