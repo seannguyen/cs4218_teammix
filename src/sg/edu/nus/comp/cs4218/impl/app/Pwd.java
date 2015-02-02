@@ -29,7 +29,7 @@ public class Pwd implements Application{
 
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
-      if (args.length == 1){
+    	if (args.length == 0){
         try {
           stdout.write(converDirectoryToString(environment.currentDirectory).getBytes());
         } catch (IOException e) {

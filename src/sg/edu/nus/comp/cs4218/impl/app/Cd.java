@@ -68,15 +68,15 @@ public class Cd implements Application{
   @Override
   public void run(String[] args, InputStream stdin, OutputStream stdout) throws CdException {
     File newDirectory = null;
-    if (args.length==1){
+    if (args.length==0){
       newDirectory = changeDirectory(System.getProperty( "user.dir" ));
-    }else if(args.length == 2){ 
-        if (args[1].equals("~")){
+    }else if(args.length == 1){ 
+        if (args[0].equals("~")){
           newDirectory = changeDirectory(System.getProperty( "user.dir" ));
-        }else if (Paths.get(args[1]).isAbsolute()){
-          newDirectory = changeDirectory(args[1]);
+        }else if (Paths.get(args[0]).isAbsolute()){
+          newDirectory = changeDirectory(args[0]);
         }else{
-          newDirectory = changeDirectory(formatDirectory(environment.currentDirectory, args[1]));
+          newDirectory = changeDirectory(formatDirectory(environment.currentDirectory, args[0]));
         }
     }else{
       throw new CdException("Invalid arguments");

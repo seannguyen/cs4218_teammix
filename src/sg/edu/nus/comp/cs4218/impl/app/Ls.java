@@ -48,10 +48,10 @@ public class Ls implements Application {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws LsException {
       List<File> files = null;
-      if (args.length == 2) {
+      if (args.length == 1) {
           File targetDirectory = new File(args[1]);
           files = getFiles(targetDirectory);
-      } else if (args.length == 1) {
+      } else if (args.length == 0) {
           File currentDirectory = new File(environment.currentDirectory);
           files = getFiles(currentDirectory);
       }
