@@ -15,11 +15,24 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class LsCommand implements Application {
     protected Environment environment;
-  
+    
+    /**
+     * Constructor to initialise Environment.currentDirectory
+     *
+     * @param currentDirectory
+     *          an absolute directory path
+     */
     public LsCommand(String currentDirectory) {
       environment.currentDirectory = currentDirectory;
     }
     
+    /**
+     * Retrieves the list of files in the given directory
+     *
+     * @param directory
+     *          a directory path
+     * @return list of files in directory
+     */
     protected List<File> getFiles(File directory) {
         if (Files.exists(directory.toPath())) {
             File[] files = directory.listFiles();
@@ -28,7 +41,15 @@ public class LsCommand implements Application {
             return null;
         }
     }
-
+    
+    /**
+     * Converts the a list of files into formatted string 
+     * for printing
+     *
+     * @param files
+     *          a list of files
+     * @return a string of all the files in the list
+     */
     protected String convertFilesToString(List<File> files) {
         String returnable = null;
         if (files != null) {
@@ -45,6 +66,16 @@ public class LsCommand implements Application {
         return returnable;
     }
 
+    /**
+     * Perform List directory command
+     *
+     * @param args
+     *          input arguments
+     * @param stdin
+     *          inputStream
+     * @param stdout
+     *          outputStream
+     */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws LsException {
       List<File> files = null;

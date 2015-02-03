@@ -15,14 +15,26 @@ public class CdCommand implements Application {
   protected final static String NOTHING = "";
   protected Environment environment;
 
+  /**
+   * Constructor to initialise Environment.currentDirectory
+   *
+   * @param currentDirectory
+   *          an absolute directory path
+   */
   public CdCommand(String currentDirectory) {
     environment.currentDirectory = currentDirectory;
   }
 
+  /**
+   * Returns new File pointing to new directory Returns null if newDirectory is
+   * null or newDirectory is not a directory
+   *
+   * @param newDirectory
+   *          an absolute directory path
+   * @return new directory
+   */
   protected File changeDirectory(String newDirectory) throws CdException {
-    if (newDirectory == null) {
-      throw new CdException("Invalid Directory");
-    } else {
+    if (newDirectory != null) {
       File newDir = new File(newDirectory);
       if (newDir.isDirectory()) {
         return newDir;
@@ -31,6 +43,15 @@ public class CdCommand implements Application {
     return null;
   }
 
+  /**
+   * Format given new relative directory path into a absolute directory
+   *
+   * @param curAbsoluteDir
+   *          current absolute directory
+   * @param newRelativeDir
+   *          a relative directory
+   * @return formated Directory
+   */
   protected static String formatDirectory(String curAbsoluteDir,
       String newRelativeDir) {
     String separator = File.separator;
@@ -68,14 +89,26 @@ public class CdCommand implements Application {
     }
   }
 
+  /**
+   * Perform change directory command
+   *
+   * @param args
+   *          input arguments
+   * @param stdin
+   *          inputStream
+   * @param stdout
+   *          outputStream
+   */
   @Override
   public void run(String[] args, InputStream stdin, OutputStream stdout)
       throws CdException {
     File newDirectory = null;
+    String arg = "";
     if (args.length == 0) {
       newDirectory = changeDirectory(System.getProperty("user.dir"));
     } else if (args.length == 1) {
-      if (args[0].equals("~")) {
+      arg = args[0] + ": ";
+      if (("~").equals(args[0])) {
         newDirectory = changeDirectory(System.getProperty("user.dir"));
       } else if (Paths.get(args[0]).isAbsolute()) {
         newDirectory = changeDirectory(args[0]);
@@ -87,7 +120,9 @@ public class CdCommand implements Application {
       throw new CdException("Invalid arguments");
     }
 
-    if (newDirectory != null) {
+    if (newDirectory == null) {
+      throw new CdException(arg + "Not a directory");
+    } else {
       environment.currentDirectory = newDirectory.getAbsolutePath();
     }
   }

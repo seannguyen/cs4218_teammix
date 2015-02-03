@@ -13,29 +13,48 @@ import sg.edu.nus.comp.cs4218.exception.PwdException;
 public class PwdCommand implements Application {
   protected Environment environment;
 
+  /**
+   * Constructor to initialise Environment.currentDirectory
+   *
+   * @param currentDirectory
+   *          an absolute directory path
+   */
   public PwdCommand(String currentDirectory) {
     environment.currentDirectory = currentDirectory;
   }
 
-  protected String converDirectoryToString(String directory)
-      throws PwdException {
+  /**
+   * Check if directory is null, exist and isDirectory.
+   *
+   * @param directory
+   *          a directory to be checked
+   */
+  protected String verifyDirectory(String directory) throws PwdException {
     File checkDirectory = new File(directory);
     // Error Handling
     if (checkDirectory == null || !checkDirectory.exists()
         || !checkDirectory.isDirectory()) {
       throw new PwdException("Cannot find working directory");
     }
-    // Processing the
     return directory;
   }
 
+  /**
+   * Perform print working directory command
+   *
+   * @param args
+   *          [] input arguments
+   * @param stdin
+   *          inputStream
+   * @param stdout
+   *          outputStream
+   */
   @Override
   public void run(String[] args, InputStream stdin, OutputStream stdout)
       throws AbstractApplicationException {
     if (args.length == 0) {
       try {
-        stdout.write(converDirectoryToString(environment.currentDirectory)
-            .getBytes());
+        stdout.write(verifyDirectory(environment.currentDirectory).getBytes());
       } catch (IOException e) {
         e.printStackTrace();
       }
