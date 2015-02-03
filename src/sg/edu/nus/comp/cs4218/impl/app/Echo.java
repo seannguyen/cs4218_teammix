@@ -11,20 +11,24 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 public class Echo implements Application{
+	public static final String SPACE_SEPERATOR = " ";
+	
 	public Echo() {
+		
 	}
 
 	@Override
-	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
-		if(args.length == 1) {
-			System.getProperty("line.seperator");
+	public void run(String[] args, InputStream stdin, OutputStream stdout) throws EchoException {		
+		if(args.length == 0) {
+			System.getProperty("line.seperator");			
 			return;
 		} else {
 			StringBuilder stringBuilder = new StringBuilder();
-			for(int i = 1; i < args.length; i++) {
+			for(int i = 0; i < args.length; i++) {
 				stringBuilder.append(args[i]);
+				stringBuilder.append(SPACE_SEPERATOR);
 			}
-			stringBuilder.append(System.getProperty("line.seperator"));			
+			//stringBuilder.append(System.getProperty("line.seperator"));			
 			try {
 				stdout.write(stringBuilder.toString().getBytes());
 			} catch (IOException e) {				

@@ -17,4 +17,7 @@ public final class Configurations {
 	public static final String APPNAME_LS = "ls";
 	public static final String APPNAME_ECHO = "echo";
 	public static final String APPNAME_PWD = "pwd";
+	public static final String APPNAME_CAT = "cat";
+	public static final String APPNAME_HEAD = "head";
+	public static final String APPNAME_TAIL = "tail";
 }
