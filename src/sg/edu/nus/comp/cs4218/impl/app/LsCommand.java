@@ -13,10 +13,10 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
-public class Ls implements Application {
+public class LsCommand implements Application {
     protected Environment environment;
   
-    public Ls(String currentDirectory) {
+    public LsCommand(String currentDirectory) {
       environment.currentDirectory = currentDirectory;
     }
     
