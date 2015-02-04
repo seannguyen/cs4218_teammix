@@ -6,12 +6,18 @@ public final class Configurations {
 	public static final String MESSAGE_ERROR_PARSING = "Your Command Line is Invalid";
 	public static final String MESSAGE_ERROR_APP = "Application Error:";
 	public static final String MESSAGE_ERROR_APPMISSING = "Command Not Found";
+	public static final String MESSGE_ERROR_OUTSTREAMMISSING = "The output stream is missing";
 	
 	public static final char QUOTE_SINGLE = '\'';
 	public static final char QUOTE_DOUBLE = '\"';
 	public static final char QUOTE_BACK = '`';
 	public static final String SEMICOLON = ";";
 	public static final char SEMICOLONCHAR = ';';
+	public static final String INPUTREDIRECTION_TOKEN = ">";
+	public static final String OUTPUTREDIRECTION_TOKEN = "<";
+	public static final String NEWLINE = String.format("%n");
+	public static final String SEPERATORREGEX = String.format("[ \t]");
+	
 	
 	public static final String APPNAME_CD = "cd";
 	public static final String APPNAME_LS = "ls";

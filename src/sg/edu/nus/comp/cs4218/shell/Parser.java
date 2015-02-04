@@ -56,6 +56,20 @@ public class Parser {
 		}
 		String appName = callLine.get(0);
 		callLine.remove(0);
+		
+		for (int i = 0; i < callLine.size(); i++) {
+			String string = callLine.get(i);
+			if (string == Configurations.INPUTREDIRECTION_TOKEN) {
+				if (i > callLine.size() - 2 && callLine.get(i + 1) == Configurations.INPUTREDIRECTION_TOKEN
+						&& callLine.get(i + 1) == Configurations.OUTPUTREDIRECTION_TOKEN) { 
+					//mean that this is not the last element
+					throw new ShellException(Configurations.MESSAGE_ERROR_PARSING);
+				}
+			} else {
+				
+			}
+		}
+		
 		Command command = new CallCommand(appName, callLine); 
 		return command;
 	}
@@ -106,7 +120,7 @@ public class Parser {
 			if (isQuote(phase.charAt(0))) {
 				result.add(input.get(i));
 			} else {
-				String[] splitedPhases = phase.split(" ");
+				String[] splitedPhases = phase.split(Configurations.SEPERATORREGEX);
 				result.addAll(new Vector<String>(Arrays.asList(splitedPhases)));
 			}
 		}

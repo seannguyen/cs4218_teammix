@@ -15,13 +15,20 @@ public class SimpleShell implements Shell {
 	public void parseAndEvaluate(String cmdline, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
 		try {
-			Parser parser = new Parser();
-			Command command = parser.parseCommandLine(cmdline);
-			command.evaluate(null, stdout);
-		} catch (ShellException shellError) {
-			System.out.println(shellError.getMessage());
-		} catch (AbstractApplicationException appError) {
-			System.out.println(appError.getMessage());
+			try {
+				Parser parser = new Parser();
+				Command command = parser.parseCommandLine(cmdline);
+				command.evaluate(null, stdout);
+			} catch (ShellException shellError) {
+				stdout.write(shellError.getMessage().getBytes());
+			} catch (AbstractApplicationException appError) {
+				stdout.write(appError.getMessage().getBytes());
+			} catch (Exception e) {
+				stdout.write(e.getMessage().getBytes());
+			}
+			stdout.write(Configurations.NEWLINE.getBytes());
+		} catch (Exception e) {
+			System.out.println("There is something wrong with the system");
 		}
 	}
 
@@ -43,7 +50,6 @@ public class SimpleShell implements Shell {
 			System.out.printf(Environment.currentDirectory + ">");
 			String line  = input.nextLine();
 			shell.parseAndEvaluate(line, System.out);
-			System.out.println();
 		}
 		input.close();
 	}
