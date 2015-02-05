@@ -16,40 +16,54 @@ public class Parser {
 
 	//PRIVATE HELPER METHODS
 	
-	private Command parseSequence (Vector <String> sequenceLine) throws ShellException {
+	private SequenceCommand parseSequence (Vector <String> input) throws ShellException {
 		int lastSemiColon = -1;
 		SequenceCommand seqCommand = new SequenceCommand();
-		for (int i = 0; i < sequenceLine.size(); i++) {
-			if (sequenceLine.get(i) == Configurations.SEMICOLON_TOKEN) {
-				Vector <String> callLine = new Vector<String>();
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.SEMICOLON_TOKEN)) {
+				Vector <String> pipe = new Vector<String>();
 				if (lastSemiColon >= 0) {
-					callLine = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i));
+					pipe = new Vector<String>(input.subList(lastSemiColon + 1, i));
 				} else {
-					callLine = new Vector<String>(sequenceLine.subList(0, i));
+					pipe = new Vector<String>(input.subList(0, i));
 				}
 				lastSemiColon = i;
-				Command command = parseCall(callLine);
+				PipeCommand command = parsePipe(pipe);
 				seqCommand.addCommand(command);
-			} else if (i == sequenceLine.size() - 1) {
-				Vector <String> commandPhase;
-				if (lastSemiColon >= 0) {
-					commandPhase = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i +1));
-				} else {
-					commandPhase = sequenceLine;
-				}
-				Command command = parseCall(commandPhase);
+			} else if (i == input.size() - 1) {
+				Vector <String> pipe;
+				pipe = new Vector<String>(input.subList(lastSemiColon + 1, input.size()));
+				Command command = parsePipe(pipe);
 				seqCommand.addCommand(command);
 			}
 		}
 		return seqCommand;
 	}
-//	
-//	private Vector <Command> parsePipe (Vector <String> pipeLine) {
-//		Vector <Command> pipe = new Vector<Command>(); 
-//		pipe.add(parseCall(pipeLine));
-//		return pipe;
-//	}
-//	
+	
+	private PipeCommand parsePipe (Vector <String> input) throws ShellException {
+		int lastPipeToken = -1;
+		PipeCommand pipeCommand = new PipeCommand();
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.PIPE_TOKEN)) {
+				Vector <String> call = new Vector<String>();
+				if (lastPipeToken >= 0) {
+					call = new Vector<String>(input.subList(lastPipeToken + 1, i));
+				} else {
+					call = new Vector<String>(input.subList(0, i));
+				}
+				lastPipeToken = i;
+				Command command = parseCall(call);
+				pipeCommand.addCommand(command);
+			} else if (i == input.size() - 1) {
+				Vector <String> call;
+				call = new Vector<String>(input.subList(lastPipeToken + 1, input.size()));
+				Command command = parseCall(call);
+				pipeCommand.addCommand(command);
+			}
+		}
+		return pipeCommand;
+	}
+	
 	private Command parseCall(Vector <String> callLine) throws ShellException {
 		if (callLine.size() == 0) {
 			return new CallCommand(null, null, null, null);
@@ -59,8 +73,8 @@ public class Parser {
 		
 		//merge all IO redirection token with their directories
 		for (int i = 0; i < callLine.size(); i++) {
-			if (callLine.get(i) == Configurations.INPUTREDIRECTION_TOKEN 
-					|| callLine.get(i) == Configurations.OUTPUTREDIRECTION_TOKEN && i < callLine.size() - 1) {
+			if (callLine.get(i).equals(Configurations.INPUTREDIRECTION_TOKEN) 
+					|| callLine.get(i).equals(Configurations.OUTPUTREDIRECTION_TOKEN) && i < callLine.size() - 1) {
 				String mergedElement = callLine.get(i) + callLine.get(i + 1);
 				callLine.insertElementAt(mergedElement, i);
 				callLine.remove(i + 1);
@@ -96,8 +110,8 @@ public class Parser {
 	private Vector <String> preprocessCommandLine (String line) throws ShellException{
 		Vector <String> result = extractQuote(line);
 		result = splitBySpace(result);
-		result = extractSemiColon(result);
-//		result = extractPipeToken(result);
+		result = extractToken(result, Configurations.SEMICOLON_TOKEN.charAt(0));
+		result = extractToken(result, Configurations.PIPE_TOKEN.charAt(0));
 		for (int i = 0; i < result.size(); i++) {
 			if (result == null || result.get(i).length() == 0) {
 				result.remove(i);
@@ -106,58 +120,35 @@ public class Parser {
 		}
 		return result;
 	}
-	
-	private Vector <String> extractSemiColon (Vector <String> input) {
+
+	private Vector <String> extractToken (Vector <String> input, char tokenChar) {
+		String token = String.valueOf(tokenChar);
 		Vector <String> result = new Vector<String>();
 		for (int i = 0; i < input.size(); i++) {
 			String element = input.get(i);
 			if (element.length() <= 1 || isQuote(element.charAt(0))) {
 				result.add(element);
 			} else {
-				if (element.charAt(0) == Configurations.SEMICOLON_TOKEN.charAt(0)) {
-					result.add(Configurations.SEMICOLON_TOKEN);
+				if (element.charAt(0) == tokenChar) {
+					result.add(token);
 				}
-				
-				String semicolon = Configurations.SEMICOLON_TOKEN;
-				Vector <String> splitedPhases = new Vector<String>(Arrays.asList(element.split(semicolon)));
+				Vector <String> splitedPhases;
+				if (token.equals(Configurations.PIPE_TOKEN)) {
+					splitedPhases = new Vector<String>(Arrays.asList(element.split("\\" + token)));
+				} else {
+					splitedPhases = new Vector<String>(Arrays.asList(element.split(token)));
+				}
 				for (int j = 1; j < splitedPhases.size(); j += 2) {
-					splitedPhases.insertElementAt(Configurations.SEMICOLON_TOKEN, j);
+					splitedPhases.insertElementAt(token, j);
 				}
 				result.addAll(splitedPhases);
-				if (element.charAt(element.length() - 1) == Configurations.SEMICOLON_TOKEN.charAt(0) 
-						&& element.length() != 1) {
-					result.add(Configurations.SEMICOLON_TOKEN);
-				}
-				if (element.endsWith(Configurations.SEMICOLON_TOKEN)) {
-					result.add(Configurations.SEMICOLON_TOKEN);
+				if (element.endsWith(token) && element.length() != 1) {
+					result.add(token);
 				}
 			}
 		}
 		return result;
-	}
-	
-//	private Vector <String> extractPipeToken (Vector <String> input) {
-//		Vector <String> result = new Vector<String>();
-//		for (int i = 0; i < input.size(); i++) {
-//			String element = input.get(i);
-//			if (element.length() == 0 || isQuote(element.charAt(0))) {
-//				result.add(element);
-//			} else {
-//				if (element.charAt(0) == Configurations.PIPE_TOKEN) {
-//					result.add(Configurations.PIPE_TOKEN));
-//				}
-//				Vector <String> splitedPhases = new Vector<String>(Arrays.asList(element.split(Configurations.SEMICOLON_TOKEN)));
-//				for (int j = 1; j < splitedPhases.size(); j++) {
-//					splitedPhases.insertElementAt(Configurations.SEMICOLON_TOKEN, j);
-//				}
-//				result.addAll(splitedPhases);
-//				if (element.charAt(element.length() - 1) == Configurations.SEMICOLON_TOKEN && element.length() != 1) {
-//					result.add(Configurations.SEMICOLON_TOKEN);
-//				}
-//			}
-//		}
-//		return result;
-//	}
+	}  
 	
 	private Vector <String> splitBySpace (Vector <String> input) {
 		Vector <String> result = new Vector<String>();
@@ -169,7 +160,7 @@ public class Parser {
 			if (isQuote(phase.charAt(0))) {
 				result.add(input.get(i));
 			} else {
-				String[] splitedPhases = phase.split(Configurations.SEPERATORREGEX);
+				String[] splitedPhases = phase.split(Configurations.WHITESPACEREGEX);
 				result.addAll(new Vector<String>(Arrays.asList(splitedPhases)));
 			}
 		}

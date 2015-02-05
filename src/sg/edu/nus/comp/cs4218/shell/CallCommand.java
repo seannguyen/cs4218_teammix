@@ -40,13 +40,18 @@ public class CallCommand implements Command {
 		if (app == null) {
 			throw new ShellException(Configurations.MESSAGE_ERROR_APPMISSING);
 		}
-		initIoStreams(stdin, stdout);
-		String[] args = (String[]) arguments.toArray(new String[0]);
-		app.run(args, this.inputStream, this.outputStream);
 		try {
-			stdout.write(Configurations.NEWLINE.getBytes());
-		} catch (IOException e) {
-			throw new ShellException(Configurations.MESSGE_ERROR_OUTSTREAMMISSING);
+			initIoStreams(stdin, stdout);
+			String[] args = (String[]) arguments.toArray(new String[0]);
+			app.run(args, this.inputStream, this.outputStream);
+			try {
+				stdout.write(Configurations.NEWLINE.getBytes());
+			} catch (IOException e) {
+				throw new ShellException(Configurations.MESSGE_ERROR_OUTSTREAMMISSING);
+			}
+		} catch (Exception e) {
+			terminate();
+			throw e;
 		}
 		terminate();
 	}
