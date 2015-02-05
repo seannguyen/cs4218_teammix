@@ -1,5 +1,17 @@
 package sg.edu.nus.comp.cs4218.shell;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.Vector;
@@ -68,43 +80,16 @@ public class Parser {
 		if (callLine.size() == 0) {
 			return new CallCommand(null, null, null, null);
 		}
-		String appName = callLine.get(0);
-		callLine.remove(0);
-		
-		//merge all IO redirection token with their directories
-		for (int i = 0; i < callLine.size(); i++) {
-			if (callLine.get(i).equals(Configurations.INPUTREDIRECTION_TOKEN) 
-					|| callLine.get(i).equals(Configurations.OUTPUTREDIRECTION_TOKEN) && i < callLine.size() - 1) {
-				String mergedElement = callLine.get(i) + callLine.get(i + 1);
-				callLine.insertElementAt(mergedElement, i);
-				callLine.remove(i + 1);
-			}
+		try {
+			String appName = callLine.get(0);
+			callLine.remove(0);
+			Vector<String> ioRedirectories = getIoRedirectories(callLine);
+			Vector<String> arguments = getFilesFromGrobPattern(callLine);
+			Command command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), arguments);
+			return command;
+		} catch (IOException e) {
+			throw new ShellException(e.getMessage());
 		}
-		String inputRedirectory = "", outputRedirectory = "";
-		for (int i = 0; i < callLine.size(); i++) {
-			if (callLine.get(i).startsWith(Configurations.INPUTREDIRECTION_TOKEN)) {
-				if (inputRedirectory.length() > 0) {
-					error();
-				}
-				inputRedirectory = callLine.get(i);
-				callLine.remove(i);
-			} else if (callLine.get(i).startsWith(Configurations.OUTPUTREDIRECTION_TOKEN)) {
-				if (outputRedirectory.length() > 0) {
-					error();
-				}
-				outputRedirectory = callLine.get(i);
-				callLine.remove(i);
-			}
-		}
-		if (inputRedirectory.length() > 0) {
-			inputRedirectory = inputRedirectory.substring(1);
-		}
-		if (outputRedirectory.length() > 0) {
-			outputRedirectory = outputRedirectory.substring(1);
-		}
-		
-		Command command = new CallCommand(appName, inputRedirectory, outputRedirectory, callLine);
-		return command;
 	}
 	
 	private Vector <String> preprocessCommandLine (String line) throws ShellException{
@@ -121,6 +106,54 @@ public class Parser {
 		return result;
 	}
 
+	private Vector<String> getFilesFromGrobPattern(Vector<String> input) throws IOException {
+		for (int i = 0; i < input.size(); i++) {
+			final Vector<String> results = new Vector<String>();
+			String root = "." + File.separator;
+			Path startDir = Paths.get(root);
+			FileSystem fs = FileSystems.getDefault();
+			String globPattern = "glob:" + root + input.get(i);
+			if (System.getProperty("file.separator") != null 
+					&& System.getProperty("file.separator").equals(Configurations.WINDOWS_FILESEPARATOR)) {
+				globPattern = globPattern.replace("\\", "\\\\");
+			}
+			final PathMatcher matcher = fs.getPathMatcher(globPattern);
+
+			FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
+				@Override
+			    public FileVisitResult visitFile(Path file, BasicFileAttributes attribs) {
+					return checkFileName(file);
+			    }
+				@Override
+				public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attribs) {
+			        return checkFileName(file);
+				}
+				
+				private FileVisitResult checkFileName(Path file) {
+					if (matcher.matches(file)) {
+			            results.add(file.toString());
+			        }
+			        return FileVisitResult.CONTINUE;
+				}
+			};
+			Files.walkFileTree(startDir, matcherVisitor);
+			for (int j = 0; j < results.size(); j++) {
+				int originalLevelDeep = countOccurrences(root + input.get(i), File.separator);
+				int resultLevelDeep = countOccurrences(results.get(j), File.separator);
+				if (originalLevelDeep != resultLevelDeep) {
+					results.remove(j);
+					j--;
+				}
+			}
+			if (results.size() > 0) {
+				input.remove(i);
+				input.addAll(results);
+				i += results.size() - 1;
+			}
+		}
+		return input;
+	}
+	
 	private Vector <String> extractToken (Vector <String> input, char tokenChar) {
 		String token = String.valueOf(tokenChar);
 		Vector <String> result = new Vector<String>();
@@ -202,6 +235,44 @@ public class Parser {
 		return result;
 	}
 
+	private Vector <String> getIoRedirectories(Vector<String> input) throws ShellException {
+		String inputRedirectory = "", outputRedirectory = "";
+		//merge all IO redirection token with their directories
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.INPUTREDIRECTION_TOKEN) 
+					|| input.get(i).equals(Configurations.OUTPUTREDIRECTION_TOKEN) && i < input.size() - 1) {
+				String mergedElement = input.get(i) + input.get(i + 1);
+				input.insertElementAt(mergedElement, i);
+				input.remove(i + 1);
+			}
+		}
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).startsWith(Configurations.INPUTREDIRECTION_TOKEN)) {
+				if (inputRedirectory.length() > 0) {
+					error();
+				}
+				inputRedirectory = input.get(i);
+				input.remove(i);
+			} else if (input.get(i).startsWith(Configurations.OUTPUTREDIRECTION_TOKEN)) {
+				if (outputRedirectory.length() > 0) {
+					error();
+				}
+				outputRedirectory = input.get(i);
+				input.remove(i);
+			}
+		}
+		if (inputRedirectory.length() > 0) {
+			inputRedirectory = inputRedirectory.substring(1);
+		}
+		if (outputRedirectory.length() > 0) {
+			outputRedirectory = outputRedirectory.substring(1);
+		}
+		Vector<String> result = new Vector<String>();
+		result.addElement(inputRedirectory);
+		result.add(outputRedirectory);
+		return result;
+	}
+	
 	private void error() throws ShellException{
 		throw new ShellException(Configurations.MESSAGE_ERROR_PARSING);
 	}
@@ -211,5 +282,15 @@ public class Parser {
 			return true;
 		}
 		return false;
+	}
+
+	private int countOccurrences(String s, String token) {
+		int counter = 0;
+		for( int i = 0; i < s.length(); i++ ) {
+		    if (String.valueOf(s.charAt(i)).equals(token)) {
+		        counter++;
+		    } 
+		}
+		return counter;
 	}
 }

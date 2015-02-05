@@ -14,6 +14,9 @@ public final class Configurations {
 	public static final char QUOTE_DOUBLE = '\"';
 	public static final char QUOTE_BACK = '`';
 	
+	public static final String WINDOWS_FILESEPARATOR = "\\";
+	public static final String LINUX_FILESEPARATOR = "/";
+	
 	public static final String SEMICOLON_TOKEN = ";";
 	public static final String PIPE_TOKEN = "|";
 	public static final String INPUTREDIRECTION_TOKEN = "<";

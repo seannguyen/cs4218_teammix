@@ -18,14 +18,14 @@ public class CallCommand implements Command {
 
 	//attributes
 	private String appName;
-	private Vector < String > arguments;
+	private Vector<String> arguments;
 	private String inputFile;
 	private String outputFile;
 	private InputStream inputStream;
 	private OutputStream outputStream;
 	
 	//constructor
-	public CallCommand (String appName, String inputFile, String outputFile, Vector < String > arguments) {
+	public CallCommand (String appName, String inputFile, String outputFile, Vector<String> arguments) {
 		this.appName = appName;
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
