@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.shell;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -17,10 +18,11 @@ import java.util.Stack;
 import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class Parser {
-	public Command parseCommandLine (String commandLine) throws ShellException {
+	public Command parseCommandLine (String commandLine) throws ShellException, AbstractApplicationException {
 		Vector <String> preprocessedLine = preprocessCommandLine(commandLine);
 		Command  command = parseSequence(preprocessedLine);
 		return command;
@@ -28,7 +30,7 @@ public class Parser {
 
 	//PRIVATE HELPER METHODS
 	
-	private SequenceCommand parseSequence (Vector <String> input) throws ShellException {
+	private SequenceCommand parseSequence (Vector <String> input) throws ShellException, AbstractApplicationException {
 		int lastSemiColon = -1;
 		SequenceCommand seqCommand = new SequenceCommand();
 		for (int i = 0; i < input.size(); i++) {
@@ -52,7 +54,7 @@ public class Parser {
 		return seqCommand;
 	}
 	
-	private PipeCommand parsePipe (Vector <String> input) throws ShellException {
+	private PipeCommand parsePipe (Vector <String> input) throws ShellException, AbstractApplicationException {
 		int lastPipeToken = -1;
 		PipeCommand pipeCommand = new PipeCommand();
 		for (int i = 0; i < input.size(); i++) {
@@ -76,13 +78,14 @@ public class Parser {
 		return pipeCommand;
 	}
 	
-	private Command parseCall(Vector <String> callLine) throws ShellException {
+	private Command parseCall(Vector <String> callLine) throws ShellException, AbstractApplicationException {
 		if (callLine.size() == 0) {
 			return new CallCommand(null, null, null, null);
 		}
 		try {
 			String appName = callLine.get(0);
 			callLine.remove(0);
+			callLine = subtitudeCommand(callLine);
 			Vector<String> ioRedirectories = getIoRedirectories(callLine);
 			Vector<String> arguments = getFilesFromGrobPattern(callLine);
 			Command command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), arguments);
@@ -106,6 +109,39 @@ public class Parser {
 		return result;
 	}
 
+	private Vector<String> subtitudeCommand(Vector<String> input) throws ShellException, AbstractApplicationException {
+		if (input == null) {
+			return input;
+		}
+		for (int i = 0; i < input.size(); i++) {
+			String element = input.get(i);
+			if (element.length() == 0 && !isQuote(element.charAt(0))) {
+				continue;
+			}
+			Vector<Integer> backQuotePositions = new Vector<Integer>();
+			for (int j = 0; j < element.length(); j++) {
+				if (element.charAt(j) == Configurations.QUOTE_BACK) {
+					backQuotePositions.add(j);
+				}
+			}
+			for (int j = backQuotePositions.size() - 1; j >= 0; j -= 2) {
+				if (j > 0) {
+					String subCmdLine = element.substring(backQuotePositions.get(j - 1), backQuotePositions.get(j) + 1);
+					subCmdLine = subCmdLine.substring(1, subCmdLine.length() - 1);
+					Command subCmd = parseCommandLine(subCmdLine);
+					ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+					subCmd.evaluate(null, outStream);
+					String evaluatedResult = outStream.toString();
+					String firstHalf = element.substring(0, backQuotePositions.get(j - 1));
+					String secondHalf = element.substring(backQuotePositions.get(j) + 1);
+					element = firstHalf + evaluatedResult + secondHalf; 
+					element = element.replace(Configurations.NEWLINE, Configurations.WHITESPACE);
+				}
+			}
+		}
+		return input;
+	}
+	
 	private Vector<String> getFilesFromGrobPattern(Vector<String> input) throws IOException {
 		for (int i = 0; i < input.size(); i++) {
 			final Vector<String> results = new Vector<String>();

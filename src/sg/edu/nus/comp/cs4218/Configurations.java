@@ -22,6 +22,7 @@ public final class Configurations {
 	public static final String INPUTREDIRECTION_TOKEN = "<";
 	public static final String OUTPUTREDIRECTION_TOKEN = ">";
 	public static final String NEWLINE = String.format("%n");
+	public static final String WHITESPACE = " ";
 	public static final String WHITESPACEREGEX = String.format("[ \t]");
 	
 	

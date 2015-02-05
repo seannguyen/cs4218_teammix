@@ -2,11 +2,6 @@ package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 import sg.edu.nus.comp.cs4218.Configurations;
@@ -32,11 +27,6 @@ public class SimpleShell implements Shell {
 	}
 
 	public static void main(String[] args) throws AbstractApplicationException, ShellException, IOException {
-		FileSystem fs = FileSystems.getDefault();
-		PathMatcher matcher = fs.getPathMatcher("glob:" + ".\\\\*");
-		Path path = Paths.get(".\\a\\b\\b.txt");
-		boolean x = matcher.matches(path);
-		
 		System.out.println(Configurations.MESSAGE_WELCOME);
 		//initialize apps in environment
 		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand(Environment.currentDirectory));
