@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.shell;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
 
@@ -15,24 +16,17 @@ public class SimpleShell implements Shell {
 	public void parseAndEvaluate(String cmdline, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
 		try {
-			try {
-				Parser parser = new Parser();
-				Command command = parser.parseCommandLine(cmdline);
-				command.evaluate(null, stdout);
-			} catch (ShellException shellError) {
-				stdout.write(shellError.getMessage().getBytes());
-			} catch (AbstractApplicationException appError) {
-				stdout.write(appError.getMessage().getBytes());
-			} catch (Exception e) {
-				stdout.write(e.getMessage().getBytes());
-			}
-			stdout.write(Configurations.NEWLINE.getBytes());
-		} catch (Exception e) {
-			System.out.println("There is something wrong with the system");
+		Parser parser = new Parser();
+		Command command = parser.parseCommandLine(cmdline);
+		command.evaluate(null, stdout);
+		} catch (ShellException e) {
+			System.out.println(e.getMessage());
+		} catch (AbstractApplicationException e)  {
+			System.out.println(e.getMessage());
 		}
 	}
 
-	public static void main(String[] args) throws AbstractApplicationException, ShellException {
+	public static void main(String[] args) throws AbstractApplicationException, ShellException, IOException {
 		System.out.println(Configurations.MESSAGE_WELCOME);
 		//initialize apps in environment
 		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand(Environment.currentDirectory));
@@ -46,8 +40,7 @@ public class SimpleShell implements Shell {
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
 		while (Environment.running) {
-			//System.out.printf(Configurations.MESSAGE_PROMPT);
-			System.out.printf(Environment.currentDirectory + ">");
+			System.out.printf(Environment.currentDirectory + Configurations.MESSAGE_PROMPT);
 			String line  = input.nextLine();
 			shell.parseAndEvaluate(line, System.out);
 		}

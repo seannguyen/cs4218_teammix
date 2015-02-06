@@ -1,14 +1,28 @@
 package sg.edu.nus.comp.cs4218.shell;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class Parser {
-	public Command parseCommandLine (String commandLine) throws ShellException {
+	public Command parseCommandLine (String commandLine) throws ShellException, AbstractApplicationException {
 		Vector <String> preprocessedLine = preprocessCommandLine(commandLine);
 		Command  command = parseSequence(preprocessedLine);
 		return command;
@@ -16,99 +30,194 @@ public class Parser {
 
 	//PRIVATE HELPER METHODS
 	
-	private Command parseSequence (Vector <String> sequenceLine) throws ShellException {
+	private SequenceCommand parseSequence (Vector <String> input) throws ShellException, AbstractApplicationException {
 		int lastSemiColon = -1;
 		SequenceCommand seqCommand = new SequenceCommand();
-		for (int i = 0; i < sequenceLine.size(); i++) {
-			if (sequenceLine.get(i) == Configurations.SEMICOLON) {
-				Vector <String> callLine = new Vector<String>();
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.SEMICOLON_TOKEN)) {
+				Vector <String> pipe = new Vector<String>();
 				if (lastSemiColon >= 0) {
-					callLine = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i));
+					pipe = new Vector<String>(input.subList(lastSemiColon + 1, i));
 				} else {
-					callLine = new Vector<String>(sequenceLine.subList(0, i));
+					pipe = new Vector<String>(input.subList(0, i));
 				}
 				lastSemiColon = i;
-				Command command = parseCall(callLine);
+				PipeCommand command = parsePipe(pipe);
 				seqCommand.addCommand(command);
-			} else if (i == sequenceLine.size() - 1) {
-				Vector <String> commandPhase;
-				if (lastSemiColon >= 0) {
-					commandPhase = new Vector<String>(sequenceLine.subList(lastSemiColon + 1, i +1));
-				} else {
-					commandPhase = sequenceLine;
-				}
-				Command command = parseCall(commandPhase);
+			} else if (i == input.size() - 1) {
+				Vector <String> pipe;
+				pipe = new Vector<String>(input.subList(lastSemiColon + 1, input.size()));
+				Command command = parsePipe(pipe);
 				seqCommand.addCommand(command);
 			}
 		}
 		return seqCommand;
 	}
-//	
-//	private Vector <Command> parsePipe (Vector <String> pipeLine) {
-//		Vector <Command> pipe = new Vector<Command>(); 
-//		pipe.add(parseCall(pipeLine));
-//		return pipe;
-//	}
-//	
-	private Command parseCall(Vector <String> callLine) throws ShellException {
-		if (callLine.size() == 0) {
-			return new CallCommand("", null);
-		}
-		String appName = callLine.get(0);
-		callLine.remove(0);
-		
-		for (int i = 0; i < callLine.size(); i++) {
-			String string = callLine.get(i);
-			if (string == Configurations.INPUTREDIRECTION_TOKEN) {
-				if (i > callLine.size() - 2 && callLine.get(i + 1) == Configurations.INPUTREDIRECTION_TOKEN
-						&& callLine.get(i + 1) == Configurations.OUTPUTREDIRECTION_TOKEN) { 
-					//mean that this is not the last element
-					throw new ShellException(Configurations.MESSAGE_ERROR_PARSING);
+	
+	private PipeCommand parsePipe (Vector <String> input) throws ShellException, AbstractApplicationException {
+		int lastPipeToken = -1;
+		PipeCommand pipeCommand = new PipeCommand();
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.PIPE_TOKEN)) {
+				Vector <String> call = new Vector<String>();
+				if (lastPipeToken >= 0) {
+					call = new Vector<String>(input.subList(lastPipeToken + 1, i));
+				} else {
+					call = new Vector<String>(input.subList(0, i));
 				}
-			} else {
-				
+				lastPipeToken = i;
+				Command command = parseCall(call);
+				pipeCommand.addCommand(command);
+			} else if (i == input.size() - 1) {
+				Vector <String> call;
+				call = new Vector<String>(input.subList(lastPipeToken + 1, input.size()));
+				Command command = parseCall(call);
+				pipeCommand.addCommand(command);
 			}
 		}
-		
-		Command command = new CallCommand(appName, callLine); 
-		return command;
+		return pipeCommand;
+	}
+	
+	private Command parseCall(Vector <String> callLine) throws ShellException, AbstractApplicationException {
+		if (callLine.size() == 0) {
+			return new CallCommand(null, null, null, null);
+		}
+		try {
+			String appName = callLine.get(0);
+			callLine.remove(0);
+			callLine = subtitudeCommand(callLine);
+			Vector<String> ioRedirectories = getIoRedirectories(callLine);
+			Vector<String> arguments = getFilesFromGrobPattern(callLine);
+			Command command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), arguments);
+			return command;
+		} catch (IOException e) {
+			throw new ShellException(e.getMessage());
+		}
 	}
 	
 	private Vector <String> preprocessCommandLine (String line) throws ShellException{
 		Vector <String> result = extractQuote(line);
 		result = splitBySpace(result);
-		result = extractSemiColon(result);
+		result = extractToken(result, Configurations.SEMICOLON_TOKEN.charAt(0));
+		result = extractToken(result, Configurations.PIPE_TOKEN.charAt(0));
 		for (int i = 0; i < result.size(); i++) {
-			if (result.get(i).length() == 0) {
+			if (result == null || result.get(i).length() == 0) {
 				result.remove(i);
 				i--;
 			}
 		}
 		return result;
 	}
+
+	private Vector<String> subtitudeCommand(Vector<String> input) throws ShellException, AbstractApplicationException {
+		if (input == null) {
+			return input;
+		}
+		for (int i = 0; i < input.size(); i++) {
+			String element = input.get(i);
+			if (element.length() == 0 && !isQuote(element.charAt(0))) {
+				continue;
+			}
+			Vector<Integer> backQuotePositions = new Vector<Integer>();
+			for (int j = 0; j < element.length(); j++) {
+				if (element.charAt(j) == Configurations.QUOTE_BACK) {
+					backQuotePositions.add(j);
+				}
+			}
+			for (int j = backQuotePositions.size() - 1; j >= 0; j -= 2) {
+				if (j > 0) {
+					String subCmdLine = element.substring(backQuotePositions.get(j - 1), backQuotePositions.get(j) + 1);
+					subCmdLine = subCmdLine.substring(1, subCmdLine.length() - 1);
+					Command subCmd = parseCommandLine(subCmdLine);
+					ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+					subCmd.evaluate(null, outStream);
+					String evaluatedResult = outStream.toString();
+					String firstHalf = element.substring(0, backQuotePositions.get(j - 1));
+					String secondHalf = element.substring(backQuotePositions.get(j) + 1);
+					element = firstHalf + evaluatedResult + secondHalf; 
+					element = element.replace(Configurations.NEWLINE, Configurations.WHITESPACE);
+				}
+			}
+		}
+		return input;
+	}
 	
-	private Vector <String> extractSemiColon (Vector <String> input) {
+	private Vector<String> getFilesFromGrobPattern(Vector<String> input) throws IOException {
+		for (int i = 0; i < input.size(); i++) {
+			final Vector<String> results = new Vector<String>();
+			String root = "." + File.separator;
+			Path startDir = Paths.get(root);
+			FileSystem fs = FileSystems.getDefault();
+			String globPattern = "glob:" + root + input.get(i);
+			if (System.getProperty("file.separator") != null 
+					&& System.getProperty("file.separator").equals(Configurations.WINDOWS_FILESEPARATOR)) {
+				globPattern = globPattern.replace("\\", "\\\\");
+			}
+			final PathMatcher matcher = fs.getPathMatcher(globPattern);
+
+			FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
+				@Override
+			    public FileVisitResult visitFile(Path file, BasicFileAttributes attribs) {
+					return checkFileName(file);
+			    }
+				@Override
+				public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attribs) {
+			        return checkFileName(file);
+				}
+				
+				private FileVisitResult checkFileName(Path file) {
+					if (matcher.matches(file)) {
+			            results.add(file.toString());
+			        }
+			        return FileVisitResult.CONTINUE;
+				}
+			};
+			Files.walkFileTree(startDir, matcherVisitor);
+			for (int j = 0; j < results.size(); j++) {
+				int originalLevelDeep = countOccurrences(root + input.get(i), File.separator);
+				int resultLevelDeep = countOccurrences(results.get(j), File.separator);
+				if (originalLevelDeep != resultLevelDeep) {
+					results.remove(j);
+					j--;
+				}
+			}
+			if (results.size() > 0) {
+				input.remove(i);
+				input.addAll(results);
+				i += results.size() - 1;
+			}
+		}
+		return input;
+	}
+	
+	private Vector <String> extractToken (Vector <String> input, char tokenChar) {
+		String token = String.valueOf(tokenChar);
 		Vector <String> result = new Vector<String>();
 		for (int i = 0; i < input.size(); i++) {
 			String element = input.get(i);
-			if (element.length() == 0 || isQuote(element.charAt(0))) {
+			if (element.length() <= 1 || isQuote(element.charAt(0))) {
 				result.add(element);
 			} else {
-				if (element.charAt(0) == Configurations.SEMICOLONCHAR) {
-					result.add(Configurations.SEMICOLON);
+				if (element.charAt(0) == tokenChar) {
+					result.add(token);
 				}
-				Vector <String> splitedPhases = new Vector<String>(Arrays.asList(element.split(Configurations.SEMICOLON)));
+				Vector <String> splitedPhases;
+				if (token.equals(Configurations.PIPE_TOKEN)) {
+					splitedPhases = new Vector<String>(Arrays.asList(element.split("\\" + token)));
+				} else {
+					splitedPhases = new Vector<String>(Arrays.asList(element.split(token)));
+				}
 				for (int j = 1; j < splitedPhases.size(); j += 2) {
-					splitedPhases.insertElementAt(Configurations.SEMICOLON, j);
+					splitedPhases.insertElementAt(token, j);
 				}
 				result.addAll(splitedPhases);
-				if (element.charAt(element.length() - 1) == Configurations.SEMICOLONCHAR && element.length() != 1) {
-					result.add(Configurations.SEMICOLON);
+				if (element.endsWith(token) && element.length() != 1) {
+					result.add(token);
 				}
 			}
 		}
 		return result;
-	}
+	}  
 	
 	private Vector <String> splitBySpace (Vector <String> input) {
 		Vector <String> result = new Vector<String>();
@@ -120,7 +229,7 @@ public class Parser {
 			if (isQuote(phase.charAt(0))) {
 				result.add(input.get(i));
 			} else {
-				String[] splitedPhases = phase.split(Configurations.SEPERATORREGEX);
+				String[] splitedPhases = phase.split(Configurations.WHITESPACEREGEX);
 				result.addAll(new Vector<String>(Arrays.asList(splitedPhases)));
 			}
 		}
@@ -162,6 +271,44 @@ public class Parser {
 		return result;
 	}
 
+	private Vector <String> getIoRedirectories(Vector<String> input) throws ShellException {
+		String inputRedirectory = "", outputRedirectory = "";
+		//merge all IO redirection token with their directories
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(Configurations.INPUTREDIRECTION_TOKEN) 
+					|| input.get(i).equals(Configurations.OUTPUTREDIRECTION_TOKEN) && i < input.size() - 1) {
+				String mergedElement = input.get(i) + input.get(i + 1);
+				input.insertElementAt(mergedElement, i);
+				input.remove(i + 1);
+			}
+		}
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).startsWith(Configurations.INPUTREDIRECTION_TOKEN)) {
+				if (inputRedirectory.length() > 0) {
+					error();
+				}
+				inputRedirectory = input.get(i);
+				input.remove(i);
+			} else if (input.get(i).startsWith(Configurations.OUTPUTREDIRECTION_TOKEN)) {
+				if (outputRedirectory.length() > 0) {
+					error();
+				}
+				outputRedirectory = input.get(i);
+				input.remove(i);
+			}
+		}
+		if (inputRedirectory.length() > 0) {
+			inputRedirectory = inputRedirectory.substring(1);
+		}
+		if (outputRedirectory.length() > 0) {
+			outputRedirectory = outputRedirectory.substring(1);
+		}
+		Vector<String> result = new Vector<String>();
+		result.addElement(inputRedirectory);
+		result.add(outputRedirectory);
+		return result;
+	}
+	
 	private void error() throws ShellException{
 		throw new ShellException(Configurations.MESSAGE_ERROR_PARSING);
 	}
@@ -171,5 +318,15 @@ public class Parser {
 			return true;
 		}
 		return false;
+	}
+
+	private int countOccurrences(String s, String token) {
+		int counter = 0;
+		for( int i = 0; i < s.length(); i++ ) {
+		    if (String.valueOf(s.charAt(i)).equals(token)) {
+		        counter++;
+		    } 
+		}
+		return counter;
 	}
 }
