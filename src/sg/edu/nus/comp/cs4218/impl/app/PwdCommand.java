@@ -11,16 +11,13 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.PwdException;
 
 public class PwdCommand implements Application {
-  protected Environment environment;
-
   /**
    * Constructor to initialise Environment.currentDirectory
    *
    * @param currentDirectory
    *          an absolute directory path
    */
-  public PwdCommand(String currentDirectory) {
-    environment.currentDirectory = currentDirectory;
+  public PwdCommand() {
   }
 
   /**
@@ -54,7 +51,7 @@ public class PwdCommand implements Application {
       throws AbstractApplicationException {
     if (args.length == 0) {
       try {
-        stdout.write(verifyDirectory(environment.currentDirectory).getBytes());
+        stdout.write(verifyDirectory(Environment.currentDirectory).getBytes());
       } catch (IOException e) {
         e.printStackTrace();
       }

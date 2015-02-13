@@ -14,16 +14,13 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class LsCommand implements Application {
-    protected Environment environment;
-    
     /**
      * Constructor to initialise Environment.currentDirectory
      *
      * @param currentDirectory
      *          an absolute directory path
      */
-    public LsCommand(String currentDirectory) {
-      environment.currentDirectory = currentDirectory;
+    public LsCommand() {
     }
     
     /**
@@ -83,7 +80,7 @@ public class LsCommand implements Application {
           File targetDirectory = new File(args[0]);
           files = getFiles(targetDirectory);
       } else if (args.length == 0) {
-          File currentDirectory = new File(environment.currentDirectory);
+          File currentDirectory = new File(Environment.currentDirectory);
           files = getFiles(currentDirectory);
       }
       
