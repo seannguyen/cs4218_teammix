@@ -29,8 +29,8 @@ public class SimpleShell implements Shell {
 	public static void main(String[] args) throws AbstractApplicationException, ShellException, IOException {
 		System.out.println(Configurations.MESSAGE_WELCOME);
 		//initialize apps in environment
-		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand();
-		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand();
+		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO, new EchoCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_CAT, new CatCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD, new HeadCommand());
