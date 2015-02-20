@@ -100,7 +100,7 @@ public class FindCommand implements Application {
       pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
     } else if (args.length == 3) {
       checkNameArg(args[1]); 
-      root = args[0];
+      root = args[0].replace("*", ".");
       pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
     } else {
       throw new FindException("Invalid Arguments");
