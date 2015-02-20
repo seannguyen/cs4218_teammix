@@ -87,7 +87,12 @@ public class Parser {
 			callLine.remove(0);
 			callLine = subtitudeCommand(callLine);
 			Vector<String> ioRedirectories = getIoRedirectories(callLine);
-			Vector<String> arguments = getFilesFromGrobPattern(callLine);
+			Vector<String> arguments;
+			if(("find").equals(appName)) {
+			  arguments = callLine;
+			} else {
+			  arguments = getFilesFromGrobPattern(callLine);
+			}
 			Command command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), arguments);
 			return command;
 		} catch (IOException e) {

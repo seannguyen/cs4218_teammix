@@ -15,6 +15,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -25,6 +26,8 @@ import sg.edu.nus.comp.cs4218.exception.FindException;
 
 public class FindCommand implements Application {
   protected final static String NOTHING = "";
+  protected final static String RELATIVE = ".";
+  protected final static String RELATIVE_INPUT = ".\\\\";
   protected final static String FILE_SEPARATOR = "file.separator";
   
   protected Vector<String> getFilesFromPattern(String start, String args) throws IOException {
@@ -33,13 +36,11 @@ public class FindCommand implements Application {
         Path startDir = Paths.get(root);
         FileSystem fileSystem = FileSystems.getDefault();
         String globPattern = "glob:" + root + args;
-
         if (System.getProperty(FILE_SEPARATOR) != null 
                 && System.getProperty(FILE_SEPARATOR).equals(Configurations.WINDOWS_FILESEPARATOR)) {
             globPattern = globPattern.replace("\\", "\\\\");
         }
         final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
-
         FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attribs) {
@@ -51,6 +52,7 @@ public class FindCommand implements Application {
             }
             
             private FileVisitResult checkFileName(Path file) {
+             // System.out.println(file);
                 if (matcher.matches(file)) {
                     results.add(file.toString());
                 }
@@ -59,6 +61,12 @@ public class FindCommand implements Application {
         };
         Files.walkFileTree(startDir, matcherVisitor);
     return results;
+  }
+  
+  private void checkNameArg(String token) throws FindException {
+    if(!("-name").equals(token)) {
+      throw new FindException("Missing -name");
+    }
   }
   
   private void checkErrorStatus(int error) throws FindException {
@@ -85,19 +93,19 @@ public class FindCommand implements Application {
     Vector<String> results = new Vector<String>();
     String pattern = NOTHING, root = NOTHING;
     int error = 0;
+    
     if (args.length == 2) {
-      if(!("-name").equals(args[0])) {
-        throw new FindException("Missing -name");
-      } 
+      checkNameArg(args[0]); 
       root = Environment.currentDirectory;
-      pattern = args[1];
+      pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
     } else if (args.length == 3) {
-      if(!("-name").equals(args[1])) {
-        throw new FindException("Missing -name");
-      } 
+      checkNameArg(args[1]); 
       root = args[0];
-      pattern = args[2];
+      pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
+    } else {
+      throw new FindException("Invalid Arguments");
     }
+    
     try {
       results = getFilesFromPattern(root, pattern);
     } catch (IOException e) {
@@ -114,7 +122,12 @@ public class FindCommand implements Application {
     }
     
     for(String result : results) {
-      System.out.println(result.replaceFirst(root, NOTHING));
+      try {
+        String outString = result.replaceFirst(root, RELATIVE) + Configurations.NEWLINE;
+        stdout.write(outString.getBytes());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     } 
   }
 }
