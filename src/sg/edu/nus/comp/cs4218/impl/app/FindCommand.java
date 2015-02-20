@@ -30,12 +30,22 @@ public class FindCommand implements Application {
   protected final static String RELATIVE_INPUT = ".\\\\";
   protected final static String FILE_SEPARATOR = "file.separator";
   
-  protected Vector<String> getFilesFromPattern(String start, String args) throws IOException {
+  /**
+   * Finds files with matching pattern in given starting
+   * directory
+   * 
+   * @param start
+   *           start directory
+   *           
+   * @param pattern
+   *            pattern to be matched
+   */
+  protected Vector<String> getFilesFromPattern(String start, String pattern) throws IOException {
         final Vector<String> results = new Vector<String>();
         String root = start + File.separator;
         Path startDir = Paths.get(root);
         FileSystem fileSystem = FileSystems.getDefault();
-        String globPattern = "glob:" + root + args;
+        String globPattern = "glob:" + root + pattern;
         if (System.getProperty(FILE_SEPARATOR) != null 
                 && System.getProperty(FILE_SEPARATOR).equals(Configurations.WINDOWS_FILESEPARATOR)) {
             globPattern = globPattern.replace("\\", "\\\\");
@@ -63,12 +73,28 @@ public class FindCommand implements Application {
     return results;
   }
   
+  /**
+   * Checks if token is "-name"
+   * if token is not "-name" throw find exception
+   *
+   * @param token
+   *           token to be check
+   */
   private void checkNameArg(String token) throws FindException {
     if(!("-name").equals(token)) {
       throw new FindException("Missing -name");
     }
   }
   
+  /**
+   * Checks if the globing function has any errors
+   * Throws Exception if error != 0
+   *
+   * @param error
+   *           error = 0 means no error
+   *           error = 1 means File Not file 
+   *           error = 2 means Invalid Directory
+   */
   private void checkErrorStatus(int error) throws FindException {
     if(error == 1) {
       throw new FindException(Configurations.MESSGE_ERROR_FILENOTFOUND);
@@ -78,7 +104,7 @@ public class FindCommand implements Application {
   }
   
   /**
-   * Perform change directory command
+   * Perform find command
    *
    * @param args
    *          input arguments
@@ -93,7 +119,7 @@ public class FindCommand implements Application {
     Vector<String> results = new Vector<String>();
     String pattern = NOTHING, root = NOTHING;
     int error = 0;
-    
+    System.out.println(args.toString());
     if (args.length == 2) {
       checkNameArg(args[0]); 
       root = Environment.currentDirectory;
