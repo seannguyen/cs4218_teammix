@@ -15,15 +15,6 @@ public class CdCommand implements Application {
   protected final static String NOTHING = "";
 
   /**
-   * Constructor to initialise Environment.currentDirectory
-   *
-   * @param currentDirectory
-   *          an absolute directory path
-   */
-  public CdCommand() {
-  }
-
-  /**
    * Returns new File pointing to new directory Returns null if newDirectory is
    * null or newDirectory is not a directory
    *
@@ -31,7 +22,7 @@ public class CdCommand implements Application {
    *          an absolute directory path
    * @return new directory
    */
-  protected File changeDirectory(String newDirectory) throws CdException {
+  protected File changeDirectory(String newDirectory) {
     if (newDirectory != null) {
       File newDir = new File(newDirectory);
       if (newDir.isDirectory()) {

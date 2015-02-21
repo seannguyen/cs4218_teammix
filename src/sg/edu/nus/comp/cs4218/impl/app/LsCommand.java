@@ -52,11 +52,13 @@ public class LsCommand implements Application {
         if (files != null) {
             StringBuilder stringBuilder = new StringBuilder();
             for (File file : files) {
+              if(!file.getName().startsWith(".")) {
                 stringBuilder.append(file.getName());
                 if (file.isDirectory()) {
                     stringBuilder.append(File.separator);
                 }
                 stringBuilder.append('\t');
+              }
             }
             returnable = stringBuilder.toString();
         } 
@@ -82,6 +84,8 @@ public class LsCommand implements Application {
       } else if (args.length == 0) {
           File currentDirectory = new File(Environment.currentDirectory);
           files = getFiles(currentDirectory);
+      } else {
+        throw new LsException("Invalid arguments");
       }
       
       if(files != null) {

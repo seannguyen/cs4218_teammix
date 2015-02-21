@@ -20,54 +20,55 @@ import sg.edu.nus.comp.cs4218.impl.app.CdCommand;
 public class CdCommandTest {
   private CdCommand cdCommand;
   private File fileTemp, folderTemp1, folderTemp2;
-  private File workingDir = new File(System.getProperty("user.dir"));
+  private final File workingDir = new File(System.getProperty("user.dir"));
   private InputStream stdin;
   private OutputStream stdout;
-  
+
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
-  
+
   @Before
   public void setUp() throws Exception {
     fileTemp = File.createTempFile("cd1", "");
     folderTemp1 = Files.createTempDirectory("cdFolderTemp1").toFile();
-    folderTemp2 = Files.createTempDirectory(workingDir.toPath(), "cdFolderTemp2").toFile();
+    folderTemp2 = Files.createTempDirectory(workingDir.toPath(),
+        "cdFolderTemp2").toFile();
     Environment.currentDirectory = workingDir.getAbsolutePath();
+    cdCommand = new CdCommand();
   }
 
   @After
-  public void tearDown() throws Exception {
-      fileTemp.delete();
-      folderTemp1.delete();
-      folderTemp2.delete();
-      cdCommand = null;
-      stdin = null;
-      stdout = null;
+  public void tearDown() {
+    fileTemp.delete();
+    folderTemp1.delete();
+    folderTemp2.delete();
+    cdCommand = null;
+    stdin = null;
+    stdout = null;
   }
-  
+
   /**
-   *  Testing File changeDirectory(String newDirectory)
-   *  newDirectory is null
+   * Tests helper changeDirectory(String newDirectory) newDirectory is null
    */
   @Test
   public void testChangeDirectoryToNull() {
-    cdCommand = new CdCommand();
     assertNull(cdCommand.changeDirectory(null));
   }
-  
+
   /**
-   *  Testing File changeDirectory(String newDirectory)
-   *  newDirectory is empty String
+   * Tests helper changeDirectory(String newDirectory) newDirectory is empty
+   * String
    */
   @Test
   public void testChangeDirectoryToEmptyString() {
-    cdCommand = new CdCommand();
     assertNull(cdCommand.changeDirectory(""));
   }
 
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test absolute path to non-directory
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * absolute path to non-directory
+   * 
+   * @throw CdException
    */
   @Test
   public void testChangeDirectoryToFile() throws CdException {
@@ -78,92 +79,101 @@ public class CdCommandTest {
     String args[] = { fileTemp.getAbsolutePath() };
     cdCommand.run(args, stdin, stdout);
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test invalid args size 2 (more than 1)
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * invalid args size 2 (more than 1)
+   * 
+   * @throw CdException
    */
   @Test
   public void testTwoArgs() throws CdException {
-    cdCommand = new CdCommand();
     expectedEx.expect(CdException.class);
     expectedEx.expectMessage("Invalid arguments");
-    String args[] = { fileTemp.getAbsolutePath(), "src"};
+    String args[] = { fileTemp.getAbsolutePath(), "src" };
     cdCommand.run(args, stdin, stdout);
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test invalid args size 5 (more than 1)
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * invalid args size 5 (more than 1)
+   * 
+   * @throw CdException
    */
   @Test
   public void testFiveArgs() throws CdException {
-    cdCommand = new CdCommand();
     expectedEx.expect(CdException.class);
     expectedEx.expectMessage("Invalid arguments");
-    String args[] = { fileTemp.getAbsolutePath(), "src", "sg", "", fileTemp.getAbsolutePath()};
+    String args[] = { fileTemp.getAbsolutePath(), "src", "sg", "",
+        fileTemp.getAbsolutePath() };
     cdCommand.run(args, stdin, stdout);
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test Home ~
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * Home ~
+   * 
+   * @throws CdException
    */
   @Test
-  public void cdHomeTest() {
-      String[] args = {"~"};
-      cdCommand = new CdCommand();
-      assertEquals(Environment.currentDirectory, System.getProperty("user.dir"));
+  public void cdHomeTest() throws CdException {
+    String[] args = { "~" };
+    cdCommand.run(args, stdin, stdout);
+    assertEquals(Environment.currentDirectory, System.getProperty("user.dir"));
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test absolute path to folder
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * absolute path to folder
+   * 
+   * @throw CdException
    */
   @Test
   public void cdToFullPathFolder() throws CdException {
-    cdCommand = new CdCommand();
-    String args[] = {folderTemp1.getAbsolutePath()};
+    String args[] = { folderTemp1.getAbsolutePath() };
     cdCommand.run(args, stdin, stdout);
     assertEquals(Environment.currentDirectory, folderTemp1.getAbsolutePath());
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test relative path to folder
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * relative path to folder
+   * 
+   * @throw CdException
    */
   @Test
   public void cdToRelativePathFolder() throws CdException {
-    cdCommand = new CdCommand();
     String relativePath = folderTemp2.getName();
-    String args[] = {relativePath};
+    String args[] = { relativePath };
     cdCommand.run(args, stdin, stdout);
     assertEquals(Environment.currentDirectory, folderTemp2.getAbsolutePath());
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test change directory to parent folder
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * change directory to parent folder
+   * 
+   * @throw CdException
    */
   @Test
   public void cdToParentFolder() throws CdException {
-    cdCommand = new CdCommand();
     String parentPath = workingDir.getParent();
-    String args[] = {".."};
+    String args[] = { ".." };
     cdCommand.run(args, stdin, stdout);
     assertEquals(Environment.currentDirectory, parentPath);
   }
-  
-  /** 
-   * Test void run(String[] args, InputStream stdin, OutputStream stdout)
-   * Test cd null back to user.dir
+
+  /**
+   * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+   * cd null back to user.dir
+   * 
+   * @throw CdException
    */
   @Test
   public void cdNullTest() throws CdException {
-      String[] args = {};
-      cdCommand = new CdCommand();
-      cdCommand.run(args, stdin, stdout);
-      assertEquals(Environment.currentDirectory, System.getProperty("user.dir"));
+    String[] args = {};
+    cdCommand.run(args, stdin, stdout);
+    assertEquals(Environment.currentDirectory, System.getProperty("user.dir"));
   }
-  
+
 }
