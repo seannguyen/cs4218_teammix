@@ -72,14 +72,42 @@ public class CdCommandTest {
    */
   @Test
   public void testChangeDirectoryToFile() throws CdException {
-    cdCommand = new CdCommand();
     assertNull(cdCommand.changeDirectory(fileTemp.getAbsolutePath()));
     expectedEx.expect(CdException.class);
     expectedEx.expectMessage("Not a directory");
     String args[] = { fileTemp.getAbsolutePath() };
     cdCommand.run(args, stdin, stdout);
   }
+  
+  /**
+   * Test helper FormatDirectory to convert relative to absolute path
+   */
+  @Test
+  public void testFormatDirectoryRelativeInput() {
+    String results = cdCommand.formatDirectory(workingDir.getAbsolutePath(), folderTemp2.getName());
+    assertEquals(results, folderTemp2.getAbsolutePath() + File.separator);
+  }
 
+  /**
+   * Test helper FormatDirectory to return nothing when curr working dir is 
+   * null
+   */
+  @Test
+  public void testFormatDirectoryNullCurrentWorkingDir() {
+    String results = cdCommand.formatDirectory(null, folderTemp2.getName());
+    assertEquals(results, "");
+  }
+  
+  /**
+   * Test helper FormatDirectory to return nothing when curr working dir is 
+   * null
+   */
+  @Test
+  public void testFormatDirectoryTransverse() {
+    String results = cdCommand.formatDirectory(folderTemp2.getAbsolutePath(), "..");
+    assertEquals(results, workingDir.getAbsolutePath() + File.separator);
+  }
+  
   /**
    * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
    * invalid args size 2 (more than 1)
