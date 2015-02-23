@@ -34,5 +34,8 @@ public final class Configurations {
 	public static final String APPNAME_HEAD = "head";
 	public static final String APPNAME_TAIL = "tail";
 	public static final String APPNAME_FIND = "find";
+<<<<<<< HEAD
 	public static final String APPNAME_WC = "wc";
+=======
+>>>>>>> 60ddb5bb87a542979117bc290b33468686e754d1
 }

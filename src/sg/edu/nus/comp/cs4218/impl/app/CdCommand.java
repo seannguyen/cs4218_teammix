@@ -13,17 +13,6 @@ import sg.edu.nus.comp.cs4218.exception.CdException;
 
 public class CdCommand implements Application {
   protected final static String NOTHING = "";
-  protected Environment environment;
-
-  /**
-   * Constructor to initialise Environment.currentDirectory
-   *
-   * @param currentDirectory
-   *          an absolute directory path
-   */
-  public CdCommand(String currentDirectory) {
-    environment.currentDirectory = currentDirectory;
-  }
 
   /**
    * Returns new File pointing to new directory Returns null if newDirectory is
@@ -33,7 +22,7 @@ public class CdCommand implements Application {
    *          an absolute directory path
    * @return new directory
    */
-  protected File changeDirectory(String newDirectory) throws CdException {
+  protected File changeDirectory(String newDirectory) {
     if (newDirectory != null) {
       File newDir = new File(newDirectory);
       if (newDir.isDirectory()) {
@@ -114,7 +103,7 @@ public class CdCommand implements Application {
         newDirectory = changeDirectory(args[0]);
       } else {
         newDirectory = changeDirectory(formatDirectory(
-            environment.currentDirectory, args[0]));
+            Environment.currentDirectory, args[0]));
       }
     } else {
       throw new CdException("Invalid arguments");
@@ -123,7 +112,7 @@ public class CdCommand implements Application {
     if (newDirectory == null) {
       throw new CdException(arg + "Not a directory");
     } else {
-      environment.currentDirectory = newDirectory.getAbsolutePath();
+      Environment.currentDirectory = newDirectory.getAbsolutePath();
     }
   }
 }

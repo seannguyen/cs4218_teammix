@@ -38,6 +38,7 @@ public class SimpleShell implements Shell {
 		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new PwdCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_FIND, new FindCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_WC, new WcCommand());
+
 		//setup shell
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
