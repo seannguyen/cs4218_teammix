@@ -33,4 +33,6 @@ public final class Configurations {
 	public static final String APPNAME_CAT = "cat";
 	public static final String APPNAME_HEAD = "head";
 	public static final String APPNAME_TAIL = "tail";
+	public static final String APPNAME_FIND = "find";
+	public static final String APPNAME_WC = "wc";
 }

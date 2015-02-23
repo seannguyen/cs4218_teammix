@@ -29,13 +29,15 @@ public class SimpleShell implements Shell {
 	public static void main(String[] args) throws AbstractApplicationException, ShellException, IOException {
 		System.out.println(Configurations.MESSAGE_WELCOME);
 		//initialize apps in environment
-		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand(Environment.currentDirectory));
-		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand(Environment.currentDirectory));
+		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO, new EchoCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_CAT, new CatCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD, new HeadCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_TAIL, new TailCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new PwdCommand(Environment.currentDirectory));
+		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new PwdCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_FIND, new FindCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_WC, new WcCommand());
 		//setup shell
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
