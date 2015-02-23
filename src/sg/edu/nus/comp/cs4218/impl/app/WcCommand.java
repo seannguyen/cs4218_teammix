@@ -25,6 +25,7 @@ public class WcCommand implements Application {
 	private boolean lineFlag = false;
 	private boolean wordFlag = false;
 	private boolean charFlag = false;
+	private boolean argFlag = false;
 
 	public WcCommand() {
 		// This constructor is intentionally empty. Nothing special is needed
@@ -46,6 +47,7 @@ public class WcCommand implements Application {
 				// wc: illegal option -- z
 				throw new WcException("illegal option " + args[i]);
 			} else {
+				argFlag = true;
 				int numOfFiles = args.length - i;
 				String[] arrayOfFiles = new String[numOfFiles];
 				System.arraycopy(args, i, arrayOfFiles, 0, numOfFiles);
@@ -53,7 +55,10 @@ public class WcCommand implements Application {
 				break;
 			}
 		}
-		processStdin(stdout);
+		if (!argFlag) {
+			resetAllCounters();
+			throw new WcException("no argument(s)");
+		}
 	}
 
 	public void processFiles(String args[], InputStream stdin,
@@ -82,9 +87,11 @@ public class WcCommand implements Application {
 				}
 			} else if (isDirectory(file)) {
 				// cat: sample/: Is a directory
+				resetAllCounters();
 				throw new WcException(" " + fileName + ":" + " Is a directory");
 			} else {
 				// cat: sample.txt: No such file or directory
+				resetAllCounters();
 				throw new WcException(" " + fileName + ":"
 						+ " No such file or directory");
 			}
@@ -143,6 +150,7 @@ public class WcCommand implements Application {
 
 			stdout.write("Total".getBytes());
 		} catch (IOException e) {
+			resetAllCounters();
 			e.printStackTrace();
 		}
 	}
@@ -176,7 +184,8 @@ public class WcCommand implements Application {
 
 			stdout.write(fileName.getBytes());
 			stdout.write(String.format("%n").getBytes());			
-		} catch (IOException e) {			
+		} catch (IOException e) {	
+			resetAllCounters();
 			e.printStackTrace();
 		}
 	}
@@ -201,7 +210,8 @@ public class WcCommand implements Application {
 		}
 		return false;
 	}
-
+	
+	/*
 	public void processStdin(OutputStream stdout) {
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
@@ -229,4 +239,5 @@ public class WcCommand implements Application {
 			}
 		}
 	}
+	*/
 }
