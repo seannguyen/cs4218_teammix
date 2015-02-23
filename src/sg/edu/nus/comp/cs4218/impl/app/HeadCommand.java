@@ -13,8 +13,7 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
 
 public class HeadCommand implements Application{
-	public static final int DEFAULT_NUM_OF_LINES = 10;
-	private Environment environment;
+	public static final int DEFAULT_NUM_OF_LINES = 10;	
 	
 	public HeadCommand() {
 		// This constructor is intentionally empty. Nothing special is needed here.
@@ -67,10 +66,10 @@ public class HeadCommand implements Application{
 	}
 	
 	public String getAbsolutePath(String filePath) {				
-		if(filePath.startsWith(environment.currentDirectory)) {
+		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
 		}
-		return environment.currentDirectory + File.separator + filePath;
+		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
 	public boolean doesFileExist(File file) {

@@ -15,7 +15,6 @@ import sg.edu.nus.comp.cs4218.exception.TailException;
 
 public class TailCommand implements Application{
 	public static final int DEFAULT_DISPLAY_LINES = 10;
-	private Environment environment;
 	
 	public TailCommand() {
 		// This constructor is intentionally empty. Nothing special is needed here.
@@ -91,10 +90,10 @@ public class TailCommand implements Application{
 	}
 	
 	public String getAbsolutePath(String filePath) {				
-		if(filePath.startsWith(environment.currentDirectory)) {
+		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
 		}
-		return environment.currentDirectory + File.separator + filePath;
+		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
 	public boolean doesFileExist(File file) {
