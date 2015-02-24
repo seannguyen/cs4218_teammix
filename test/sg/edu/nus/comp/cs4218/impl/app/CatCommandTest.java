@@ -117,6 +117,12 @@ public class CatCommandTest {
 		Files.delete(PATHHIDE);
 	}
 
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a normal text file with contents in it
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFile() throws CatException {
 		String[] args = {FILE};
@@ -124,6 +130,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a text file with nothing in it
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFileEmpty() throws CatException {
 		String[] args = {FILEEMPTY};
@@ -131,6 +143,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden text file with contents
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFileHidden() throws CatException {
 		String[] args = {FILEHIDE};
@@ -138,6 +156,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden text file nothing in it
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFileHiddenEmpty() throws CatException {
 		String[] args = {FILEHIDEEMPTY};
@@ -145,6 +169,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a file in a folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFolderFile() throws CatException {
 		String[] args = {FOLDERTEST + File.separator + FILE};
@@ -152,6 +182,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a file(nothing in it) in a folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFolderFileEmpty() throws CatException {
 		String[] args = {FOLDERTEST + File.separator + FILEEMPTY};
@@ -159,6 +195,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden file in a folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFolderFileHidden() throws CatException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDE};
@@ -166,6 +208,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden file(nothing in it) in a folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatFolderFileHiddenEmpty() throws CatException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDEEMPTY};
@@ -173,6 +221,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a file in a hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatHiddenFolderFile() throws CatException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILE};
@@ -180,6 +234,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a file(nothing in it) in a hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatHiddenFolderFileEmpty() throws CatException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEEMPTY};
@@ -187,6 +247,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden file in a hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatHiddenFolderFileHidden() throws CatException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDE};
@@ -194,6 +260,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden file(nothing in it) in a hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatHiddenFolderFileHiddenEmpty() throws CatException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY};
@@ -201,6 +273,12 @@ public class CatCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a file that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatNoSuchFile() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -209,14 +287,26 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a directory that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
-	public void testCatNoSuchDirector() throws CatException {
+	public void testCatNoSuchDirectory() throws CatException {
 		expectedEx.expect(CatException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"NoSuchFile"};
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a directory
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatDirectory() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -225,6 +315,12 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden file that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatNoSuchHiddenFile() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -233,6 +329,12 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden directory
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatHiddenDirectory() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -241,6 +343,12 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a hidden folder that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatNoSuchHiddenDirectory() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -249,6 +357,12 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat 2 files
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatTwoFiles() throws CatException {
 		String[] args = {FILE, FILEHIDE};
@@ -256,6 +370,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT + CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat 3 files
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatThreeFiles() throws CatException {
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
@@ -263,6 +383,12 @@ public class CatCommandTest {
 		assertEquals(CONTENT + CONTENT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * cat zero args
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatNoFile() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -271,6 +397,12 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Cat a empty string
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testCatEmptyArg() throws CatException {
 		expectedEx.expect(CatException.class);
@@ -279,36 +411,72 @@ public class CatCommandTest {
 		catCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input normal file
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePath() throws CatException {		
 		String result = catCommand.getAbsolutePath(FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input normal folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolder() throws CatException {		
 		String result = catCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolderHiddenFile() throws CatException {		
 		String result = catCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILEHIDE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolder() throws CatException {		
 		String result = catCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws CatException {		
 		String result = catCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY ,result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExist() throws CatException {
 		File file = new File(FILE);
@@ -316,6 +484,12 @@ public class CatCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistHidden() throws CatException {
 		File file = new File(FILEHIDEEMPTY);
@@ -323,6 +497,12 @@ public class CatCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistNoSuchFile() throws CatException {
 		File file = new File("NoSuchFile.txt");
@@ -330,6 +510,12 @@ public class CatCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input folder that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistFolder() throws CatException {
 		File file = new File(FOLDERTEST);
@@ -337,6 +523,12 @@ public class CatCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input a folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectory() throws CatException {
 		File file = new File(FOLDERTEST);
@@ -344,6 +536,12 @@ public class CatCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectoryHidden() throws CatException {
 		File file = new File(FOLDERTESTHIDE);
@@ -351,6 +549,12 @@ public class CatCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input folder that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectoryNoSuchDirectory() throws CatException {
 		File file = new File("NoSuchFolder");
