@@ -16,10 +16,16 @@ import sg.edu.nus.comp.cs4218.exception.TailException;
 public class TailCommand implements Application{
 	public static final int DEFAULT_DISPLAY_LINES = 10;
 	
-	public TailCommand() {
-		// This constructor is intentionally empty. Nothing special is needed here.
-	}
-	
+	/**
+	 * Perform Tail command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws TailException {
 		ArrayList<String> listOfLines = new ArrayList<String>();		
@@ -59,6 +65,17 @@ public class TailCommand implements Application{
 		}
 	}
 
+	/**
+	 * Write to outputStream the lines(numOfLines) starting from the bottom of Arraylist.
+	 *
+	 * @param stdout
+	 *            outputStream
+	 * @param listOfLines
+	 * 			  lines from file
+	 * @param numOfLines
+	 * 			  number of lines to be displayed from bottom      
+	 *  
+	 */
 	public void outputLines(OutputStream stdout, ArrayList<String> listOfLines, int numOfLines) throws IOException {
 		int numLineToDisplay = listOfLines.size() - numOfLines;
 		
@@ -72,6 +89,17 @@ public class TailCommand implements Application{
 		}
 	}
 
+	/**
+	 * Read from a given File and add each line in the file to an arraylist
+	 *
+	 * @param listOfLines
+	 *            list to store lines from file
+	 * @param numOflines
+	 * 			  number of lines to add to arraylist
+	 * @param file
+	 * 			  file to read from      
+	 *  
+	 */
 	public ArrayList<String> addLinesToArrayListFromFile(ArrayList<String> listOfLines, int numOfLines, File file) {
 		try {
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -89,6 +117,12 @@ public class TailCommand implements Application{
 		return listOfLines;
 	}
 	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
 	public String getAbsolutePath(String filePath) {				
 		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
@@ -96,6 +130,12 @@ public class TailCommand implements Application{
 		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
 	public boolean doesFileExist(File file) {
 		if(file.exists() && !file.isDirectory()) {
 			return true;
@@ -103,6 +143,12 @@ public class TailCommand implements Application{
 		return false;
 	}
 	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
 	public boolean isDirectory(File file) {
 		if(file.isDirectory()) {
 			return true;
