@@ -1,13 +1,10 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -16,15 +13,15 @@ import sg.edu.nus.comp.cs4218.exception.WcException;
 
 public class WcCommand implements Application {
 	private String fileName;
-	private int lineCount = 0;
-	private int wordCount = 0;
-	private int charCount = 0;
-	private int totalLineCount = 0;
-	private int totalWordCount = 0;
-	private int totalCharCount = 0;
-	private boolean lineFlag = false;
-	private boolean wordFlag = false;
-	private boolean charFlag = false;
+	protected int lineCount = 0;
+	protected int wordCount = 0;
+	protected int charCount = 0;
+	protected int totalLineCount = 0;
+	protected int totalWordCount = 0;
+	protected int totalCharCount = 0;
+	protected boolean lineFlag = false;
+	protected boolean wordFlag = false;
+	protected boolean charFlag = false;
 	private boolean argFlag = false;
 
 	/**
@@ -41,6 +38,10 @@ public class WcCommand implements Application {
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws WcException {
 		for (int i = 0; i < args.length; i++) {
+			if(args[i].equals("")) {
+				resetAllCounters();
+				throw new WcException("Null argument(s)");
+			}
 			if (args[i].equals("-l")) { // Print only the newline counts
 				lineFlag = true;
 			} else if (args[i].equals("-w")) { // Print only the word counts
@@ -50,8 +51,9 @@ public class WcCommand implements Application {
 				charFlag = true;
 			} else if (args[i].charAt(0) == '-') {
 				// wc: illegal option -- z
+				resetAllCounters();
 				throw new WcException("illegal option " + args[i]);
-			} else {
+			} else {			
 				argFlag = true;
 				int numOfFiles = args.length - i;
 				String[] arrayOfFiles = new String[numOfFiles];
@@ -62,7 +64,7 @@ public class WcCommand implements Application {
 		}
 		if (!argFlag) {
 			resetAllCounters();
-			throw new WcException("no argument(s)");
+			throw new WcException("No argument(s)");
 		}
 	}
 
@@ -79,6 +81,10 @@ public class WcCommand implements Application {
 	 */
 	public void processFiles(String args[], InputStream stdin,
 			OutputStream stdout) throws WcException {
+		if(args.length == 0) {
+			resetAllCounters();
+			throw new WcException("No argument(s)");
+		}
 		for (int i = 0; i < args.length; i++) {
 			fileName = getAbsolutePath(args[i]);
 			File file = new File(fileName);
@@ -110,13 +116,12 @@ public class WcCommand implements Application {
 				resetAllCounters();
 				throw new WcException(" " + fileName + ":"
 						+ " No such file or directory");
-			}
-
-			if (args.length > 1) {
-				printTotalResults(stdout);
-			}
-			resetAllCounters();
+			}			
 		}
+		if (args.length > 1) {
+			printTotalResults(stdout);
+		}
+		resetAllCounters();
 	}
 
 	/**
@@ -151,7 +156,7 @@ public class WcCommand implements Application {
 	 */
 	public void printTotalResults(OutputStream stdout) {
 		try {
-			if (lineFlag == false && wordFlag == false && charFlag == false) {
+			if (!lineFlag && !wordFlag && !charFlag) {
 				// print all in the following order: newline, word, character
 				stdout.write(String.valueOf(totalLineCount).getBytes());
 				stdout.write("\t".getBytes());
@@ -176,7 +181,7 @@ public class WcCommand implements Application {
 				stdout.write("\t".getBytes());
 			}
 
-			stdout.write("Total".getBytes());
+			stdout.write("total".getBytes());
 		} catch (IOException e) {
 			resetAllCounters();
 			e.printStackTrace();
@@ -193,7 +198,7 @@ public class WcCommand implements Application {
 	 */
 	public void printResults(String fileName, OutputStream stdout) {
 		try {
-			if (lineFlag == false && wordFlag == false && charFlag == false) {
+			if (!lineFlag && !wordFlag && !charFlag) {
 				// print all in the following order: newline, word, character
 				stdout.write(String.valueOf(lineCount).getBytes());
 				stdout.write("\t".getBytes());

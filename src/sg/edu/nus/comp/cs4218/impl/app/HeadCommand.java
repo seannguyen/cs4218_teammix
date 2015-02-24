@@ -34,9 +34,9 @@ public class HeadCommand implements Application{
 			try {
 				numOfLines = Integer.parseInt(args[1]);
 				if(numOfLines < 0) {
-					//illegal line count -- -1
+					//illegal line count -- numOfLines
 					throw new HeadException("illegal line count -- " + numOfLines);
-				}
+				}								
 			} catch(NumberFormatException e) {
 				e.printStackTrace();
 			}

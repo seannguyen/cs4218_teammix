@@ -35,6 +35,9 @@ public class TailCommand implements Application{
 		if (args.length == 3 && args[0].equals("-n")) {			
 			try {
 				numOfLines = Integer.parseInt(args[1]);
+				if(numOfLines < 0) {
+					throw new TailException("illegal line count -- " + numOfLines);
+				}
 			} catch(NumberFormatException e) {
 				e.printStackTrace();
 			}
@@ -43,7 +46,11 @@ public class TailCommand implements Application{
 			numOfLines = DEFAULT_DISPLAY_LINES;
 			fileName = args[0];
 		} else {
-			throw new TailException("Incorrect arguements");
+			throw new TailException("Incorrect argument(s)");
+		}
+		
+		if(fileName.equals("")) {
+			throw new TailException("Null argument(s)");
 		}
 		
 		fileName = getAbsolutePath(fileName);

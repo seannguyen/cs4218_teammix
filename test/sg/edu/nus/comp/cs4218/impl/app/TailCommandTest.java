@@ -21,19 +21,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.TailException;
 
-public class HeadCommandTest {
-	private HeadCommand headCommand;
+public class TailCommandTest {
+	private TailCommand tailCommand;
 	private InputStream stdin;
 	private OutputStream stdout;
 	final private static String NOFILEMSG = "No such file or directory";
 	final private static String INCORRECTARGMSG = "Incorrect argument(s)";
-	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
-	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
-	final private static String RESULT_10 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n";
-	final private static String RESULT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n";
-	final private static String RESULT_11 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n";
+	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, tail, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
+	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, tail, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
+	final private static String RESULT_10 = "3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
+	final private static String RESULT_1 = "12. END-OF-FILE\n";
+	final private static String RESULT_11 = "2. cd, pwd, ls, cat, echo, tail, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
 	final private static String FOLDERTEST = "folderTest";
 	final private static String FOLDERTESTHIDE = ".FolderTestHide";
 	final private static String FILE = "textFile1.txt"; 
@@ -109,13 +109,13 @@ public class HeadCommandTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		headCommand = new HeadCommand();		
+		tailCommand = new TailCommand();		
 		stdout = new java.io.ByteArrayOutputStream();		
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		headCommand = null;
+		tailCommand = null;
 		stdout = null;
 	}
 	
@@ -140,326 +140,326 @@ public class HeadCommandTest {
 	}
 
 	@Test
-	public void testHeadFile() throws HeadException {
+	public void testTailFile() throws TailException {
 		String[] args = {FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFileEmpty() throws HeadException {
+	public void testTailFileEmpty() throws TailException {
 		String[] args = {FILEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFileHidden() throws HeadException {
+	public void testTailFileHidden() throws TailException {
 		String[] args = {FILEHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFileHiddenEmpty() throws HeadException {
+	public void testTailFileHiddenEmpty() throws TailException {
 		String[] args = {FILEHIDEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFolderFile() throws HeadException {
+	public void testTailFolderFile() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFolderFileEmpty() throws HeadException {
+	public void testTailFolderFileEmpty() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFolderFileHidden() throws HeadException {
+	public void testTailFolderFileHidden() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadFolderFileHiddenEmpty() throws HeadException {
+	public void testTailFolderFileHiddenEmpty() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadHiddenFolderFile() throws HeadException {
+	public void testTailHiddenFolderFile() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadHiddenFolderFileEmpty() throws HeadException {
+	public void testTailHiddenFolderFileEmpty() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadHiddenFolderFileHidden() throws HeadException {
+	public void testTailHiddenFolderFileHidden() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadShortFile() throws HeadException {
+	public void testTailShortFile() throws TailException {
 		String[] args = {FILESHORT};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadShortFileHide() throws HeadException {
+	public void testTailShortFileHide() throws TailException {
 		String[] args = {FILESHORTHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadHiddenFolderFileHiddenEmpty() throws HeadException {
+	public void testTailHiddenFolderFileHiddenEmpty() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadDisplayOneLine() throws HeadException {
+	public void testTailDisplayOneLine() throws TailException {
 		String[] args = {"-n", "1", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_1, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadDisplayZeroLine() throws HeadException {
+	public void testTailDisplayZeroLine() throws TailException {
 		String[] args = {"-n", "0", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadDisplayNegativeLine() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailDisplayNegativeLine() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage("illegal line count -- ");
 		String[] args = {"-n", "-1", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadDisplay11Lines() throws HeadException {
+	public void testTailDisplay11Lines() throws TailException {
 		String[] args = {"-n", "11", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(RESULT_11, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadDisplayOverMaxLines() throws HeadException {
+	public void testTailDisplayOverMaxLines() throws TailException {
 		String[] args = {"-n", "100", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals(CONTENT_1, stdout.toString());
 	}
 	
 	@Test
-	public void testHeadIllegalOption() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailIllegalOption() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {"-z", "10", FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadInvalidArguments() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailInvalidArguments() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {"-z", FILEEMPTY, FILE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadInvalidFileWithArgs() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailInvalidFileWithArgs() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"-n", "5", "NoSuchFile.txt"};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadDisplayOverMaxEmptyFile() throws HeadException {
+	public void testTailDisplayOverMaxEmptyFile() throws TailException {
 		String[] args = {"-n", "100", FILEEMPTY};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
 	
 	@Test
-	public void testHeadNoSuchFile() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailNoSuchFile() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"NoSuchFile.txt"};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadNoSuchDirector() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailNoSuchDirector() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"NoSuchFile"};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadDirectory() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailDirectory() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage("Is a directory");
 		String[] args = {FOLDERTEST};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadNoSuchHiddenFile() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailNoSuchHiddenFile() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {".NoSuchFile.txt"};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadHiddenDirectory() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailHiddenDirectory() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage("Is a directory");
 		String[] args = {FOLDERTESTHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadNoSuchHiddenDirectory() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailNoSuchHiddenDirectory() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {".NoSuchFile"};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadTwoFiles() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailTwoFiles() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {FILE, FILEHIDE};
-		headCommand.run(args, stdin, stdout);		
+		tailCommand.run(args, stdin, stdout);		
 	}
 	
 	@Test
-	public void testHeadThreeFiles() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailThreeFiles() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadNoFile() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailNoFile() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testHeadEmptyArg() throws HeadException {
-		expectedEx.expect(HeadException.class);
+	public void testTailEmptyArg() throws TailException {
+		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage("Null argument(s)");
 		String[] args = {""};
-		headCommand.run(args, stdin, stdout);
+		tailCommand.run(args, stdin, stdout);
 	}
 	
 	@Test
-	public void testGetAbsolutePath() throws HeadException {		
-		String result = headCommand.getAbsolutePath(FILE);
+	public void testGetAbsolutePath() throws TailException {		
+		String result = tailCommand.getAbsolutePath(FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FILE ,result);
 	}
 	
 	@Test
-	public void testGetAbsolutePathInFolder() throws HeadException {		
-		String result = headCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
+	public void testGetAbsolutePathInFolder() throws TailException {		
+		String result = tailCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILE ,result);
 	}
 	
 	@Test
-	public void testGetAbsolutePathInFolderHiddenFile() throws HeadException {		
-		String result = headCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
+	public void testGetAbsolutePathInFolderHiddenFile() throws TailException {		
+		String result = tailCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILEHIDE ,result);
 	}
 	
 	@Test
-	public void testGetAbsolutePathInHiddenFolder() throws HeadException {		
-		String result = headCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
+	public void testGetAbsolutePathInHiddenFolder() throws TailException {		
+		String result = tailCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILE ,result);
 	}
 	
 	@Test
-	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws HeadException {		
-		String result = headCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
+	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws TailException {		
+		String result = tailCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY ,result);
 	}
 	
 	@Test
-	public void testDoesFileExist() throws HeadException {
+	public void testDoesFileExist() throws TailException {
 		File file = new File(FILE);
-		Boolean result = headCommand.doesFileExist(file);
+		Boolean result = tailCommand.doesFileExist(file);
 		assertTrue(result);
 	}
 	
 	@Test
-	public void testDoesFileExistHidden() throws HeadException {
+	public void testDoesFileExistHidden() throws TailException {
 		File file = new File(FILEHIDEEMPTY);
-		Boolean result = headCommand.doesFileExist(file);
+		Boolean result = tailCommand.doesFileExist(file);
 		assertTrue(result);
 	}
 	
 	@Test
-	public void testDoesFileExistNoSuchFile() throws HeadException {
+	public void testDoesFileExistNoSuchFile() throws TailException {
 		File file = new File("NoSuchFile.txt");
-		Boolean result = headCommand.doesFileExist(file);
+		Boolean result = tailCommand.doesFileExist(file);
 		assertFalse(result);
 	}
 	
 	@Test
-	public void testDoesFileExistFolder() throws HeadException {
+	public void testDoesFileExistFolder() throws TailException {
 		File file = new File(FOLDERTEST);
-		Boolean result = headCommand.doesFileExist(file);
+		Boolean result = tailCommand.doesFileExist(file);
 		assertFalse(result);
 	}
 	
 	@Test
-	public void testIsDirectory() throws HeadException {
+	public void testIsDirectory() throws TailException {
 		File file = new File(FOLDERTEST);
-		Boolean result = headCommand.isDirectory(file);
+		Boolean result = tailCommand.isDirectory(file);
 		assertTrue(result);
 	}
 	
 	@Test
-	public void testIsDirectoryHidden() throws HeadException {
+	public void testIsDirectoryHidden() throws TailException {
 		File file = new File(FOLDERTESTHIDE);
-		Boolean result = headCommand.isDirectory(file);
+		Boolean result = tailCommand.isDirectory(file);
 		assertTrue(result);
 	}
 	
 	@Test
-	public void testIsDirectoryNoSuchDirectory() throws HeadException {
+	public void testIsDirectoryNoSuchDirectory() throws TailException {
 		File file = new File("NoSuchFolder");
-		Boolean result = headCommand.isDirectory(file);
+		Boolean result = tailCommand.isDirectory(file);
 		assertFalse(result);
 	}
 }
