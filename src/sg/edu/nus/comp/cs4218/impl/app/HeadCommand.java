@@ -15,10 +15,16 @@ import sg.edu.nus.comp.cs4218.exception.HeadException;
 public class HeadCommand implements Application{
 	public static final int DEFAULT_NUM_OF_LINES = 10;	
 	
-	public HeadCommand() {
-		// This constructor is intentionally empty. Nothing special is needed here.
-	}
-	
+	/**
+	 * Perform Head command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws HeadException {
 		String fileName = "";
@@ -69,6 +75,12 @@ public class HeadCommand implements Application{
 		}
 	}
 	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
 	public String getAbsolutePath(String filePath) {				
 		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
@@ -76,6 +88,12 @@ public class HeadCommand implements Application{
 		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
 	public boolean doesFileExist(File file) {
 		if(file.exists() && !file.isDirectory()) {
 			return true;
@@ -83,6 +101,12 @@ public class HeadCommand implements Application{
 		return false;
 	}
 	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
 	public boolean isDirectory(File file) {
 		if(file.isDirectory()) {
 			return true;

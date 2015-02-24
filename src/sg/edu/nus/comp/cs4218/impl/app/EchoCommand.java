@@ -9,11 +9,16 @@ import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 public class EchoCommand implements Application{
 	public static final String SPACE_SEPERATOR = " ";
-	
-	public EchoCommand() {
-		// This constructor is intentionally empty. Nothing special is needed here.
-	}
-
+	/**
+	 * Perform Echo command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws EchoException {	
 		String string;
