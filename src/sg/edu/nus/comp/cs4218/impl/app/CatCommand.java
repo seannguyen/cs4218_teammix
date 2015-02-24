@@ -13,11 +13,16 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
 public class CatCommand implements Application{	
-	
-	public CatCommand() {
-		// This constructor is intentionally empty. Nothing special is needed here.
-	}
-	
+	/**
+	 * Perform cat command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws CatException {
 		String fileName = "";
@@ -59,6 +64,12 @@ public class CatCommand implements Application{
 		}
 	}
 	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
 	public String getAbsolutePath(String filePath) {				
 		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
@@ -66,6 +77,12 @@ public class CatCommand implements Application{
 		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
 	public boolean doesFileExist(File file) {
 		if(file.exists() && !file.isDirectory()) {
 			return true;
@@ -73,6 +90,12 @@ public class CatCommand implements Application{
 		return false;
 	}
 	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
 	public boolean isDirectory(File file) {
 		if(file.isDirectory()) {
 			return true;
