@@ -485,7 +485,7 @@ public class CatCommandTest {
 	}
 	
 	/**
-	 * Test helper method getAbsolutePath
+	 * Test helper method doesFileExist
 	 * input hidden file that exist
 	 * 
 	 * @throw CatException
@@ -498,7 +498,7 @@ public class CatCommandTest {
 	}
 	
 	/**
-	 * Test helper method getAbsolutePath
+	 * Test helper method doesFileExist
 	 * input file that does not exist
 	 * 
 	 * @throw CatException
@@ -511,7 +511,7 @@ public class CatCommandTest {
 	}
 	
 	/**
-	 * Test helper method getAbsolutePath
+	 * Test helper method doesFileExist
 	 * input folder that exist
 	 * 
 	 * @throw CatException

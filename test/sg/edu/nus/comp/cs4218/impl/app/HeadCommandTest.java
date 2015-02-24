@@ -134,6 +134,12 @@ public class HeadCommandTest {
 		Files.delete(PATHHIDE);
 	}
 
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a file and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFile() throws HeadException {
 		String[] args = {"text1.txt"};
@@ -141,6 +147,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a empty file
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFileEmpty() throws HeadException {
 		String[] args = {"text2.txt"};
@@ -148,6 +160,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden file and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFileHidden() throws HeadException {
 		String[] args = {".text3.txt"};
@@ -155,6 +173,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden empty file
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFileHiddenEmpty() throws HeadException {
 		String[] args = {".text4.txt"};
@@ -162,6 +186,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a file in a folder and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFolderFile() throws HeadException {
 		String[] args = {"FolderTest" + File.separator + "text1.txt"};
@@ -169,6 +199,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a empty file in a folder
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFolderFileEmpty() throws HeadException {
 		String[] args = {"FolderTest" + File.separator + "text2.txt"};
@@ -176,6 +212,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden file in a folder and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFolderFileHidden() throws HeadException {
 		String[] args = {"FolderTest" + File.separator + ".text3.txt"};
@@ -183,6 +225,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden empty file in a folder
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadFolderFileHiddenEmpty() throws HeadException {
 		String[] args = {"FolderTest" + File.separator + ".text4.txt"};
@@ -190,6 +238,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a file in a hidden folder and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadHiddenFolderFile() throws HeadException {
 		String[] args = {".FolderTestHide" + File.separator + "text1.txt"};
@@ -197,6 +251,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a empty file in a hidden folder
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadHiddenFolderFileEmpty() throws HeadException {
 		String[] args = {".FolderTestHide" + File.separator + "text2.txt"};
@@ -204,6 +264,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden file in a hidden folder and display 10 lines
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadHiddenFolderFileHidden() throws HeadException {
 		String[] args = {".FolderTestHide" + File.separator + ".text3.txt"};
@@ -211,6 +277,12 @@ public class HeadCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a short file and display 
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadShortFile() throws HeadException {
 		String[] args = {"text5.txt"};
@@ -218,6 +290,12 @@ public class HeadCommandTest {
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a short hidden file and display
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadShortFileHide() throws HeadException {
 		String[] args = {".text6.txt"};
@@ -225,6 +303,12 @@ public class HeadCommandTest {
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden empty file in a hidden folder
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadHiddenFolderFileHiddenEmpty() throws HeadException {
 		String[] args = {".FolderTestHide" + File.separator + ".text4.txt"};
@@ -232,6 +316,12 @@ public class HeadCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a file that does not exist
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadNoSuchFile() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -240,14 +330,26 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a folder that does not exist
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
-	public void testHeadNoSuchDirector() throws HeadException {
+	public void testHeadNoSuchDirectory() throws HeadException {
 		expectedEx.expect(HeadException.class);
 		expectedEx.expectMessage("No such file or directory");
 		String[] args = {"NoSuchFile"};
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a directory
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadDirectory() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -256,6 +358,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden file that does not exist
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadNoSuchHiddenFile() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -264,6 +372,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden directory
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadHiddenDirectory() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -272,6 +386,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head a hidden directory that does not exist
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadNoSuchHiddenDirectory() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -280,6 +400,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head 2 files
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadTwoFiles() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -288,6 +414,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);		
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head 3 files
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadThreeFiles() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -296,6 +428,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head no args
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadNoFile() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -304,6 +442,12 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Head empty string
+	 * 
+	 * @throw HeadException
+	 */
 	@Test
 	public void testHeadEmptyArg() throws HeadException {
 		expectedEx.expect(HeadException.class);
@@ -312,36 +456,72 @@ public class HeadCommandTest {
 		headCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePath() throws HeadException {		
 		String result = headCommand.getAbsolutePath("text1.txt");
 		assertEquals(workingDir.getAbsolutePath() + File.separator + "text1.txt" ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolder() throws HeadException {		
 		String result = headCommand.getAbsolutePath("FolderTest" + File.separator + "text1.txt");
 		assertEquals(workingDir.getAbsolutePath() + File.separator + "FolderTest" + File.separator + "text1.txt" ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolderHiddenFile() throws HeadException {		
 		String result = headCommand.getAbsolutePath("FolderTest" + File.separator + ".text3.txt");
 		assertEquals(workingDir.getAbsolutePath() + File.separator + "FolderTest" + File.separator + ".text3.txt" ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolder() throws HeadException {		
 		String result = headCommand.getAbsolutePath(".FolderTestHide" + File.separator + "text1.txt");
 		assertEquals(workingDir.getAbsolutePath() + File.separator + ".FolderTestHide" + File.separator + "text1.txt" ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws HeadException {		
 		String result = headCommand.getAbsolutePath(".FolderTestHide" + File.separator + ".text4.txt");
 		assertEquals(workingDir.getAbsolutePath() + File.separator + ".FolderTestHide" + File.separator + ".text4.txt" ,result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExist() throws HeadException {
 		File file = new File("text1.txt");
@@ -349,6 +529,12 @@ public class HeadCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input hidden file that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistHidden() throws HeadException {
 		File file = new File(".text4.txt");
@@ -356,6 +542,12 @@ public class HeadCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistNoSuchFile() throws HeadException {
 		File file = new File("NoSuchFile.txt");
@@ -363,6 +555,12 @@ public class HeadCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input folder that exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testDoesFileExistFolder() throws HeadException {
 		File file = new File("FolderTest");
@@ -370,6 +568,12 @@ public class HeadCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectory() throws HeadException {
 		File file = new File("FolderTest");
@@ -377,6 +581,12 @@ public class HeadCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input hidden folder
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectoryHidden() throws HeadException {
 		File file = new File(".FolderTestHide");
@@ -384,6 +594,12 @@ public class HeadCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * folder that does not exist
+	 * 
+	 * @throw CatException
+	 */
 	@Test
 	public void testIsDirectoryNoSuchDirectory() throws HeadException {
 		File file = new File("NoSuchFolder");
