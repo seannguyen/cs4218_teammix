@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Vector;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -75,6 +76,13 @@ public class FindCommandTest {
 		Environment.currentDirectory = workingDir.getAbsolutePath();
 	}
 
+	@After 
+	public void tearDown() throws Exception {
+		findCommand = null;
+		stdout.close();
+		printStream.close();
+	}
+	
 	@AfterClass
 	public static void tearDownAfterClass() throws IOException {
 		Files.delete(PATHTOFILE);
