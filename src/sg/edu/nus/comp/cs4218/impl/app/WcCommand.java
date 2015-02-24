@@ -27,11 +27,16 @@ public class WcCommand implements Application {
 	private boolean charFlag = false;
 	private boolean argFlag = false;
 
-	public WcCommand() {
-		// This constructor is intentionally empty. Nothing special is needed
-		// here.
-	}
-
+	/**
+	 * Perform Wc command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws WcException {
@@ -61,6 +66,17 @@ public class WcCommand implements Application {
 		}
 	}
 
+	/**
+	 * Write to outputStream the lines(numOfLines) starting from the bottom of Arraylist.
+	 *
+	 * @param args
+	 *            args storing file names
+	 * @param stdin
+	 * 			  inputStream
+	 * @param stdout
+	 * 			  outputStream     
+	 *  
+	 */
 	public void processFiles(String args[], InputStream stdin,
 			OutputStream stdout) throws WcException {
 		for (int i = 0; i < args.length; i++) {
@@ -103,6 +119,9 @@ public class WcCommand implements Application {
 		}
 	}
 
+	/**
+	 * Reset all counters to zero
+	 */
 	public void resetAllCounters() {
 		lineCount = 0;
 		wordCount = 0;
@@ -115,12 +134,21 @@ public class WcCommand implements Application {
 		charFlag = false;
 	}
 
+	/**
+	 * Reset line, word and char counters to zero
+	 */
 	public void resetCounters() {
 		lineCount = 0;
 		wordCount = 0;
 		charCount = 0;
 	}
 
+	/**
+	 * Print Totalresults to stdout
+	 * 
+	 * @param stdout
+	 * 			outputStream
+	 */
 	public void printTotalResults(OutputStream stdout) {
 		try {
 			if (lineFlag == false && wordFlag == false && charFlag == false) {
@@ -155,6 +183,14 @@ public class WcCommand implements Application {
 		}
 	}
 
+	/**
+	 * Print Results to stdout
+	 * 
+	 * @param file
+	 * 			name of file
+	 * @param stdout
+	 * 			outputStream
+	 */
 	public void printResults(String fileName, OutputStream stdout) {
 		try {
 			if (lineFlag == false && wordFlag == false && charFlag == false) {
@@ -190,6 +226,12 @@ public class WcCommand implements Application {
 		}
 	}
 
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
 	public String getAbsolutePath(String filePath) {
 		if (filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
@@ -197,6 +239,12 @@ public class WcCommand implements Application {
 		return Environment.currentDirectory + File.separator + filePath;
 	}
 
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
 	public boolean doesFileExist(File file) {
 		if (file.exists() && !file.isDirectory()) {
 			return true;
@@ -204,40 +252,16 @@ public class WcCommand implements Application {
 		return false;
 	}
 
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
 	public boolean isDirectory(File file) {
 		if (file.isDirectory()) {
 			return true;
 		}
 		return false;
 	}
-	
-	/*
-	public void processStdin(OutputStream stdout) {
-		BufferedReader br = null;
-		StringBuilder sb = new StringBuilder();
-
-		String line;
-		try {
-			br = new BufferedReader(new InputStreamReader(System.in));
-			while ((line = br.readLine()) != null) {
-				// sb.append(line);
-				lineCount++;
-				wordCount += line.trim().split("\\s+").length;
-				charCount += line.length() + 1;
-			}
-			printResults("", stdout);
-			resetCounters();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	*/
 }
