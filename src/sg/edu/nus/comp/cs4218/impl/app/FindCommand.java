@@ -31,6 +31,61 @@ public class FindCommand implements Application {
 	protected final static String FILE_SEPARATOR = "file.separator";
 
 	/**
+	 * Perform find command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws FindException {
+		Vector<String> results = new Vector<String>();
+		String pattern = NOTHING, root = NOTHING;
+		int error = 0;
+		if (args.length == 2) {
+			checkNameArg(args[0]);
+			root = Environment.currentDirectory;
+			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
+		} else if (args.length == 3) {
+			checkNameArg(args[1]);
+			root = args[0].replace("*", ".");
+			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
+		} else {
+			throw new FindException("Invalid Arguments");
+		}
+
+		try {
+			results = getFilesFromPattern(root, pattern);
+		} catch (IOException e) {
+			error = 1;
+		} catch (InvalidPathException e) {
+			error = 2;
+		}
+
+		checkErrorStatus(error);
+
+		if (System.getProperty(FILE_SEPARATOR) != null
+				&& System.getProperty(FILE_SEPARATOR).equals(
+						Configurations.WINDOWS_FILESEPARATOR)) {
+			root = root.replace("\\", "\\\\");
+		}
+
+		for (String result : results) {
+			try {
+				String outString = result.replaceFirst(root, RELATIVE)
+						+ Configurations.NEWLINE;
+				stdout.write(outString.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * Finds files with matching pattern in given starting directory
 	 * 
 	 * @param start
@@ -101,61 +156,6 @@ public class FindCommand implements Application {
 			throw new FindException(Configurations.MESSGE_ERROR_FILENOTFOUND);
 		} else if (error == 2) {
 			throw new FindException("Invalid Directory");
-		}
-	}
-
-	/**
-	 * Perform find command
-	 *
-	 * @param args
-	 *            input arguments
-	 * @param stdin
-	 *            inputStream
-	 * @param stdout
-	 *            outputStream
-	 */
-	@Override
-	public void run(String[] args, InputStream stdin, OutputStream stdout)
-			throws FindException {
-		Vector<String> results = new Vector<String>();
-		String pattern = NOTHING, root = NOTHING;
-		int error = 0;
-		if (args.length == 2) {
-			checkNameArg(args[0]);
-			root = Environment.currentDirectory;
-			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
-		} else if (args.length == 3) {
-			checkNameArg(args[1]);
-			root = args[0].replace("*", ".");
-			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
-		} else {
-			throw new FindException("Invalid Arguments");
-		}
-
-		try {
-			results = getFilesFromPattern(root, pattern);
-		} catch (IOException e) {
-			error = 1;
-		} catch (InvalidPathException e) {
-			error = 2;
-		}
-
-		checkErrorStatus(error);
-
-		if (System.getProperty(FILE_SEPARATOR) != null
-				&& System.getProperty(FILE_SEPARATOR).equals(
-						Configurations.WINDOWS_FILESEPARATOR)) {
-			root = root.replace("\\", "\\\\");
-		}
-
-		for (String result : results) {
-			try {
-				String outString = result.replaceFirst(root, RELATIVE)
-						+ Configurations.NEWLINE;
-				stdout.write(outString.getBytes());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

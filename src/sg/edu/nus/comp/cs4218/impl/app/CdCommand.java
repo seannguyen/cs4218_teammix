@@ -15,6 +15,44 @@ public class CdCommand implements Application {
 	protected final static String NOTHING = "";
 
 	/**
+	 * Perform change directory command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws CdException {
+		File newDirectory = null;
+		String arg = "";
+		if (args.length == 0) {
+			newDirectory = changeDirectory(System.getProperty("user.dir"));
+		} else if (args.length == 1) {
+			arg = args[0] + ": ";
+			if (("~").equals(args[0])) {
+				newDirectory = changeDirectory(System.getProperty("user.dir"));
+			} else if (Paths.get(args[0]).isAbsolute()) {
+				newDirectory = changeDirectory(args[0]);
+			} else {
+				newDirectory = changeDirectory(formatDirectory(
+						Environment.currentDirectory, args[0]));
+			}
+		} else {
+			throw new CdException("Invalid arguments");
+		}
+
+		if (newDirectory == null) {
+			throw new CdException(arg + "Not a directory");
+		} else {
+			Environment.currentDirectory = newDirectory.getAbsolutePath();
+		}
+	}
+
+	/**
 	 * Returns new File pointing to new directory Returns null if newDirectory
 	 * is null or newDirectory is not a directory
 	 *
@@ -77,44 +115,6 @@ public class CdCommand implements Application {
 				newWorkingDir.append(File.separator);
 			}
 			return newWorkingDir.toString();
-		}
-	}
-
-	/**
-	 * Perform change directory command
-	 *
-	 * @param args
-	 *            input arguments
-	 * @param stdin
-	 *            inputStream
-	 * @param stdout
-	 *            outputStream
-	 */
-	@Override
-	public void run(String[] args, InputStream stdin, OutputStream stdout)
-			throws CdException {
-		File newDirectory = null;
-		String arg = "";
-		if (args.length == 0) {
-			newDirectory = changeDirectory(System.getProperty("user.dir"));
-		} else if (args.length == 1) {
-			arg = args[0] + ": ";
-			if (("~").equals(args[0])) {
-				newDirectory = changeDirectory(System.getProperty("user.dir"));
-			} else if (Paths.get(args[0]).isAbsolute()) {
-				newDirectory = changeDirectory(args[0]);
-			} else {
-				newDirectory = changeDirectory(formatDirectory(
-						Environment.currentDirectory, args[0]));
-			}
-		} else {
-			throw new CdException("Invalid arguments");
-		}
-
-		if (newDirectory == null) {
-			throw new CdException(arg + "Not a directory");
-		} else {
-			Environment.currentDirectory = newDirectory.getAbsolutePath();
 		}
 	}
 }

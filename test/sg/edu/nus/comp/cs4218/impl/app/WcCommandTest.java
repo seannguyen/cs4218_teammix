@@ -144,6 +144,12 @@ public class WcCommandTest {
 		Files.delete(PATHHIDE);
 	}
 
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileNoOption() throws WcException {
 		String[] args = {FILE};
@@ -151,6 +157,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two files and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesNoOption() throws WcException {
 		String[] args = {FILE, FILEHIDE};
@@ -158,6 +170,12 @@ public class WcCommandTest {
 		assertEquals(TWOFILESALLOPT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesNoOption() throws WcException {
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
@@ -165,6 +183,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with no file and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testNoFileNoOption() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -173,6 +197,12 @@ public class WcCommandTest {
 		wcCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one empty file and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testEmptyFileNoOption() throws WcException {
 		String[] args = {FILEEMPTY};
@@ -180,6 +210,12 @@ public class WcCommandTest {
 		assertEquals("0" + TAB + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with null and no options
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testNullFileNoOption() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -188,6 +224,12 @@ public class WcCommandTest {
 		wcCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file WORD CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileWordCharLine() throws WcException {
 		String[] args = {WORD, CHAR, LINE, FILE};
@@ -195,6 +237,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileCharLine() throws WcException {
 		String[] args = {CHAR, LINE, FILE};
@@ -202,6 +250,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "748" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file WORD CHAR
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileWordChar() throws WcException {
 		String[] args = {WORD, CHAR, FILE};
@@ -209,6 +263,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + "748" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file and WORD LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileWordLine() throws WcException {
 		String[] args = {WORD, LINE, FILE};
@@ -216,6 +276,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file and WORD
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileWord() throws WcException {
 		String[] args = {WORD, FILE};
@@ -223,6 +289,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file and CHAR
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileChar() throws WcException {
 		String[] args = {CHAR, FILE};
@@ -230,6 +302,12 @@ public class WcCommandTest {
 		assertEquals("748" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with one file and LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testOneFileLine() throws WcException {
 		String[] args = {LINE, FILE};
@@ -237,6 +315,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and WORD CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesWordCharLine() throws WcException {
 		String[] args = {WORD, CHAR, LINE, FILE, FILEHIDE};
@@ -244,6 +328,12 @@ public class WcCommandTest {
 		assertEquals(TWOFILESALLOPT, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesCharLine() throws WcException {
 		String[] args = {CHAR, LINE, FILE, FILEHIDE};
@@ -251,6 +341,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "748" + TAB + FILE + NEWLINE + "12" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and WORD CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesLineWordChar() throws WcException {
 		String[] args = {WORD, CHAR, FILE, FILEHIDE};
@@ -258,6 +354,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + "748" + TAB + FILE + NEWLINE + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "238" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and WORD LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesWordLine() throws WcException {
 		String[] args = {WORD, LINE, FILE, FILEHIDE};
@@ -265,6 +367,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + FILE + NEWLINE + "12" + TAB + "119" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and WORD
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesWord() throws WcException {
 		String[] args = {WORD, FILE, FILEHIDE};
@@ -272,6 +380,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + FILE + NEWLINE + "119" + TAB + FILEHIDE + NEWLINE + "238" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and CHAR
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesChar() throws WcException {
 		String[] args = {CHAR, FILE, FILEHIDE};
@@ -279,6 +393,12 @@ public class WcCommandTest {
 		assertEquals("748" + TAB + FILE + NEWLINE + "748" + TAB + FILEHIDE + NEWLINE + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with two file and LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesLine() throws WcException {
 		String[] args = {LINE, FILE, FILEHIDE};
@@ -286,6 +406,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + FILE + NEWLINE + "12" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and WORD CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesWordCharLine() throws WcException {
 		String[] args = {WORD, CHAR, LINE, FILE, FILEEMPTY, FILEHIDE};
@@ -293,6 +419,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesCharLine() throws WcException {
 		String[] args = {CHAR, LINE, FILE, FILEEMPTY, FILEHIDE};
@@ -300,6 +432,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and WORD CHAR
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesWordChar() throws WcException {
 		String[] args = {WORD, CHAR, FILE, FILEEMPTY, FILEHIDE};
@@ -307,6 +445,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "238" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and WORD LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesWordLine() throws WcException {
 		String[] args = {WORD, LINE, FILE, FILEEMPTY, FILEHIDE};
@@ -314,6 +458,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "119" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and WORD 
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesWord() throws WcException {
 		String[] args = {WORD, FILE, FILEEMPTY, FILEHIDE};
@@ -321,6 +471,12 @@ public class WcCommandTest {
 		assertEquals("119" + TAB + FILE + NEWLINE + "0" + TAB + FILEEMPTY + NEWLINE + "119" + TAB + FILEHIDE + NEWLINE + "238" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and CHAR
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesChar() throws WcException {
 		String[] args = {CHAR, FILE, FILEEMPTY, FILEHIDE};
@@ -328,6 +484,12 @@ public class WcCommandTest {
 		assertEquals("748" + TAB + FILE + NEWLINE + "0" + TAB + FILEEMPTY + NEWLINE + "748" + TAB + FILEHIDE + NEWLINE + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesLine() throws WcException {
 		String[] args = {LINE, FILE, FILEEMPTY, FILEHIDE};
@@ -335,6 +497,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + FILE + NEWLINE + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with no File and WORD CHAR LINE
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testNoFileWordCharLine() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -343,6 +511,12 @@ public class WcCommandTest {
 		wcCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and  CHAR LINE repeated
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testThreeFilesCharLineRepeats() throws WcException {
 		String[] args = {CHAR, LINE, LINE, CHAR, CHAR, LINE, FILE, FILEEMPTY, FILEHIDE};
@@ -350,6 +524,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with three files and WORD CHAR LINE repeated
+	 * 
+	 * @throw WcException
+	 */
 	@Test
 	public void testTwoFilesWordCharLineRepeats() throws WcException {
 		String[] args = {WORD, CHAR, LINE, LINE, CHAR, WORD, CHAR, LINE, WORD, FILE, FILEHIDE};
@@ -357,6 +537,11 @@ public class WcCommandTest {
 		assertEquals(TWOFILESALLOPT, stdout.toString());
 	}
 	
+	/**
+	 * Test helper resetCounters
+	 * 
+	 * @throw WcException
+	 */
 	public void testResetCounters() throws WcException {		
 		wcCommand.wordCount = 10;
 		wcCommand.charCount = 10;
@@ -367,20 +552,12 @@ public class WcCommandTest {
 		assertEquals(0, wcCommand.lineCount);
 	}
 	
+	/**
+	 * Test helper resetAllCounters
+	 * 
+	 * @throw WcException
+	 */
 	public void testResetAllCounters() throws WcException {
-		/*
-		 * 
-		 * protected int lineCount = 0;
-	protected int wordCount = 0;
-	protected int charCount = 0;
-	protected int totalLineCount = 0;
-	protected int totalWordCount = 0;
-	protected int totalCharCount = 0;
-	protected boolean lineFlag = false;
-	protected boolean wordFlag = false;
-	protected boolean charFlag = false;
-		 */
-		
 		wcCommand.wordCount = 10;
 		wcCommand.charCount = 10;
 		wcCommand.lineCount = 10;
@@ -402,50 +579,98 @@ public class WcCommandTest {
 		assertFalse(wcCommand.charFlag);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePath() throws TailException {		
 		String result = wcCommand.getAbsolutePath(FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolder() throws TailException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolderHiddenFile() throws TailException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILEHIDE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolder() throws TailException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws TailException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY ,result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExist() throws TailException {
 		File file = new File(FILE);
 		Boolean result = wcCommand.doesFileExist(file);
 		assertTrue(result);
 	}
-	
+
+	/**
+	 * Test helper method doesFileExist
+	 * input hidden file 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistHidden() throws TailException {
 		File file = new File(FILEHIDEEMPTY);
 		Boolean result = wcCommand.doesFileExist(file);
 		assertTrue(result);
 	}
-	
+
+	/**
+	 * Test helper method doesFileExist
+	 * input file that does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistNoSuchFile() throws TailException {
 		File file = new File("NoSuchFile.txt");
@@ -453,6 +678,13 @@ public class WcCommandTest {
 		assertFalse(result);
 	}
 	
+
+	/**
+	 * Test helper method doesFileExist
+	 * input folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistFolder() throws TailException {
 		File file = new File(FOLDERTEST);
@@ -460,6 +692,13 @@ public class WcCommandTest {
 		assertFalse(result);
 	}
 	
+
+	/**
+	 * Test helper method isDirectory
+	 * input folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectory() throws TailException {
 		File file = new File(FOLDERTEST);
@@ -467,6 +706,13 @@ public class WcCommandTest {
 		assertTrue(result);
 	}
 	
+
+	/**
+	 * Test helper method isDirectory
+	 * input hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectoryHidden() throws TailException {
 		File file = new File(FOLDERTESTHIDE);
@@ -474,6 +720,12 @@ public class WcCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input folder doesn not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectoryNoSuchDirectory() throws TailException {
 		File file = new File("NoSuchFolder");
@@ -481,6 +733,12 @@ public class WcCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method processFiles three files
+	 * input 3 files
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testProcessFilesThreeFiles() throws WcException {
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
@@ -488,6 +746,12 @@ public class WcCommandTest {
 		assertEquals("12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE + "0" + TAB + "0" + TAB + "0" + TAB + FILEEMPTY + NEWLINE + "12" + TAB + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "1496" + TAB + "total", stdout.toString());
 	}
 
+	/**
+	 * Test helper method processFiles three files
+	 * input 2 files with no args
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testProcessFilesNoArg() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -496,6 +760,12 @@ public class WcCommandTest {
 		wcCommand.processFiles(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method processFiles three files
+	 * input directorys
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testProcessFilesDirectory() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -504,6 +774,12 @@ public class WcCommandTest {
 		wcCommand.processFiles(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method processFiles three files
+	 * input file does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testProcessFilesNoSuchFile() throws WcException {
 		expectedEx.expect(WcException.class);
@@ -512,6 +788,12 @@ public class WcCommandTest {
 		wcCommand.processFiles(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method printResults
+	 * input false for flags
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsAllFalse() throws WcException {
 		wcCommand.lineFlag = false;
@@ -524,6 +806,11 @@ public class WcCommandTest {
 		assertEquals("10" + TAB + "20" + TAB + "30" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults LINE WORD CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsLineWordChar() throws WcException {
 		wcCommand.lineFlag = true;
@@ -536,6 +823,11 @@ public class WcCommandTest {
 		assertEquals("10" + TAB + "20" + TAB + "30" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults LINE WORD
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsLineWord() throws WcException {
 		wcCommand.lineFlag = true;
@@ -548,6 +840,12 @@ public class WcCommandTest {
 		assertEquals("10" + TAB + "20" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults LINE CHAR
+	 * input false for flags
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsLineChar() throws WcException {
 		wcCommand.lineFlag = true;
@@ -560,6 +858,12 @@ public class WcCommandTest {
 		assertEquals("10" + TAB + "30" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults WORD CHAR
+	 * input false for flags
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsWordChar() throws WcException {
 		wcCommand.lineFlag = false;
@@ -572,6 +876,11 @@ public class WcCommandTest {
 		assertEquals("20" + TAB + "30" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults LINE
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsLine() throws WcException {
 		wcCommand.lineFlag = true;
@@ -584,6 +893,11 @@ public class WcCommandTest {
 		assertEquals("10" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults WORD
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsWord() throws WcException {
 		wcCommand.lineFlag = false;
@@ -596,6 +910,11 @@ public class WcCommandTest {
 		assertEquals("20" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResults CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintResultsChar() throws WcException {
 		wcCommand.lineFlag = false;
@@ -608,6 +927,12 @@ public class WcCommandTest {
 		assertEquals("30" + TAB + FILE + NEWLINE, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal
+	 * input false for flags
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsAllFalse() throws WcException {
 		wcCommand.lineFlag = false;
@@ -620,6 +945,11 @@ public class WcCommandTest {
 		assertEquals(RESULTSALLOPT, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal LINE WORD CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsLineWordChar() throws WcException {
 		wcCommand.lineFlag = true;
@@ -632,6 +962,11 @@ public class WcCommandTest {
 		assertEquals(RESULTSALLOPT, stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal LINE WORD
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsLineWord() throws WcException {
 		wcCommand.lineFlag = true;
@@ -644,6 +979,11 @@ public class WcCommandTest {
 		assertEquals("100" + TAB + "200" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal LINE CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsLineChar() throws WcException {
 		wcCommand.lineFlag = true;
@@ -656,6 +996,11 @@ public class WcCommandTest {
 		assertEquals("100" + TAB + "300" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal WORD CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsWordChar() throws WcException {
 		wcCommand.lineFlag = false;
@@ -668,6 +1013,11 @@ public class WcCommandTest {
 		assertEquals("200" + TAB + "300" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal LINE
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsLine() throws WcException {
 		wcCommand.lineFlag = true;
@@ -680,6 +1030,11 @@ public class WcCommandTest {
 		assertEquals("100" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal WORD
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsWord() throws WcException {
 		wcCommand.lineFlag = false;
@@ -692,6 +1047,11 @@ public class WcCommandTest {
 		assertEquals("200" + TAB + "total", stdout.toString());
 	}
 	
+	/**
+	 * Test helper method printResultsTotal CHAR
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testPrintTotalResultsChar() throws WcException {
 		wcCommand.lineFlag = false;

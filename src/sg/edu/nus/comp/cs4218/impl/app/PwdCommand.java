@@ -13,25 +13,6 @@ import sg.edu.nus.comp.cs4218.exception.PwdException;
 public class PwdCommand implements Application {
 
 	/**
-	 * Check if directory is null, exist and isDirectory.
-	 *
-	 * @param directory
-	 *            a directory to be checked
-	 */
-	protected String verifyDirectory(String directory) throws PwdException {
-		if (directory == null) {
-			throw new PwdException("Cannot find working directory");
-		}
-		File checkDirectory = new File(directory);
-		// Error Handling
-		if (checkDirectory == null || !checkDirectory.exists()
-				|| !checkDirectory.isDirectory()) {
-			throw new PwdException("Cannot find working directory");
-		}
-		return directory;
-	}
-
-	/**
 	 * Perform print working directory command
 	 *
 	 * @param args
@@ -55,5 +36,23 @@ public class PwdCommand implements Application {
 			throw new PwdException("Invalid Arguments");
 		}
 	}
-
+	
+	/**
+	 * Check if directory is null, exist and isDirectory.
+	 *
+	 * @param directory
+	 *            a directory to be checked
+	 */
+	protected String verifyDirectory(String directory) throws PwdException {
+		if (directory == null) {
+			throw new PwdException("Cannot find working directory");
+		}
+		File checkDirectory = new File(directory);
+		// Error Handling
+		if (checkDirectory == null || !checkDirectory.exists()
+				|| !checkDirectory.isDirectory()) {
+			throw new PwdException("Cannot find working directory");
+		}
+		return directory;
+	}
 }

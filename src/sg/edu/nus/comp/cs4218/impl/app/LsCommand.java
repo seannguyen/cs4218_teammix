@@ -15,12 +15,36 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class LsCommand implements Application {
 	/**
-	 * Constructor to initialise Environment.currentDirectory
+	 * Perform List directory command
 	 *
-	 * @param currentDirectory
-	 *            an absolute directory path
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
 	 */
-	public LsCommand() {
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws LsException {
+		List<File> files = null;
+		if (args.length == 1) {
+			File targetDirectory = new File(args[0]);
+			files = getFiles(targetDirectory);
+		} else if (args.length == 0) {
+			File currentDirectory = new File(Environment.currentDirectory);
+			files = getFiles(currentDirectory);
+		} else {
+			throw new LsException("Invalid arguments");
+		}
+
+		if (files != null) {
+			try {
+				stdout.write(convertFilesToString(files).getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -63,39 +87,4 @@ public class LsCommand implements Application {
 		}
 		return returnable;
 	}
-
-	/**
-	 * Perform List directory command
-	 *
-	 * @param args
-	 *            input arguments
-	 * @param stdin
-	 *            inputStream
-	 * @param stdout
-	 *            outputStream
-	 */
-	@Override
-	public void run(String[] args, InputStream stdin, OutputStream stdout)
-			throws LsException {
-		List<File> files = null;
-		if (args.length == 1) {
-			File targetDirectory = new File(args[0]);
-			files = getFiles(targetDirectory);
-		} else if (args.length == 0) {
-			File currentDirectory = new File(Environment.currentDirectory);
-			files = getFiles(currentDirectory);
-		} else {
-			throw new LsException("Invalid arguments");
-		}
-
-		if (files != null) {
-			try {
-				stdout.write(convertFilesToString(files).getBytes());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
 }

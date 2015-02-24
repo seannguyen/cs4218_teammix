@@ -139,6 +139,12 @@ public class TailCommandTest {
 		Files.delete(PATHHIDE);
 	}
 
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFile() throws TailException {
 		String[] args = {FILE};
@@ -146,6 +152,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a empty File 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFileEmpty() throws TailException {
 		String[] args = {FILEEMPTY};
@@ -153,6 +165,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a Hidden File and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFileHidden() throws TailException {
 		String[] args = {FILEHIDE};
@@ -160,6 +178,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden empty File
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFileHiddenEmpty() throws TailException {
 		String[] args = {FILEHIDEEMPTY};
@@ -167,6 +191,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File in folder and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFolderFile() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILE};
@@ -174,6 +204,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a empty File in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFolderFileEmpty() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEEMPTY};
@@ -181,6 +217,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden File in folder and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFolderFileHidden() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDE};
@@ -188,6 +230,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden empty File in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailFolderFileHiddenEmpty() throws TailException {
 		String[] args = {FOLDERTEST + File.separator + FILEHIDEEMPTY};
@@ -195,6 +243,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File in hidden folder and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailHiddenFolderFile() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILE};
@@ -202,6 +256,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a empty File in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailHiddenFolderFileEmpty() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEEMPTY};
@@ -209,6 +269,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden file in hidden folder and display last 10 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailHiddenFolderFileHidden() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDE};
@@ -216,6 +282,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_10, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a short File 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailShortFile() throws TailException {
 		String[] args = {FILESHORT};
@@ -223,6 +295,12 @@ public class TailCommandTest {
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail short hidden file
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailShortFileHide() throws TailException {
 		String[] args = {FILESHORTHIDE};
@@ -230,6 +308,12 @@ public class TailCommandTest {
 		assertEquals(CONTENT_2, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden empty File in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailHiddenFolderFileHiddenEmpty() throws TailException {
 		String[] args = {FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY};
@@ -237,6 +321,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display only 1 last line
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplayOneLine() throws TailException {
 		String[] args = {"-n", "1", FILE};
@@ -244,6 +334,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_1, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display 0 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplayZeroLine() throws TailException {
 		String[] args = {"-n", "0", FILE};
@@ -251,6 +347,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display negative number of lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplayNegativeLine() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -259,6 +361,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display last 11 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplay11Lines() throws TailException {
 		String[] args = {"-n", "11", FILE};
@@ -266,6 +374,12 @@ public class TailCommandTest {
 		assertEquals(RESULT_11, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File and display last 100 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplayOverMaxLines() throws TailException {
 		String[] args = {"-n", "100", FILE};
@@ -273,6 +387,12 @@ public class TailCommandTest {
 		assertEquals(CONTENT_1, stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File with wrong option
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailIllegalOption() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -281,6 +401,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File with invlaid args
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailInvalidArguments() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -289,6 +415,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a File that does not exist with valid args
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailInvalidFileWithArgs() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -297,6 +429,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a empty File and display last 100 lines
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDisplayOverMaxEmptyFile() throws TailException {
 		String[] args = {"-n", "100", FILEEMPTY};
@@ -304,6 +442,12 @@ public class TailCommandTest {
 		assertEquals("", stdout.toString());
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a file that does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailNoSuchFile() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -312,14 +456,26 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a directory that does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
-	public void testTailNoSuchDirector() throws TailException {
+	public void testTailNoSuchDirectory() throws TailException {
 		expectedEx.expect(TailException.class);
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"NoSuchFile"};
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a directory
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailDirectory() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -328,6 +484,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden File that does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailNoSuchHiddenFile() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -336,6 +498,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden directory
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailHiddenDirectory() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -344,6 +512,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a hidden directory that does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailNoSuchHiddenDirectory() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -352,6 +526,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a 2 Files
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailTwoFiles() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -360,6 +540,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);		
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a 3 Files
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailThreeFiles() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -368,6 +554,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail no args
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailNoFile() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -376,6 +568,12 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Tail a empty string
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testTailEmptyArg() throws TailException {
 		expectedEx.expect(TailException.class);
@@ -384,36 +582,72 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePath() throws TailException {		
 		String result = tailCommand.getAbsolutePath(FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolder() throws TailException {		
 		String result = tailCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInFolderHiddenFile() throws TailException {		
 		String result = tailCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILEHIDE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input file in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolder() throws TailException {		
 		String result = tailCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILE ,result);
 	}
 	
+	/**
+	 * Test helper method getAbsolutePath
+	 * input hidden file in hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws TailException {		
 		String result = tailCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY ,result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExist() throws TailException {
 		File file = new File(FILE);
@@ -421,6 +655,12 @@ public class TailCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input empty file 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistHidden() throws TailException {
 		File file = new File(FILEHIDEEMPTY);
@@ -428,6 +668,12 @@ public class TailCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input file that does not exist 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistNoSuchFile() throws TailException {
 		File file = new File("NoSuchFile.txt");
@@ -435,6 +681,12 @@ public class TailCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input folder 
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testDoesFileExistFolder() throws TailException {
 		File file = new File(FOLDERTEST);
@@ -442,6 +694,12 @@ public class TailCommandTest {
 		assertFalse(result);
 	}
 	
+	/**
+	 * Test helper method isDirectory
+	 * input folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectory() throws TailException {
 		File file = new File(FOLDERTEST);
@@ -449,6 +707,12 @@ public class TailCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input hidden folder
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectoryHidden() throws TailException {
 		File file = new File(FOLDERTESTHIDE);
@@ -456,6 +720,12 @@ public class TailCommandTest {
 		assertTrue(result);
 	}
 	
+	/**
+	 * Test helper method doesFileExist
+	 * input folder does not exist
+	 * 
+	 * @throw TailException
+	 */
 	@Test
 	public void testIsDirectoryNoSuchDirectory() throws TailException {
 		File file = new File("NoSuchFolder");
