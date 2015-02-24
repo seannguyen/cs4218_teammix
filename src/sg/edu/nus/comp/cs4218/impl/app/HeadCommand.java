@@ -35,7 +35,11 @@ public class HeadCommand implements Application{
 			numOfLines = DEFAULT_NUM_OF_LINES;
 			fileName = args[0];
 		} else {
-			throw new HeadException("Incorrect arguements");
+			throw new HeadException("Incorrect argument(s)");
+		}
+		
+		if(fileName.equals("")) {
+			throw new HeadException("Null argument(s)");
 		}
 
 		fileName = getAbsolutePath(fileName);

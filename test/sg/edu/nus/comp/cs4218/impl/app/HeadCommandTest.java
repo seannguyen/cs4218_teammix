@@ -1,0 +1,393 @@
+package sg.edu.nus.comp.cs4218.impl.app;
+
+import static org.junit.Assert.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import sg.edu.nus.comp.cs4218.exception.HeadException;
+
+public class HeadCommandTest {
+	private HeadCommand headCommand;
+	private InputStream stdin;
+	private OutputStream stdout;
+	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
+	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
+	final private static String RESULT_10 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n";
+	final private static String FOLDERTEST = "FolderTest";
+	final private static String FOLDERTESTHIDE = ".FolderTestHide";
+	final private static String FILE = "text1.txt";
+	final private static String FILEEMPTY = "text2.txt";
+	final private static String FILEHIDE = ".text3.txt";
+	final private static String FILEHIDEEMPTY = ".text4.txt";
+	final private static String FILESHORT = "text5.txt";
+	final private static String FILESHORTHIDE = ".text6.txt";
+	final private static Path PATH = Paths.get(FOLDERTEST);
+	final private static Path PATHHIDE = Paths.get(FOLDERTESTHIDE);
+	final private static Path PATHTOFILE = Paths.get(FILE);
+	final private static Path PATHTOFILEEMPTY = Paths.get(FILEEMPTY);
+	final private static Path PATHTOFILEHIDE = Paths.get(FILEHIDE);
+	final private static Path PATHTOFILESHORT = Paths.get(FILESHORT);
+	final private static Path PATHTOFILESHORTHIDE = Paths.get(FILESHORTHIDE);
+	final private static Path PATHTOFILEHIDEEMPTY = Paths.get(FILEHIDEEMPTY);
+	final private static Path PATHTOFOLDERFILE = Paths.get(FOLDERTEST + File.separator + FILE);
+	final private static Path PATHTOFOLDERFILEEMPTY = Paths.get(FOLDERTEST + File.separator + FILEEMPTY);
+	final private static Path PATHTOFOLDERFILEHIDE = Paths.get(FOLDERTEST + File.separator + FILEHIDE);
+	final private static Path PATHTOFOLDERFILEHIDEEMPTY = Paths.get(FOLDERTEST + File.separator + FILEHIDEEMPTY);
+	final private static Path PATHTOHIDDENFOLDERFILE = Paths.get(FOLDERTESTHIDE + File.separator + FILE);
+	final private static Path PATHTOHIDDENFOLDERFILEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEEMPTY);
+	final private static Path PATHTOHIDDENFOLDERFILEHIDE = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDE);
+	final private static Path PATHTOHIDDENFOLDERFILEHIDEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
+	private final File workingDir = new File(System.getProperty("user.dir"));
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws IOException {
+		String[] arrayOfFiles = {PATHTOFILE.toString(), PATHTOFILEHIDE.toString(), PATHTOFOLDERFILE.toString(), PATHTOFOLDERFILEHIDE.toString(), PATHTOHIDDENFOLDERFILE.toString(), PATHTOHIDDENFOLDERFILEHIDE.toString()};
+		String[] arrayOfShortFiles = {PATHTOFILESHORT.toString(), PATHTOFILESHORTHIDE.toString()};
+		Files.createDirectories(PATH);
+		Files.createDirectories(PATHHIDE);
+		try {
+			Files.createFile(PATHTOFILE);
+			Files.createFile(PATHTOFILEEMPTY);
+			Files.createFile(PATHTOFILEHIDE);
+			Files.createFile(PATHTOFILEHIDEEMPTY);
+			Files.createFile(PATHTOFILESHORT);
+			Files.createFile(PATHTOFILESHORTHIDE);
+			Files.createFile(PATHTOFOLDERFILE);
+			Files.createFile(PATHTOFOLDERFILEEMPTY);
+			Files.createFile(PATHTOFOLDERFILEHIDE);
+			Files.createFile(PATHTOFOLDERFILEHIDEEMPTY);
+			Files.createFile(PATHTOHIDDENFOLDERFILE);
+			Files.createFile(PATHTOHIDDENFOLDERFILEEMPTY);
+			Files.createFile(PATHTOHIDDENFOLDERFILEHIDE);
+			Files.createFile(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
+			
+			for(int i = 0; i < arrayOfFiles.length; i++) {
+				File file = new File(arrayOfFiles[i]);
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(CONTENT_1);
+				bw.close();
+			}	
+			
+			for(int i = 0; i < arrayOfShortFiles.length; i++) {
+				File file = new File(arrayOfShortFiles[i]);
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(CONTENT_2);
+				bw.close();
+			}
+		} catch (FileAlreadyExistsException e) {
+			System.err.println("File already exists: " + e.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Before
+	public void setUp() throws Exception {
+		headCommand = new HeadCommand();		
+		stdout = new java.io.ByteArrayOutputStream();		
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() throws IOException {
+		Files.delete(PATHTOFILE);
+		Files.delete(PATHTOFILEEMPTY);
+		Files.delete(PATHTOFILEHIDE);
+		Files.delete(PATHTOFILEHIDEEMPTY);
+		Files.delete(PATHTOFILESHORT);
+		Files.delete(PATHTOFILESHORTHIDE);
+		Files.delete(PATHTOFOLDERFILE);
+		Files.delete(PATHTOFOLDERFILEEMPTY);
+		Files.delete(PATHTOFOLDERFILEHIDE);
+		Files.delete(PATHTOFOLDERFILEHIDEEMPTY);
+		Files.delete(PATHTOHIDDENFOLDERFILE);
+		Files.delete(PATHTOHIDDENFOLDERFILEEMPTY);
+		Files.delete(PATHTOHIDDENFOLDERFILEHIDE);
+		Files.delete(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
+		Files.delete(PATH);
+		Files.delete(PATHHIDE);
+	}
+
+	@Test
+	public void testHeadFile() throws HeadException {
+		String[] args = {"text1.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFileEmpty() throws HeadException {
+		String[] args = {"text2.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFileHidden() throws HeadException {
+		String[] args = {".text3.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFileHiddenEmpty() throws HeadException {
+		String[] args = {".text4.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFolderFile() throws HeadException {
+		String[] args = {"FolderTest" + File.separator + "text1.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFolderFileEmpty() throws HeadException {
+		String[] args = {"FolderTest" + File.separator + "text2.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFolderFileHidden() throws HeadException {
+		String[] args = {"FolderTest" + File.separator + ".text3.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadFolderFileHiddenEmpty() throws HeadException {
+		String[] args = {"FolderTest" + File.separator + ".text4.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadHiddenFolderFile() throws HeadException {
+		String[] args = {".FolderTestHide" + File.separator + "text1.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadHiddenFolderFileEmpty() throws HeadException {
+		String[] args = {".FolderTestHide" + File.separator + "text2.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadHiddenFolderFileHidden() throws HeadException {
+		String[] args = {".FolderTestHide" + File.separator + ".text3.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(RESULT_10, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadShortFile() throws HeadException {
+		String[] args = {"text5.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(CONTENT_2, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadShortFileHide() throws HeadException {
+		String[] args = {".text6.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals(CONTENT_2, stdout.toString());
+	}
+	
+	@Test
+	public void testHeadHiddenFolderFileHiddenEmpty() throws HeadException {
+		String[] args = {".FolderTestHide" + File.separator + ".text4.txt"};
+		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
+	}
+	
+	@Test
+	public void testHeadNoSuchFile() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("No such file or directory");
+		String[] args = {"NoSuchFile.txt"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadNoSuchDirector() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("No such file or directory");
+		String[] args = {"NoSuchFile"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadDirectory() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Is a directory");
+		String[] args = {"FolderTest"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadNoSuchHiddenFile() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("No such file or directory");
+		String[] args = {".NoSuchFile.txt"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadHiddenDirectory() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Is a directory");
+		String[] args = {".FolderTestHide"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadNoSuchHiddenDirectory() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("No such file or directory");
+		String[] args = {".NoSuchFile"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadTwoFiles() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Incorrect argument(s)");
+		String[] args = {"text1.txt", ".text3.txt"};
+		headCommand.run(args, stdin, stdout);		
+	}
+	
+	@Test
+	public void testHeadThreeFiles() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Incorrect argument(s)");
+		String[] args = {"text1.txt", "text2.txt", ".text3.txt"};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadNoFile() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Incorrect argument(s)");
+		String[] args = {};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testHeadEmptyArg() throws HeadException {
+		expectedEx.expect(HeadException.class);
+		expectedEx.expectMessage("Null argument(s)");
+		String[] args = {""};
+		headCommand.run(args, stdin, stdout);
+	}
+	
+	@Test
+	public void testGetAbsolutePath() throws HeadException {		
+		String result = headCommand.getAbsolutePath("text1.txt");
+		assertEquals(workingDir.getAbsolutePath() + File.separator + "text1.txt" ,result);
+	}
+	
+	@Test
+	public void testGetAbsolutePathInFolder() throws HeadException {		
+		String result = headCommand.getAbsolutePath("FolderTest" + File.separator + "text1.txt");
+		assertEquals(workingDir.getAbsolutePath() + File.separator + "FolderTest" + File.separator + "text1.txt" ,result);
+	}
+	
+	@Test
+	public void testGetAbsolutePathInFolderHiddenFile() throws HeadException {		
+		String result = headCommand.getAbsolutePath("FolderTest" + File.separator + ".text3.txt");
+		assertEquals(workingDir.getAbsolutePath() + File.separator + "FolderTest" + File.separator + ".text3.txt" ,result);
+	}
+	
+	@Test
+	public void testGetAbsolutePathInHiddenFolder() throws HeadException {		
+		String result = headCommand.getAbsolutePath(".FolderTestHide" + File.separator + "text1.txt");
+		assertEquals(workingDir.getAbsolutePath() + File.separator + ".FolderTestHide" + File.separator + "text1.txt" ,result);
+	}
+	
+	@Test
+	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws HeadException {		
+		String result = headCommand.getAbsolutePath(".FolderTestHide" + File.separator + ".text4.txt");
+		assertEquals(workingDir.getAbsolutePath() + File.separator + ".FolderTestHide" + File.separator + ".text4.txt" ,result);
+	}
+	
+	@Test
+	public void testDoesFileExist() throws HeadException {
+		File file = new File("text1.txt");
+		Boolean result = headCommand.doesFileExist(file);
+		assertTrue(result);
+	}
+	
+	@Test
+	public void testDoesFileExistHidden() throws HeadException {
+		File file = new File(".text4.txt");
+		Boolean result = headCommand.doesFileExist(file);
+		assertTrue(result);
+	}
+	
+	@Test
+	public void testDoesFileExistNoSuchFile() throws HeadException {
+		File file = new File("NoSuchFile.txt");
+		Boolean result = headCommand.doesFileExist(file);
+		assertFalse(result);
+	}
+	
+	@Test
+	public void testDoesFileExistFolder() throws HeadException {
+		File file = new File("FolderTest");
+		Boolean result = headCommand.doesFileExist(file);
+		assertFalse(result);
+	}
+	
+	@Test
+	public void testIsDirectory() throws HeadException {
+		File file = new File("FolderTest");
+		Boolean result = headCommand.isDirectory(file);
+		assertTrue(result);
+	}
+	
+	@Test
+	public void testIsDirectoryHidden() throws HeadException {
+		File file = new File(".FolderTestHide");
+		Boolean result = headCommand.isDirectory(file);
+		assertTrue(result);
+	}
+	
+	@Test
+	public void testIsDirectoryNoSuchDirectory() throws HeadException {
+		File file = new File("NoSuchFolder");
+		Boolean result = headCommand.isDirectory(file);
+		assertFalse(result);
+	}
+}

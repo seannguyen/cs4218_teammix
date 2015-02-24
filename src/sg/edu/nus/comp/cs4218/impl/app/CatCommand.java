@@ -10,11 +10,9 @@ import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
-public class CatCommand implements Application{
-	private Environment environment;
+public class CatCommand implements Application{	
 	
 	public CatCommand() {
 		// This constructor is intentionally empty. Nothing special is needed here.
@@ -22,11 +20,19 @@ public class CatCommand implements Application{
 	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws CatException {
-		String fileName = "";						
+		String fileName = "";
+		
+		if(args.length == 0) {
+			throw new CatException(" " + fileName + ":" + " No argument(s)");
+		}
 	
 		for(int i = 0; i < args.length; i++) {
 			fileName = getAbsolutePath(args[i]);			
 			File file = new File(fileName);
+			
+			if(args[i].equals("")) {
+				throw new CatException(" " + fileName + ":" + " Null argument(s)");
+			}
 			
 			if(doesFileExist(file)) {
 				try {
@@ -44,13 +50,8 @@ public class CatCommand implements Application{
 					e.printStackTrace();
 				}
 			} else if(isDirectory(file)) {
-				//cat: sample/: Is a directory				
-				try {
-					String directoryMessage = "cat: " + " " + fileName + ": Is a directory";
-					stdout.write(directoryMessage.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				//cat: sample/: Is a directory								
+				throw new CatException(" " + fileName + ":" + " Is a directory");
 			} else {
 				//cat: sample.txt: No such file or directory
 				throw new CatException(" " + fileName + ":" + " No such file or directory");
@@ -59,10 +60,10 @@ public class CatCommand implements Application{
 	}
 	
 	public String getAbsolutePath(String filePath) {				
-		if(filePath.startsWith(environment.currentDirectory)) {
+		if(filePath.startsWith(Environment.currentDirectory)) {
 			return filePath;
 		}
-		return environment.currentDirectory + File.separator + filePath;
+		return Environment.currentDirectory + File.separator + filePath;
 	}
 	
 	public boolean doesFileExist(File file) {
