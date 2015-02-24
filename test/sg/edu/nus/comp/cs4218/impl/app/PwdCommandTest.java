@@ -32,6 +32,7 @@ public class PwdCommandTest {
 	final private static String FILE = "tempFile.txt";
 	final private static Path PATH = Paths.get(FOLDER);
 	final private static Path PATHFILE = Paths.get(FILE);
+	private final File workingDir = new File(System.getProperty("user.dir"));
 	private PwdCommand pwdCommand;
 	private InputStream stdin;
 	private OutputStream stdout;
@@ -55,6 +56,7 @@ public class PwdCommandTest {
 		pwdCommand = new PwdCommand();
 		stdout = new java.io.ByteArrayOutputStream();
 		printStream = new PrintStream(stdout);
+		Environment.currentDirectory = workingDir.getAbsolutePath();
 	}
 
 	@After
@@ -62,6 +64,7 @@ public class PwdCommandTest {
 		pwdCommand = null;
 		stdout.close();
 		printStream.close();
+		Environment.currentDirectory = workingDir.getAbsolutePath();
 	}
 
 	@AfterClass

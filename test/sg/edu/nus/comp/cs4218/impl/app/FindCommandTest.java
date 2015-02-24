@@ -79,6 +79,7 @@ public class FindCommandTest {
 	@After 
 	public void tearDown() throws Exception {
 		findCommand = null;
+		Environment.currentDirectory = workingDir.getAbsolutePath();
 		stdout.close();
 		printStream.close();
 	}

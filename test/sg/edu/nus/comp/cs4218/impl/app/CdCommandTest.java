@@ -45,6 +45,7 @@ public class CdCommandTest {
 		cdCommand = null;
 		stdin = null;
 		stdout = null;
+		Environment.currentDirectory = workingDir.getAbsolutePath();
 	}
 
 	/**

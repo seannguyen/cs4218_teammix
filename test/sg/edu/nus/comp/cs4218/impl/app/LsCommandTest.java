@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,6 +43,7 @@ public class LsCommandTest {
 			+ File.separator + FOLDERCHILD + File.separator + FILECHILD);
 	final private static Path PATHTOFILEDOT = Paths.get(FOLDERPARENT
 			+ File.separator + FILEDOT);
+	private final File workingDir = new File(System.getProperty("user.dir"));
 	private InputStream stdin;
 	private OutputStream stdout;
 	PrintStream printStream;
@@ -67,8 +69,14 @@ public class LsCommandTest {
 		lsCommand = new LsCommand();
 		stdout = new java.io.ByteArrayOutputStream();
 		printStream = new PrintStream(stdout);
+		Environment.currentDirectory = workingDir.getAbsolutePath();
 	}
 
+	@After
+	public void tearDown() {
+		Environment.currentDirectory = workingDir.getAbsolutePath();
+	}
+	
 	@AfterClass
 	public static void tearDownAfterClass() throws IOException {
 		Files.delete(PATHTOFILE);
