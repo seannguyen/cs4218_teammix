@@ -26,7 +26,9 @@ public class EchoCommand implements Application{
 			StringBuilder stringBuilder = new StringBuilder();
 			for(int i = 0; i < args.length; i++) {
 				stringBuilder.append(args[i]);
-				stringBuilder.append(SPACE_SEPERATOR);
+				if (i != args.length - 1) {
+					stringBuilder.append(SPACE_SEPERATOR);
+				}
 			}
 			//stringBuilder.append(System.getProperty("line.seperator"));			
 			try {

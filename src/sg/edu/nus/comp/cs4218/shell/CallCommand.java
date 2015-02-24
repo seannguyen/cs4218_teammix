@@ -34,8 +34,7 @@ public class CallCommand implements Command {
 	
 	//public methods
 	@Override
-	public void evaluate(InputStream stdin, OutputStream stdout)
-			throws AbstractApplicationException, ShellException {
+	public void evaluate(InputStream stdin, OutputStream stdout) throws AbstractApplicationException, ShellException {
 		Application app = Environment.nameAppMaps.get(appName);
 		if (app == null) {
 			throw new ShellException(Configurations.MESSAGE_ERROR_APPMISSING);
@@ -44,11 +43,6 @@ public class CallCommand implements Command {
 			initIoStreams(stdin, stdout);
 			String[] args = (String[]) arguments.toArray(new String[0]);
 			app.run(args, this.inputStream, this.outputStream);
-			try {
-				stdout.write(Configurations.NEWLINE.getBytes());
-			} catch (IOException e) {
-				throw new ShellException(Configurations.MESSGE_ERROR_OUTSTREAMMISSING);
-			}
 		} catch (Exception e) {
 			terminate();
 			throw e;
@@ -70,6 +64,24 @@ public class CallCommand implements Command {
 		}
 	}
 	
+	public String getAppName() {
+		return this.appName;
+	}
+	
+	public Vector<String> getArgs() {
+		return this.arguments;
+	}
+	
+	public String getInputFile() {
+		return this.inputFile;
+	}
+	
+	public String getOutputFile() {
+		return this.outputFile;
+	}
+	
+	//private helper methods
+
 	private void initIoStreams(InputStream stdin, OutputStream stdout) throws ShellException {
 		if (inputFile != null && inputFile.length() > 0) {
 			this.inputStream = getInputStream(inputFile);

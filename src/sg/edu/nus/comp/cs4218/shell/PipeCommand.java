@@ -14,31 +14,7 @@ public class PipeCommand implements Command {
 	Vector <Command> commands = new Vector<Command>();
 		
 	@Override
-	public void evaluate(InputStream stdin, OutputStream stdout)
-			throws AbstractApplicationException, ShellException {
-		//This is and old complicated piping method  
-//		PipedInputStream nonFinalLastIn = (PipedInputStream) stdin;
-//		for (int i = 0; i < commands.size(); i++) {
-//			final PipedInputStream in = new PipedInputStream();
-//			final PipedInputStream lastIn = nonFinalLastIn;
-//			final PipedOutputStream out = new PipedOutputStream(in);
-//			final Command command = commands.get(i);
-//			new Thread(
-//					new Runnable(){
-//						public void run(){
-//							try {
-//								command.evaluate(lastIn, out);
-//							} catch (AbstractApplicationException | ShellException | IOException e) {
-//								e.printStackTrace();
-//							}
-//						}
-//					}
-//					).start();
-//			nonFinalLastIn = in;
-//		}
-//		terminate();
-		
-		//This is an simpler way
+	public void evaluate(InputStream stdin, OutputStream stdout) throws AbstractApplicationException, ShellException {
 		ByteArrayOutputStream pipeOut = new ByteArrayOutputStream();
 		for (int i = 0; i < commands.size(); i++) {
 			if (commands.size() == 1) {
@@ -64,4 +40,11 @@ public class PipeCommand implements Command {
 		commands.add(command);
 	}
 
+	public Command getCommand(int index) {
+		return commands.get(index);
+	}
+
+	public int getCommandSize() {
+		return this.commands.size();
+	}
 }

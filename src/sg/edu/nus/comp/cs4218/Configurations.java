@@ -13,6 +13,8 @@ public final class Configurations {
 	public static final char QUOTE_SINGLE = '\'';
 	public static final char QUOTE_DOUBLE = '\"';
 	public static final char QUOTE_BACK = '`';
+	public static final char SPACE_CHAR = ' ';
+	public static final char TAB_CHAR = '\t';
 	
 	public static final String WINDOWS_FILESEPARATOR = "\\";
 	public static final String LINUX_FILESEPARATOR = "/";

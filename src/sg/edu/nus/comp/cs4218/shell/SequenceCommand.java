@@ -22,12 +22,18 @@ public class SequenceCommand implements Command {
 
 	@Override
 	public void terminate() {
-		// TODO Auto-generated method stub
-
 	}
 	
 	public void addCommand (Command command) {
 		commands.add(command);
+	}
+	
+	public Command getCommand(int index) {
+		return commands.get(index);
+	}
+	
+	public int getCommandSize() {
+		return this.commands.size();
 	}
 
 }

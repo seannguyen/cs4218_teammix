@@ -13,7 +13,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -22,89 +21,48 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class Parser {
+	Vector<Boolean> quoteFlags = new Vector<Boolean>();
+	
 	public Command parseCommandLine (String commandLine) throws ShellException, AbstractApplicationException {
-		Vector <String> preprocessedLine = preprocessCommandLine(commandLine);
-		Command  command = parseSequence(preprocessedLine);
-		return command;
+		refreshParser();
+		Vector <String> preprocessedLine = splitLine(commandLine);
+		return parseSequence(preprocessedLine);
 	}
 
-	//PRIVATE HELPER METHODS
+	//PROTECTED CORE METHODS
 	
-	private SequenceCommand parseSequence (Vector <String> input) throws ShellException, AbstractApplicationException {
-		int lastSemiColon = -1;
-		SequenceCommand seqCommand = new SequenceCommand();
-		for (int i = 0; i < input.size(); i++) {
-			if (input.get(i).equals(Configurations.SEMICOLON_TOKEN)) {
-				Vector <String> pipe = new Vector<String>();
-				if (lastSemiColon >= 0) {
-					pipe = new Vector<String>(input.subList(lastSemiColon + 1, i));
-				} else {
-					pipe = new Vector<String>(input.subList(0, i));
+	protected Vector <String> splitLine (String input) throws ShellException{
+		Vector <String> result = new Vector<String>();
+		if (input == null || input.length() == 0) {
+			return result;
+		}
+		markQuotes(input);
+		int lastStop = -1;
+		for (int i = 0; i < input.length(); i++) {
+			if (input.charAt(i) == Configurations.SPACE_CHAR || input.charAt(i) == Configurations.TAB_CHAR) {
+				if (this.quoteFlags.get(i)) {
+					continue;
 				}
-				lastSemiColon = i;
-				PipeCommand command = parsePipe(pipe);
-				seqCommand.addCommand(command);
-			} else if (i == input.size() - 1) {
-				Vector <String> pipe;
-				pipe = new Vector<String>(input.subList(lastSemiColon + 1, input.size()));
-				Command command = parsePipe(pipe);
-				seqCommand.addCommand(command);
-			}
-		}
-		return seqCommand;
-	}
-	
-	private PipeCommand parsePipe (Vector <String> input) throws ShellException, AbstractApplicationException {
-		int lastPipeToken = -1;
-		PipeCommand pipeCommand = new PipeCommand();
-		for (int i = 0; i < input.size(); i++) {
-			if (input.get(i).equals(Configurations.PIPE_TOKEN)) {
-				Vector <String> call = new Vector<String>();
-				if (lastPipeToken >= 0) {
-					call = new Vector<String>(input.subList(lastPipeToken + 1, i));
-				} else {
-					call = new Vector<String>(input.subList(0, i));
+				String element = input.substring(lastStop + 1, i);
+				result.add(element);
+				lastStop = i;
+			} else if (input.charAt(i) == Configurations.PIPE_TOKEN.charAt(0) 
+					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN.charAt(0)) {
+				if (this.quoteFlags.get(i)) {
+					continue;
 				}
-				lastPipeToken = i;
-				Command command = parseCall(call);
-				pipeCommand.addCommand(command);
-			} else if (i == input.size() - 1) {
-				Vector <String> call;
-				call = new Vector<String>(input.subList(lastPipeToken + 1, input.size()));
-				Command command = parseCall(call);
-				pipeCommand.addCommand(command);
+				String element = input.substring(lastStop + 1, i);
+				String token = input.substring(i, i + 1);
+				result.add(element);
+				result.add(token);
+				lastStop = i;
+			} else if (i == input.length() - 1) {
+					String element = input.substring(lastStop + 1, i + 1);
+					result.add(element);
 			}
 		}
-		return pipeCommand;
-	}
-	
-	private Command parseCall(Vector <String> callLine) throws ShellException, AbstractApplicationException {
-		if (callLine.size() == 0) {
-			return new CallCommand(null, null, null, null);
-		}
-		try {
-			String appName = callLine.get(0);
-			callLine.remove(0);
-			callLine = subtitudeCommand(callLine);
-			Vector<String> ioRedirectories = getIoRedirectories(callLine);
-			Vector<String> arguments;
-			if(("find").equals(appName)) {
-			  arguments = callLine;
-			} else {
-			  arguments = getFilesFromGrobPattern(callLine);
-			}
-			Command command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), arguments);
-			return command;
-		} catch (IOException e) {
-			throw new ShellException(e.getMessage());
-		}
-	}
-	
-	private Vector <String> preprocessCommandLine (String line) throws ShellException{
-		Vector <String> result = extractQuote(line);
-		result = splitBySpace(result);
-		result = extractToken(result, Configurations.SEMICOLON_TOKEN.charAt(0));
-		result = extractToken(result, Configurations.PIPE_TOKEN.charAt(0));
+		
+		//remove empty elements
 		for (int i = 0; i < result.size(); i++) {
 			if (result == null || result.get(i).length() == 0) {
 				result.remove(i);
@@ -113,41 +71,85 @@ public class Parser {
 		}
 		return result;
 	}
-
-	private Vector<String> subtitudeCommand(Vector<String> input) throws ShellException, AbstractApplicationException {
-		if (input == null) {
-			return input;
+	
+	protected CallCommand parseCall(Vector <String> callLine) throws ShellException, AbstractApplicationException {
+		if (callLine.size() == 0) {
+			return new CallCommand(null, null, null, null);
 		}
-		for (int i = 0; i < input.size(); i++) {
-			String element = input.get(i);
-			if (element.length() == 0 && !isQuote(element.charAt(0))) {
-				continue;
+		try {
+			//process IO redirection first
+			Vector<String> ioRedirectories = getIoRedirectories(callLine);
+			if (callLine.size() == 0) {
+				return new CallCommand(null, null, null, null);
 			}
-			Vector<Integer> backQuotePositions = new Vector<Integer>();
-			for (int j = 0; j < element.length(); j++) {
-				if (element.charAt(j) == Configurations.QUOTE_BACK) {
-					backQuotePositions.add(j);
-				}
+			
+			//then process command substitution and globing
+			callLine = substituteCommand(callLine);
+			Vector<String> namePart = new Vector<String>();
+			namePart.add(callLine.get(0));
+			callLine.remove(0);
+			namePart = removeQuoteTokens(namePart);
+			namePart = getFilesFromGrobPattern(namePart);
+			String appName = namePart.get(0);
+			namePart.remove(0);
+			
+			callLine = removeQuoteTokens(callLine);
+			Vector<String> args = new Vector<String>();
+			if (!appName.equals(Configurations.APPNAME_FIND)) {
+				callLine = getFilesFromGrobPattern(callLine);
 			}
-			for (int j = backQuotePositions.size() - 1; j >= 0; j -= 2) {
-				if (j > 0) {
-					String subCmdLine = element.substring(backQuotePositions.get(j - 1), backQuotePositions.get(j) + 1);
-					subCmdLine = subCmdLine.substring(1, subCmdLine.length() - 1);
-					Command subCmd = parseCommandLine(subCmdLine);
-					ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-					subCmd.evaluate(null, outStream);
-					String evaluatedResult = outStream.toString();
-					String firstHalf = element.substring(0, backQuotePositions.get(j - 1));
-					String secondHalf = element.substring(backQuotePositions.get(j) + 1);
-					element = firstHalf + evaluatedResult + secondHalf; 
-					element = element.replace(Configurations.NEWLINE, Configurations.WHITESPACE);
-				}
-			}
+			args.addAll(namePart);
+			args.addAll(callLine);
+			CallCommand command = new CallCommand(appName, ioRedirectories.get(0), ioRedirectories.get(1), args);
+			return command;
+		} catch (IOException e) {
+			throw new ShellException(e.getMessage());
 		}
-		return input;
 	}
 	
-	private Vector<String> getFilesFromGrobPattern(Vector<String> input) throws IOException {
+	protected Vector<String> substituteCommand(Vector<String> input) throws ShellException, AbstractApplicationException {
+		Vector<String> result = new Vector<String>();
+		if (input == null) {
+			return result;
+		}
+		
+		for (String element : input) {
+			Stack <Character> quotes = new Stack<Character>();
+			int lastQuotePos = -1;
+			for (int i = element.length() - 1; i >= 0; i--) {
+				if (isQuote(element.charAt(i))) {
+					if (quotes.isEmpty()) {
+						quotes.push(element.charAt(i));
+						lastQuotePos = i;
+					} else if (quotes.peek() == Configurations.QUOTE_DOUBLE 
+							&& element.charAt(i) == Configurations.QUOTE_BACK) {
+						quotes.push(Configurations.QUOTE_BACK);
+						lastQuotePos = i;
+					} else if (element.charAt(i) == quotes.peek()) {
+						quotes.pop();
+						if (element.charAt(i) == Configurations.QUOTE_BACK) {
+							String subCommandLine = element.substring(i + 1, lastQuotePos);
+							Command subCmd = parseCommandLine(subCommandLine);
+							ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+							subCmd.evaluate(null, outStream);
+							String evaluatedResult = Configurations.QUOTE_BACK + 
+									outStream.toString() + Configurations.QUOTE_BACK;
+							String firstHalf = element.substring(0, i);
+							String secondHalf = element.substring(lastQuotePos + 1);
+							element = firstHalf + evaluatedResult + secondHalf;
+						}
+					}
+				}
+			}
+			if (quotes.size() != 0) {
+				error();
+			}
+			result.add(element);
+		}
+		return result;
+	}
+	
+	protected Vector<String> getFilesFromGrobPattern(Vector<String> input) throws IOException {
 		for (int i = 0; i < input.size(); i++) {
 			final Vector<String> results = new Vector<String>();
 			String root = "." + File.separator;
@@ -195,88 +197,8 @@ public class Parser {
 		return input;
 	}
 	
-	private Vector <String> extractToken (Vector <String> input, char tokenChar) {
-		String token = String.valueOf(tokenChar);
-		Vector <String> result = new Vector<String>();
-		for (int i = 0; i < input.size(); i++) {
-			String element = input.get(i);
-			if (element.length() <= 1 || isQuote(element.charAt(0))) {
-				result.add(element);
-			} else {
-				if (element.charAt(0) == tokenChar) {
-					result.add(token);
-				}
-				Vector <String> splitedPhases;
-				if (token.equals(Configurations.PIPE_TOKEN)) {
-					splitedPhases = new Vector<String>(Arrays.asList(element.split("\\" + token)));
-				} else {
-					splitedPhases = new Vector<String>(Arrays.asList(element.split(token)));
-				}
-				for (int j = 1; j < splitedPhases.size(); j += 2) {
-					splitedPhases.insertElementAt(token, j);
-				}
-				result.addAll(splitedPhases);
-				if (element.endsWith(token) && element.length() != 1) {
-					result.add(token);
-				}
-			}
-		}
-		return result;
-	}  
-	
-	private Vector <String> splitBySpace (Vector <String> input) {
-		Vector <String> result = new Vector<String>();
-		for (int i = 0; i < input.size(); i++) {
-			String phase = input.get(i);
-			if (input.get(i) == null || input.get(i).length() == 0) {
-				continue;
-			}
-			if (isQuote(phase.charAt(0))) {
-				result.add(input.get(i));
-			} else {
-				String[] splitedPhases = phase.split(Configurations.WHITESPACEREGEX);
-				result.addAll(new Vector<String>(Arrays.asList(splitedPhases)));
-			}
-		}
-		return result;
-	}
-	
-	private Vector <String> extractQuote (String input) throws ShellException {
-		Vector <String> result = new Vector<String>();
-		Stack <Character> quotes = new Stack<Character>();
-		int lastQuoteIndex = -1;
-		for (int i = 0; i < input.length(); i++) {
-			if (quotes.isEmpty()) {
-				if (isQuote(input.charAt(i))) {
-					result.add(input.substring(lastQuoteIndex + 1, i));
-					lastQuoteIndex = i;
-					quotes.push(input.charAt(i));
-				} else if (i == input.length() - 1) {
-					if (lastQuoteIndex >= 0) {
-						result.add(input.substring(lastQuoteIndex + 1, i + 1));
-					} else {
-						result.add(input);
-					}		
-				}
-			} else {
-				if (quotes.peek() == Configurations.QUOTE_DOUBLE && input.charAt(i) == Configurations.QUOTE_BACK) {
-					quotes.push(Configurations.QUOTE_BACK);
-				} else if (input.charAt(i) == Configurations.QUOTE_BACK && quotes.size() > 1) {
-					quotes.pop();
-				} else if (input.charAt(i) == quotes.peek()) {
-					quotes.pop();
-					result.add(input.substring(lastQuoteIndex, i + 1));
-					lastQuoteIndex = i;
-				}
-			}
-		}
-		if (quotes.size() != 0) {
-			error();
-		}
-		return result;
-	}
-
-	private Vector <String> getIoRedirectories(Vector<String> input) throws ShellException {
+	protected Vector <String> getIoRedirectories(Vector<String> input) 
+			throws ShellException, AbstractApplicationException {
 		String inputRedirectory = "", outputRedirectory = "";
 		//merge all IO redirection token with their directories
 		for (int i = 0; i < input.size(); i++) {
@@ -294,12 +216,14 @@ public class Parser {
 				}
 				inputRedirectory = input.get(i);
 				input.remove(i);
+				inputRedirectory = substituteCommand(inputRedirectory);
 			} else if (input.get(i).startsWith(Configurations.OUTPUTREDIRECTION_TOKEN)) {
 				if (outputRedirectory.length() > 0) {
 					error();
 				}
 				outputRedirectory = input.get(i);
 				input.remove(i);
+				outputRedirectory = substituteCommand(outputRedirectory);
 			}
 		}
 		if (inputRedirectory.length() > 0) {
@@ -309,9 +233,58 @@ public class Parser {
 			outputRedirectory = outputRedirectory.substring(1);
 		}
 		Vector<String> result = new Vector<String>();
-		result.addElement(inputRedirectory);
+		result.add(inputRedirectory);
 		result.add(outputRedirectory);
 		return result;
+	}
+
+	protected Vector <String> removeQuoteTokens(Vector<String> input) throws ShellException{
+		Vector<String> result = new Vector<String>();
+		for (String element : input) {
+			Stack <Character> quotes = new Stack<Character>();
+			for (int i = element.length() - 1; i >= 0; i--) {
+				if (isQuote(element.charAt(i))) {
+					if (quotes.isEmpty()) {
+						quotes.push(element.charAt(i));
+						element = removeCharFromString(element, i);
+					} else if (quotes.peek() == Configurations.QUOTE_DOUBLE 
+							&& element.charAt(i) == Configurations.QUOTE_BACK) {
+						quotes.push(Configurations.QUOTE_BACK);
+						element = removeCharFromString(element, i);
+					} else if (element.charAt(i) == quotes.peek()) {
+						quotes.pop();
+						element = removeCharFromString(element, i);
+					}
+				}
+			}
+			if (quotes.size() != 0) {
+				error();
+			}
+			result.add(element);
+		}
+		return result;
+	}
+
+	//PRIVATE HELPER METHODS (This methods are trivial, so no need test cases for this)
+	
+	private SequenceCommand parseSequence (Vector <String> input) throws ShellException, AbstractApplicationException {
+		SequenceCommand seqCommand = new SequenceCommand();
+		Vector<Vector<String>> pipes = splitByToken(input, Configurations.SEMICOLON_TOKEN);
+		for (Vector<String> pipe : pipes) {
+			PipeCommand pipeCmd = parsePipe(pipe);
+			seqCommand.addCommand(pipeCmd);
+		}
+		return seqCommand;
+	}
+	
+	private PipeCommand parsePipe (Vector <String> input) throws ShellException, AbstractApplicationException {
+		PipeCommand pipeCommand = new PipeCommand();
+		Vector<Vector<String>> calls = splitByToken(input, Configurations.PIPE_TOKEN);
+		for (Vector<String> call : calls) {
+			CallCommand callCmd = parseCall(call);
+			pipeCommand.addCommand(callCmd);
+		}
+		return pipeCommand;
 	}
 	
 	private void error() throws ShellException{
@@ -324,7 +297,7 @@ public class Parser {
 		}
 		return false;
 	}
-
+	
 	private int countOccurrences(String s, String token) {
 		int counter = 0;
 		for( int i = 0; i < s.length(); i++ ) {
@@ -333,5 +306,77 @@ public class Parser {
 		    } 
 		}
 		return counter;
+	}
+
+	private void refreshParser() {
+		this.quoteFlags = new Vector<Boolean>();
+	}
+
+	private Vector<Vector<String>> splitByToken(Vector<String> input, String token) {
+		 Vector<Vector<String>> result = new Vector<Vector<String>>();
+		int lastToken = -1;
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).equals(token)) {
+				Vector <String> subList = new Vector<String>();
+				if (lastToken >= 0) {
+					subList = new Vector<String>(input.subList(lastToken + 1, i));
+				} else {
+					subList = new Vector<String>(input.subList(0, i));
+				}
+				lastToken = i;
+				result.add(subList);
+			} else if (i == input.size() - 1) {
+				Vector <String> subList;
+				subList = new Vector<String>(input.subList(lastToken + 1, input.size()));
+				result.add(subList);
+			}
+		}
+		return result;
+	}
+
+	private String substituteCommand(String input) throws ShellException, AbstractApplicationException {
+		Vector<String> vectorInput = new Vector<String>();
+		vectorInput.add(input);
+		Vector<String> results = substituteCommand(vectorInput);
+		String result = "";
+		for (String string : results) {
+			result += string;
+		}
+		return result;
+	}
+	
+	private String removeCharFromString(String input, int index) {
+		StringBuilder sb = new StringBuilder(input);
+		sb.deleteCharAt(index);
+		return sb.toString();
+	}
+	
+	private void markQuotes (String input) throws ShellException {
+		Stack <Character> quotes = new Stack<Character>();
+		for (int i = 0; i < input.length(); i++) {
+			if (isQuote(input.charAt(i))) {
+				if (quotes.isEmpty()) {
+					quotes.push(input.charAt(i));
+					this.quoteFlags.add(true);
+				} else if (quotes.peek() == Configurations.QUOTE_DOUBLE && input.charAt(i) == Configurations.QUOTE_BACK) {
+					quotes.push(Configurations.QUOTE_BACK);
+					this.quoteFlags.add(true);
+				} else if (input.charAt(i) == quotes.peek()) {
+					quotes.pop();
+					this.quoteFlags.add(true);
+				} else {
+					this.quoteFlags.add(false);
+				}
+			} else {
+				if (quotes.isEmpty()) {
+					this.quoteFlags.add(false);
+				} else {
+					this.quoteFlags.add(true);
+				}
+			}
+		}		
+		if (quotes.size() != 0) {
+			error();
+		}
 	}
 }
