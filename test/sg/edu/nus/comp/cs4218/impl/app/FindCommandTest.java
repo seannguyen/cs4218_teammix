@@ -207,7 +207,7 @@ public class FindCommandTest {
 	@Test
 	public void testErrorStatus1() throws FindException {
 		expectedEx.expect(FindException.class);
-		expectedEx.expectMessage(Configurations.MESSGE_ERROR_FILENOTFOUND);
+		expectedEx.expectMessage(Configurations.MESSGE_E_MISSF);
 		findCommand.checkErrorStatus(1);
 	}
 

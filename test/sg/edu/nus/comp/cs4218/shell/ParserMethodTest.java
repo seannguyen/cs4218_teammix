@@ -25,34 +25,35 @@ import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
 
 public class ParserMethodTest {
 
-Parser parser;
-	
+	Parser parser;
+
 	@BeforeClass
 	public static void intiEnvironment() {
-		//initialize apps in environment
+		// initialize apps in environment
 		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO, new EchoCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_CAT, new CatCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD, new HeadCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_TAIL, new TailCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new PwdCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_FIND, new FindCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO,
+				new EchoCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_CAT,
+				new CatCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD,
+				new HeadCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_TAIL,
+				new TailCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_PWD,
+				new PwdCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_FIND,
+				new FindCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_WC, new WcCommand());
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
 		parser = new Parser();
 	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-	
-	//Test split line
+	// Test split line
 	@Test
-	public void SplitLineSimple() throws ShellException {
+	public void splitLineSimple() throws ShellException {
 		String input = "app arg1 arg2";
 		Vector<String> actual = parser.splitLine(input);
 		Vector<String> expected = new Vector<String>();
@@ -61,18 +62,19 @@ Parser parser;
 		expected.add("arg2");
 		compareVectorString(expected, actual);
 	}
-	
+
 	@Test
-	public void SplitLineNullInput() throws ShellException {
+	public void splitLineNullInput() throws ShellException {
 		String input = null;
 		Vector<String> actual = parser.splitLine(input);
 		Vector<String> expected = new Vector<String>();
 		compareVectorString(expected, actual);
 	}
 
-	//Test Substitute Command
+	// Test Substitute Command
 	@Test
-	public void SubstituteCommand() throws ShellException, AbstractApplicationException {
+	public void substituteCommand() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("app");
 		input.add("`echo abc`");
@@ -82,9 +84,10 @@ Parser parser;
 		expected.add("`abc`");
 		compareVectorString(expected, actual);
 	}
-	
+
 	@Test
-	public void SubstituteCommandMulTiple() throws ShellException, AbstractApplicationException {
+	public void substituteCommandMulTiple() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("`echo abc``echo def`");
 		Vector<String> actual = parser.substituteCommand(input);
@@ -92,9 +95,10 @@ Parser parser;
 		expected.add("`abc``def`");
 		compareVectorString(expected, actual);
 	}
-	
+
 	@Test
-	public void SubstituteCommandInDoubleQuote() throws ShellException, AbstractApplicationException {
+	public void substituteCommandInDoubleQuote() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"`echo abc`\"");
 		Vector<String> actual = parser.substituteCommand(input);
@@ -102,17 +106,19 @@ Parser parser;
 		expected.add("\"`abc`\"");
 		compareVectorString(expected, actual);
 	}
-	
-	@Test(expected = Exception.class) 
-	public void SubstituteCommandIncompleteQuote() throws ShellException, AbstractApplicationException {
+
+	@Test(expected = Exception.class)
+	public void substituteCommandIncompleteQuote() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"abc `echo \"def\"");
 		parser.removeQuoteTokens(input);
 	}
-	
-	//Test Remove quote tokens
+
+	// Test Remove quote tokens
 	@Test
-	public void removeQuoteTokens() throws ShellException, AbstractApplicationException {
+	public void removeQuoteTokens() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"abc\"");
 		input.add("'abc'");
@@ -124,9 +130,10 @@ Parser parser;
 		expected.add("abc");
 		compareVectorString(expected, actual);
 	}
-	
+
 	@Test
-	public void removeQuoteTokensNestedQuotes() throws ShellException, AbstractApplicationException {
+	public void removeQuoteTokensNestedQuotes() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"abc `def`\"");
 		Vector<String> actual = parser.removeQuoteTokens(input);
@@ -134,15 +141,16 @@ Parser parser;
 		expected.add("abc def");
 		compareVectorString(expected, actual);
 	}
-	
-	@Test (expected = Exception.class) 
-	public void removeQuoteTokensIncompleteQuote() throws ShellException, AbstractApplicationException {
+
+	@Test(expected = Exception.class)
+	public void removeQuoteTokensIncompleteQuote() throws ShellException,
+			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"abc");
 		parser.removeQuoteTokens(input);
 	}
-	
-	//PRIVATE HELPER METHODS
+
+	// PRIVATE HELPER METHODS
 	private void compareVectorString(Vector<String> list1, Vector<String> list2) {
 		assertEquals(list1.size(), list2.size());
 		for (int i = 0; i < list1.size(); i++) {
@@ -150,19 +158,3 @@ Parser parser;
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

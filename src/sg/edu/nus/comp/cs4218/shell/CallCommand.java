@@ -17,10 +17,10 @@ import sg.edu.nus.comp.cs4218.exception.ShellException;
 public class CallCommand implements Command {
 
 	//attributes
-	private String appName;
-	private Vector<String> arguments;
-	private String inputFile;
-	private String outputFile;
+	private final String appName;
+	private final Vector<String> arguments;
+	private final String inputFile;
+	private final String outputFile;
 	private InputStream inputStream;
 	private OutputStream outputStream;
 	
@@ -37,11 +37,12 @@ public class CallCommand implements Command {
 	public void evaluate(InputStream stdin, OutputStream stdout) throws AbstractApplicationException, ShellException {
 		Application app = Environment.nameAppMaps.get(appName);
 		if (app == null) {
-			throw new ShellException(Configurations.MESSAGE_ERROR_APPMISSING);
+			throw new ShellException(Configurations.MESSAGE_E_MISSA);
 		}
 		try {
 			initIoStreams(stdin, stdout);
-			String[] args = (String[]) arguments.toArray(new String[0]);
+			String[] args = new String[arguments.size()];
+			arguments.toArray(args);
 			app.run(args, this.inputStream, this.outputStream);
 		} catch (Exception e) {
 			terminate();
@@ -97,20 +98,23 @@ public class CallCommand implements Command {
 
 	private InputStream getInputStream(String fileName) throws ShellException {
 		try {
-			FileInputStream input = new FileInputStream(fileName);
-			return input;
+			return new FileInputStream(fileName);
 		} catch (FileNotFoundException e) {
-			throw new ShellException(fileName + ": " + Configurations.MESSGE_ERROR_FILENOTFOUND);
+			error(fileName + ": " + Configurations.MESSGE_E_MISSF);
+			return null;
 		}
 	}
 	
 	private OutputStream getOutputStream(String fileName) throws ShellException {
 		try {
-			FileOutputStream output = new FileOutputStream(fileName);
-			return output;
+			return new FileOutputStream(fileName);
 		} catch (FileNotFoundException e) {
-			throw new ShellException(fileName + ": " + Configurations.MESSGE_ERROR_FILENOTFOUND);
+			error(fileName + ": " + Configurations.MESSGE_E_MISSF + e.getMessage());
+			return null;
 		}
 	}
-	
+
+	private void error(String message) throws ShellException {
+		throw new ShellException(message);
+	}
 }

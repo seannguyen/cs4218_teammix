@@ -3,12 +3,12 @@ package sg.edu.nus.comp.cs4218;
 public final class Configurations {
 	public static final String MESSAGE_WELCOME = "WELCOME TO CS4128 SHELL";
 	public static final String MESSAGE_PROMPT = ">";
-	public static final String MESSAGE_ERROR_GENERAL = "Opps, there is somethis wrong!";
-	public static final String MESSAGE_ERROR_PARSING = "Your Command Line is Invalid";
-	public static final String MESSAGE_ERROR_APP = "Application Error:";
-	public static final String MESSAGE_ERROR_APPMISSING = "Command Not Found";
-	public static final String MESSGE_ERROR_OUTSTREAMMISSING = "The output stream is missing";
-	public static final String MESSGE_ERROR_FILENOTFOUND = "No Such File or Directory";
+	public static final String MESSAGE_E_GENERAL = "Opps, there is somethis wrong!";
+	public static final String MESSAGE_E_PARSING = "Your Command Line is Invalid";
+	public static final String MESSAGE_E_APP = "Application Error:";
+	public static final String MESSAGE_E_MISSA = "Command Not Found";
+	public static final String MESSAGE_E_MISSO = "The output stream is missing";
+	public static final String MESSGE_E_MISSF = "No Such File or Directory";
 	
 	public static final char QUOTE_SINGLE = '\'';
 	public static final char QUOTE_DOUBLE = '\"';
@@ -16,13 +16,13 @@ public final class Configurations {
 	public static final char SPACE_CHAR = ' ';
 	public static final char TAB_CHAR = '\t';
 	
-	public static final String WINDOWS_FILESEPARATOR = "\\";
-	public static final String LINUX_FILESEPARATOR = "/";
+	public static final String W_FILESEPARATOR = "\\";
+	public static final String L_FILESEPARATOR = "/";
 	
 	public static final String SEMICOLON_TOKEN = ";";
 	public static final String PIPE_TOKEN = "|";
-	public static final String INPUTREDIRECTION_TOKEN = "<";
-	public static final String OUTPUTREDIRECTION_TOKEN = ">";
+	public static final String IN_REIO_TOKEN = "<";
+	public static final String OUT_REIO_TOKEN = ">";
 	public static final String NEWLINE = String.format("%n");
 	public static final String WHITESPACE = " ";
 	public static final String WHITESPACEREGEX = String.format("[ \t]");

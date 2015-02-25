@@ -8,9 +8,9 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class SequenceCommand implements Command {
-	//Attributes
-	Vector <Command> commands = new Vector<Command>();
-	
+	// Attributes
+	Vector<Command> commands = new Vector<Command>();
+
 	@Override
 	public void evaluate(InputStream stdin, OutputStream stdout)
 			throws AbstractApplicationException, ShellException {
@@ -22,16 +22,17 @@ public class SequenceCommand implements Command {
 
 	@Override
 	public void terminate() {
+		//terminate seq command
 	}
-	
-	public void addCommand (Command command) {
+
+	public void addCommand(Command command) {
 		commands.add(command);
 	}
-	
+
 	public Command getCommand(int index) {
 		return commands.get(index);
 	}
-	
+
 	public int getCommandSize() {
 		return this.commands.size();
 	}

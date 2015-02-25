@@ -25,63 +25,73 @@ import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
 
 public class CommandTest {
 
-	InputStream inputStream;
-	OutputStream outputStream;
+	private static final String ARG1 = "Arg1";
+	
+	private InputStream inputStream;
+	private OutputStream outputStream;
+	private Vector<String> args;
 	
 	@BeforeClass
 	public static void intiEnvironment() {
-		//initialize apps in environment
+		// initialize apps in environment
 		Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_LS, new LsCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO, new EchoCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_CAT, new CatCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD, new HeadCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_TAIL, new TailCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_PWD, new PwdCommand());
-		Environment.nameAppMaps.put(Configurations.APPNAME_FIND, new FindCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_ECHO,
+				new EchoCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_CAT,
+				new CatCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_HEAD,
+				new HeadCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_TAIL,
+				new TailCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_PWD,
+				new PwdCommand());
+		Environment.nameAppMaps.put(Configurations.APPNAME_FIND,
+				new FindCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_WC, new WcCommand());
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
 		this.inputStream = System.in;
 		this.outputStream = System.out;
+		args = new Vector<String>();
 	}
 
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	//expect no throw
 	@Test
-	public void callCommandEvaluate() throws AbstractApplicationException, ShellException {
-		Vector<String> args = new Vector<String>();
-		args.add("arg1");
+	public void callCommandEvaluate() throws AbstractApplicationException,
+			ShellException {
+		// expect no throw
+		args.add(ARG1);
 		CallCommand callCmd = new CallCommand("echo", null, null, args);
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}
 
-	@Test (expected = Exception.class)
-	public void callCommandInvalidAppName() throws AbstractApplicationException, ShellException {
-		Vector<String> args = new Vector<String>();
-		args.add("arg1");
-		CallCommand callCmd = new CallCommand("invalidAppName", null, null, args);
+	@Test(expected = Exception.class)
+	public void callCommandInvalidAppName()
+			throws AbstractApplicationException, ShellException {
+		args.add(ARG1);
+		CallCommand callCmd = new CallCommand("invalidAppName", null, null,
+				args);
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}
-	
-	@Test (expected = Exception.class)
-	public void callCommandInvalidInputFileName() throws AbstractApplicationException, ShellException {
-		Vector<String> args = new Vector<String>();
-		args.add("arg1");
-		CallCommand callCmd = new CallCommand("invalidAppName", "wrongFileName.txt", null, args);
+
+	@Test(expected = Exception.class)
+	public void callCommandInvalidInputFileName()
+			throws AbstractApplicationException, ShellException {
+		args.add(ARG1);
+		CallCommand callCmd = new CallCommand("invalidAppName",
+				"wrongFileName.txt", null, args);
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}
-	
-	@Test (expected = Exception.class)
-	public void callCommandInvalidOutputFileName() throws AbstractApplicationException, ShellException {
-		Vector<String> args = new Vector<String>();
-		args.add("arg1");
-		CallCommand callCmd = new CallCommand("invalidAppName", null, "wrongFileName.txt", args);
+
+	@Test(expected = Exception.class)
+	public void callCommandInvalidOutputFileName()
+			throws AbstractApplicationException, ShellException {
+		args.add(ARG1);
+		CallCommand callCmd = new CallCommand("invalidAppName", null,
+				"wrongFileName.txt", args);
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}
+
 }

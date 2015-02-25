@@ -70,7 +70,7 @@ public class FindCommand implements Application {
 
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
-						Configurations.WINDOWS_FILESEPARATOR)) {
+						Configurations.W_FILESEPARATOR)) {
 			root = root.replace("\\", "\\\\");
 		}
 
@@ -103,7 +103,7 @@ public class FindCommand implements Application {
 		String globPattern = "glob:" + root + pattern;
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
-						Configurations.WINDOWS_FILESEPARATOR)) {
+						Configurations.W_FILESEPARATOR)) {
 			globPattern = globPattern.replace("\\", "\\\\");
 		}
 		final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
@@ -153,7 +153,7 @@ public class FindCommand implements Application {
 	 */
 	protected void checkErrorStatus(int error) throws FindException {
 		if (error == 1) {
-			throw new FindException(Configurations.MESSGE_ERROR_FILENOTFOUND);
+			throw new FindException(Configurations.MESSGE_E_MISSF);
 		} else if (error == 2) {
 			throw new FindException("Invalid Directory");
 		}
