@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -33,10 +34,16 @@ public class WcCommand implements Application {
 	 *            inputStream
 	 * @param stdout
 	 *            outputStream
+	 * @throws WcException 
 	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws WcException {
+		if(args.length == 0) {
+			processInputStream(stdin, stdout);
+			resetAllCounters();
+			return;
+		}
 		for (int i = 0; i < args.length; i++) {
 			if(args[i].equals("")) {
 				resetAllCounters();
@@ -64,7 +71,7 @@ public class WcCommand implements Application {
 		}
 		if (!argFlag) {
 			resetAllCounters();
-			throw new WcException("No argument(s)");
+			throw new WcException("Null stdin");
 		}
 	}
 
@@ -268,5 +275,43 @@ public class WcCommand implements Application {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws WcException 
+	 */
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws WcException {		 
+		BufferedReader bufferedReader = null;
+		String line;
+		
+		if(stdin == null) {
+			throw new WcException("Null stdin");
+		}
+		try { 
+			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+			while ((line = bufferedReader.readLine()) != null) {
+				lineCount++;
+				wordCount += line.trim().split("\\s+").length;
+				charCount += line.length() + 1;
+			} 
+			printResults("", stdout);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return;
 	}
 }
