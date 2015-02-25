@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.Vector;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -150,6 +149,8 @@ public class ParserMethodTest {
 		parser.removeQuoteTokens(input);
 	}
 
+	//Test 
+	
 	// PRIVATE HELPER METHODS
 	private void compareVectorString(Vector<String> list1, Vector<String> list2) {
 		assertEquals(list1.size(), list2.size());
