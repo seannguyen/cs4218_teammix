@@ -105,12 +105,12 @@ public class FindCommandTest {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"*");
 		assertEquals(results.size(), 3);
-		assertEquals(results.get(0), "folderParentTemp" + File.separator
-				+ "folderSub2Temp");
-		assertEquals(results.get(1), "folderParentTemp" + File.separator
-				+ "folderSubTemp");
-		assertEquals(results.get(2), "folderParentTemp" + File.separator
-				+ "tempFile.txt");
+		assertEquals(results.get(0), FOLDERPARENT + File.separator
+				+ FOLDERSUB2);
+		assertEquals(results.get(1), FOLDERPARENT + File.separator
+				+ FOLDERSUB);
+		assertEquals(results.get(2), FOLDERPARENT + File.separator
+				+ FILE);
 	}
 
 	/**
@@ -124,10 +124,10 @@ public class FindCommandTest {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"*Sub*");
 		assertEquals(results.size(), 2);
-		assertEquals(results.get(0), "folderParentTemp" + File.separator
-				+ "folderSub2Temp");
-		assertEquals(results.get(1), "folderParentTemp" + File.separator
-				+ "folderSubTemp");
+		assertEquals(results.get(0), FOLDERPARENT + File.separator
+				+ FOLDERSUB2);
+		assertEquals(results.get(1), FOLDERPARENT + File.separator
+				+ FOLDERSUB);
 
 	}
 
@@ -142,16 +142,16 @@ public class FindCommandTest {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"**");
 		assertEquals(results.size(), 5);
-		assertEquals(results.get(0), "folderParentTemp" + File.separator
-				+ "folderSub2Temp");
-		assertEquals(results.get(1), "folderParentTemp" + File.separator
-				+ "folderSub2Temp" + File.separator + "tempFileSub2.txt");
-		assertEquals(results.get(2), "folderParentTemp" + File.separator
-				+ "folderSubTemp");
-		assertEquals(results.get(3), "folderParentTemp" + File.separator
-				+ "folderSubTemp" + File.separator + "tempFileSub1.txt");
-		assertEquals(results.get(4), "folderParentTemp" + File.separator
-				+ "tempFile.txt");
+		assertEquals(results.get(0), FOLDERPARENT + File.separator
+				+ FOLDERSUB2);
+		assertEquals(results.get(1), FOLDERPARENT + File.separator
+				+ FOLDERSUB2 + File.separator + FILESUB2);
+		assertEquals(results.get(2), FOLDERPARENT + File.separator
+				+ FOLDERSUB);
+		assertEquals(results.get(3), FOLDERPARENT + File.separator
+				+ FOLDERSUB + File.separator + FILESUB1);
+		assertEquals(results.get(4), FOLDERPARENT + File.separator
+				+ FILE);
 	}
 
 	/**
@@ -165,12 +165,12 @@ public class FindCommandTest {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"**.txt");
 		assertEquals(results.size(), 3);
-		assertEquals(results.get(0), "folderParentTemp" + File.separator
-				+ "folderSub2Temp" + File.separator + "tempFileSub2.txt");
-		assertEquals(results.get(1), "folderParentTemp" + File.separator
-				+ "folderSubTemp" + File.separator + "tempFileSub1.txt");
-		assertEquals(results.get(2), "folderParentTemp" + File.separator
-				+ "tempFile.txt");
+		assertEquals(results.get(0), FOLDERPARENT + File.separator
+				+ FOLDERSUB2 + File.separator + FILESUB2);
+		assertEquals(results.get(1), FOLDERPARENT + File.separator
+				+ FOLDERSUB + File.separator + FILESUB1);
+		assertEquals(results.get(2), FOLDERPARENT + File.separator
+				+ FILE);
 	}
 
 	/**
@@ -281,13 +281,14 @@ public class FindCommandTest {
 	 * @throw FindException
 	 */
 	@Test
-	public void testValidRestricted() throws FindException {
+	public void testValidOneStar() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "*" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals(stdout.toString(), "." + File.separator + "folderSub2Temp"
-				+ Configurations.NEWLINE + "." + File.separator
-				+ "folderSubTemp" + Configurations.NEWLINE + "."
-				+ File.separator + "tempFile.txt" + Configurations.NEWLINE);
+		assertEquals("." + File.separator + FOLDERSUB2 + Configurations.NEWLINE + 
+		    "." + File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
+			"." + File.separator + FOLDERSUB + Configurations.NEWLINE +
+			"." + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
+			"." + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
 	}
 
 	/**
@@ -300,8 +301,9 @@ public class FindCommandTest {
 	public void testValidRestrictedTxt() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "*.txt" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals(stdout.toString(), "." + File.separator + "tempFile.txt"
-				+ Configurations.NEWLINE);
+		assertEquals("."+ File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
+		    "." + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
+		    "." + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
 	}
 
 	/**
@@ -314,14 +316,14 @@ public class FindCommandTest {
 	public void testValidCrossBounderies() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "**" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("." + File.separator + "folderSub2Temp"
+		assertEquals("." + File.separator + FOLDERSUB2
 				+ Configurations.NEWLINE + "." + File.separator
-				+ "folderSub2Temp" + File.separator + "tempFileSub2.txt"
+				+ FOLDERSUB2 + File.separator + FILESUB2
 				+ Configurations.NEWLINE + "." + File.separator
-				+ "folderSubTemp" + Configurations.NEWLINE + "."
-				+ File.separator + "folderSubTemp" + File.separator
-				+ "tempFileSub1.txt" + Configurations.NEWLINE + "."
-				+ File.separator + "tempFile.txt" + Configurations.NEWLINE,
+				+ FOLDERSUB + Configurations.NEWLINE + "."
+				+ File.separator + FOLDERSUB + File.separator
+				+ FILESUB1 + Configurations.NEWLINE + "."
+				+ File.separator + FILE + Configurations.NEWLINE,
 				stdout.toString());
 	}
 
@@ -335,11 +337,11 @@ public class FindCommandTest {
 	public void testValidCrossBounderiesTxt() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "**.txt" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("." + File.separator + "folderSub2Temp" + File.separator
-				+ "tempFileSub2.txt" + Configurations.NEWLINE + "."
-				+ File.separator + "folderSubTemp" + File.separator
-				+ "tempFileSub1.txt" + Configurations.NEWLINE + "."
-				+ File.separator + "tempFile.txt" + Configurations.NEWLINE,
+		assertEquals("." + File.separator + FOLDERSUB2 + File.separator
+				+ FILESUB2 + Configurations.NEWLINE + "."
+				+ File.separator + FOLDERSUB + File.separator
+				+ FILESUB1 + Configurations.NEWLINE + "."
+				+ File.separator + FILE + Configurations.NEWLINE,
 				stdout.toString());
 	}
 }

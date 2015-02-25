@@ -50,10 +50,12 @@ public class FindCommand implements Application {
 			checkNameArg(args[0]);
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
+			pattern = pattern.replace("*", "**");
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
 			root = args[0].replace("*", ".");
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
+			pattern = pattern.replace("*", "**");
 		} else {
 			throw new FindException("Invalid Arguments");
 		}
