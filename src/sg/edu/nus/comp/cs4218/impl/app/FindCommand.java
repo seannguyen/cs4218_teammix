@@ -45,17 +45,26 @@ public class FindCommand implements Application {
 			throws FindException {
 		Vector<String> results = new Vector<String>();
 		String pattern = NOTHING, root = NOTHING;
+		boolean singleFlag = false;
 		int error = 0;
 		if (args.length == 2) {
 			checkNameArg(args[0]);
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
+			if (!pattern.contains("*")) {
+			    pattern = "**" + pattern + "**";
+			    singleFlag = true;
+			}
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
 			root = args[0].replace("*", ".");
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
+			if (!pattern.contains("*")) {
+                pattern = "**" + pattern + "**";
+                singleFlag = true;
+            }
 		} else {
 			throw new FindException("Invalid Arguments");
 		}
@@ -80,7 +89,16 @@ public class FindCommand implements Application {
 			try {
 				String outString = result.replaceFirst(root, RELATIVE)
 						+ Configurations.NEWLINE;
-				stdout.write(outString.getBytes());
+				String tmd[] = outString.split("\\\\");
+				String last = tmd[tmd.length - 1];
+				if (singleFlag) {
+				  if (last.startsWith(pattern.replace("*", NOTHING)) &&
+				      last.length() == pattern.replace("*", NOTHING).length() + 2){
+				    stdout.write(outString.getBytes());
+				  }
+				} else {
+				  stdout.write(outString.getBytes());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

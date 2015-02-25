@@ -328,6 +328,21 @@ public class FindCommandTest {
 	}
 
 	/**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * Valid single exact txt file without target directory args("-name", FILESUB )
+     * 
+     * @throw FindException
+     */
+    @Test
+    public void testValidRecursiveChild() throws FindException {
+        String args[] = {"-name", FILESUB1 };
+        findCommand.run(args, stdin, stdout);
+        assertEquals("." + File.separator + FOLDERPARENT + File.separator +
+                 FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE ,
+                stdout.toString());
+    }
+    
+	/**
 	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
 	 * Valid restricted search args {targetDirectory, -name, *.txt}
 	 * 
