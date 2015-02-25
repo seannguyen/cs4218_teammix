@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +23,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
-import sg.edu.nus.comp.cs4218.exception.TailException;
+import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
 
 public class WcCommandTest {
@@ -194,8 +196,22 @@ public class WcCommandTest {
 	@Test
 	public void testNoFileNoOption() throws WcException {
 		expectedEx.expect(WcException.class);
-		expectedEx.expectMessage("No argument(s)");
+		expectedEx.expectMessage("Null stdin");
 		String[] args = {};
+		wcCommand.run(args, stdin, stdout);
+	}
+	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Wc with no file and with options
+	 * 
+	 * @throw WcException
+	 */
+	@Test
+	public void testNoFileWithOptions() throws WcException {
+		expectedEx.expect(WcException.class);
+		expectedEx.expectMessage("Null stdin");
+		String[] args = {WORD, CHAR};
 		wcCommand.run(args, stdin, stdout);
 	}
 	
@@ -508,7 +524,7 @@ public class WcCommandTest {
 	@Test
 	public void testNoFileWordCharLine() throws WcException {
 		expectedEx.expect(WcException.class);
-		expectedEx.expectMessage("No argument(s)");
+		expectedEx.expectMessage("Null stdin");
 		String[] args = {WORD, CHAR, LINE};
 		wcCommand.run(args, stdin, stdout);
 	}
@@ -585,10 +601,10 @@ public class WcCommandTest {
 	 * Test helper method getAbsolutePath
 	 * input file 
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testGetAbsolutePath() throws TailException {		
+	public void testGetAbsolutePath() throws WcException {		
 		String result = wcCommand.getAbsolutePath(FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FILE ,result);
 	}
@@ -597,10 +613,10 @@ public class WcCommandTest {
 	 * Test helper method getAbsolutePath
 	 * input file in folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testGetAbsolutePathInFolder() throws TailException {		
+	public void testGetAbsolutePathInFolder() throws WcException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTEST + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILE ,result);
 	}
@@ -609,10 +625,10 @@ public class WcCommandTest {
 	 * Test helper method getAbsolutePath
 	 * input hidden file in folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testGetAbsolutePathInFolderHiddenFile() throws TailException {		
+	public void testGetAbsolutePathInFolderHiddenFile() throws WcException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTEST + File.separator + FILEHIDE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTEST + File.separator + FILEHIDE ,result);
 	}
@@ -621,10 +637,10 @@ public class WcCommandTest {
 	 * Test helper method getAbsolutePath
 	 * input file in hidden folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testGetAbsolutePathInHiddenFolder() throws TailException {		
+	public void testGetAbsolutePathInHiddenFolder() throws WcException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILE);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILE ,result);
 	}
@@ -633,10 +649,10 @@ public class WcCommandTest {
 	 * Test helper method getAbsolutePath
 	 * input hidden file in hidden folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws TailException {		
+	public void testGetAbsolutePathInHiddenFolderHiddenFile() throws WcException {		
 		String result = wcCommand.getAbsolutePath(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
 		assertEquals(workingDir.getAbsolutePath() + File.separator + FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY ,result);
 	}
@@ -645,10 +661,10 @@ public class WcCommandTest {
 	 * Test helper method doesFileExist
 	 * input file 
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testDoesFileExist() throws TailException {
+	public void testDoesFileExist() throws WcException {
 		File file = new File(FILE);
 		Boolean result = wcCommand.doesFileExist(file);
 		assertTrue(result);
@@ -658,10 +674,10 @@ public class WcCommandTest {
 	 * Test helper method doesFileExist
 	 * input hidden file 
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testDoesFileExistHidden() throws TailException {
+	public void testDoesFileExistHidden() throws WcException {
 		File file = new File(FILEHIDEEMPTY);
 		Boolean result = wcCommand.doesFileExist(file);
 		assertTrue(result);
@@ -671,10 +687,10 @@ public class WcCommandTest {
 	 * Test helper method doesFileExist
 	 * input file that does not exist
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testDoesFileExistNoSuchFile() throws TailException {
+	public void testDoesFileExistNoSuchFile() throws WcException {
 		File file = new File("NoSuchFile.txt");
 		Boolean result = wcCommand.doesFileExist(file);
 		assertFalse(result);
@@ -685,10 +701,10 @@ public class WcCommandTest {
 	 * Test helper method doesFileExist
 	 * input folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testDoesFileExistFolder() throws TailException {
+	public void testDoesFileExistFolder() throws WcException {
 		File file = new File(FOLDERTEST);
 		Boolean result = wcCommand.doesFileExist(file);
 		assertFalse(result);
@@ -699,10 +715,10 @@ public class WcCommandTest {
 	 * Test helper method isDirectory
 	 * input folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testIsDirectory() throws TailException {
+	public void testIsDirectory() throws WcException {
 		File file = new File(FOLDERTEST);
 		Boolean result = wcCommand.isDirectory(file);
 		assertTrue(result);
@@ -713,10 +729,10 @@ public class WcCommandTest {
 	 * Test helper method isDirectory
 	 * input hidden folder
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testIsDirectoryHidden() throws TailException {
+	public void testIsDirectoryHidden() throws WcException {
 		File file = new File(FOLDERTESTHIDE);
 		Boolean result = wcCommand.isDirectory(file);
 		assertTrue(result);
@@ -726,10 +742,10 @@ public class WcCommandTest {
 	 * Test helper method isDirectory
 	 * input folder doesn not exist
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
-	public void testIsDirectoryNoSuchDirectory() throws TailException {
+	public void testIsDirectoryNoSuchDirectory() throws WcException {
 		File file = new File("NoSuchFolder");
 		Boolean result = wcCommand.isDirectory(file);
 		assertFalse(result);
@@ -739,7 +755,7 @@ public class WcCommandTest {
 	 * Test helper method processFiles three files
 	 * input 3 files
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testProcessFilesThreeFiles() throws WcException {
@@ -752,7 +768,7 @@ public class WcCommandTest {
 	 * Test helper method processFiles three files
 	 * input 2 files with no args
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testProcessFilesNoArg() throws WcException {
@@ -766,7 +782,7 @@ public class WcCommandTest {
 	 * Test helper method processFiles three files
 	 * input directorys
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testProcessFilesDirectory() throws WcException {
@@ -780,7 +796,7 @@ public class WcCommandTest {
 	 * Test helper method processFiles three files
 	 * input file does not exist
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testProcessFilesNoSuchFile() throws WcException {
@@ -794,7 +810,7 @@ public class WcCommandTest {
 	 * Test helper method printResults
 	 * input false for flags
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsAllFalse() throws WcException {
@@ -811,7 +827,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResults LINE WORD CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsLineWordChar() throws WcException {
@@ -828,7 +844,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResults LINE WORD
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsLineWord() throws WcException {
@@ -846,7 +862,7 @@ public class WcCommandTest {
 	 * Test helper method printResults LINE CHAR
 	 * input false for flags
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsLineChar() throws WcException {
@@ -864,7 +880,7 @@ public class WcCommandTest {
 	 * Test helper method printResults WORD CHAR
 	 * input false for flags
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsWordChar() throws WcException {
@@ -881,7 +897,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResults LINE
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsLine() throws WcException {
@@ -898,7 +914,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResults WORD
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsWord() throws WcException {
@@ -915,7 +931,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResults CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintResultsChar() throws WcException {
@@ -933,7 +949,7 @@ public class WcCommandTest {
 	 * Test helper method printResultsTotal
 	 * input false for flags
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsAllFalse() throws WcException {
@@ -950,7 +966,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal LINE WORD CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsLineWordChar() throws WcException {
@@ -967,7 +983,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal LINE WORD
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsLineWord() throws WcException {
@@ -984,7 +1000,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal LINE CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsLineChar() throws WcException {
@@ -1001,7 +1017,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal WORD CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsWordChar() throws WcException {
@@ -1018,7 +1034,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal LINE
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsLine() throws WcException {
@@ -1035,7 +1051,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal WORD
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsWord() throws WcException {
@@ -1052,7 +1068,7 @@ public class WcCommandTest {
 	/**
 	 * Test helper method printResultsTotal CHAR
 	 * 
-	 * @throw TailException
+	 * @throw WcException
 	 */
 	@Test
 	public void testPrintTotalResultsChar() throws WcException {
@@ -1064,5 +1080,51 @@ public class WcCommandTest {
 		wcCommand.totalCharCount = 300;
 		wcCommand.printTotalResults(stdout);
 		assertEquals("300" + TAB + "total", stdout.toString());
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input words to stdin
+	 * 
+	 * @throw WcException
+	 */
+	@Test
+	public void testProcessInputStreamWords() throws WcException {
+		stdin = new ByteArrayInputStream("Hello World".getBytes());
+		wcCommand.processInputStream(stdin, stdout);
+		//2 2 13
+		assertEquals(1, wcCommand.lineCount);
+		assertEquals(2, wcCommand.wordCount);
+		assertEquals(12, wcCommand.charCount);
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input lines of words to stdin
+	 * 
+	 * @throw WcException
+	 */
+	@Test
+	public void testprocessInputStreamLines() throws WcException {
+		stdin = new ByteArrayInputStream("Hello World\nHello\tEveryBody\nHello CS4218\n".getBytes());
+		wcCommand.processInputStream(stdin, stdout);
+		assertEquals(3, wcCommand.lineCount);
+		assertEquals(6, wcCommand.wordCount);
+		assertEquals(41, wcCommand.charCount);
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input empty stdin
+	 * 
+	 * @throw WcException
+	 */
+	@Test
+	public void testprocessInputStreamEmpty() throws WcException {
+		stdin = new ByteArrayInputStream("".getBytes());
+		wcCommand.processInputStream(stdin, stdout);
+		assertEquals(0, wcCommand.lineCount);
+		assertEquals(0, wcCommand.wordCount);
+		assertEquals(0, wcCommand.charCount);
 	}
 }
