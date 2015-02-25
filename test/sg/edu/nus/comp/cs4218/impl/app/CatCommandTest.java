@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -96,13 +98,14 @@ public class CatCommandTest {
 	@Before
 	public void setUp() throws Exception {
 		catCommand = new CatCommand();		
-		stdout = new java.io.ByteArrayOutputStream();		
+		stdout = new ByteArrayOutputStream();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		catCommand = null;
 		stdout = null;
+		stdin = null;
 	}
 	
 	@AfterClass
@@ -398,9 +401,9 @@ public class CatCommandTest {
 	@Test
 	public void testCatNoFile() throws CatException {
 		expectedEx.expect(CatException.class);
-		expectedEx.expectMessage("No argument(s)");
+		expectedEx.expectMessage("Null stdin");
 		String[] args = {};
-		catCommand.run(args, stdin, stdout);
+		catCommand.run(args, stdin, stdout);		
 	}
 	
 	/**
@@ -566,5 +569,44 @@ public class CatCommandTest {
 		File file = new File("NoSuchFolder");
 		Boolean result = catCommand.isDirectory(file);
 		assertFalse(result);
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input words to stdin
+	 * 
+	 * @throw CatException
+	 */
+	@Test
+	public void testProcessInputStreamWords() throws CatException {
+		stdin = new ByteArrayInputStream("Hello World\n".getBytes());
+		catCommand.processInputStream(stdin, stdout);
+		assertEquals("Hello World\n", stdout.toString());
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input lines of words to stdin
+	 * 
+	 * @throw CatException
+	 */
+	@Test
+	public void testprocessInputStreamLines() throws CatException {
+		stdin = new ByteArrayInputStream("Hello World\nHello\tEveryBody\nHello CS4218\n".getBytes());
+		catCommand.processInputStream(stdin, stdout);
+		assertEquals("Hello World\nHello\tEveryBody\nHello CS4218\n", stdout.toString());
+	}
+	
+	/**
+	 * Test helper method processInputStream
+	 * input empty stdin
+	 * 
+	 * @throw CatException
+	 */
+	@Test
+	public void testprocessInputStreamEmpty() throws CatException {
+		stdin = new ByteArrayInputStream("".getBytes());
+		catCommand.processInputStream(stdin, stdout);
+		assertEquals("", stdout.toString());
 	}
 }

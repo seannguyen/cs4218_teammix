@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -28,7 +29,9 @@ public class CatCommand implements Application{
 		String fileName = "";
 		
 		if(args.length == 0) {
-			throw new CatException(" " + fileName + ":" + " No argument(s)");
+			//throw new CatException(" " + fileName + ":" + " No argument(s)");
+			processInputStream(stdin, stdout);
+			return;
 		}
 	
 		for(int i = 0; i < args.length; i++) {
@@ -66,7 +69,7 @@ public class CatCommand implements Application{
                     e.printStackTrace();
                 }
 			}
-		}
+		}		
 	}
 	
 	/**
@@ -106,5 +109,41 @@ public class CatCommand implements Application{
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws CatException 
+	 */
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws CatException {		 
+		BufferedReader bufferedReader = null;
+		String line;
+		
+		if(stdin == null) {
+			throw new CatException("Null stdin");
+		}
+		try { 
+			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+			while ((line = bufferedReader.readLine()) != null) {
+				stdout.write(line.getBytes());	
+				stdout.write(String.format("%n").getBytes());
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return;
 	}
 }
