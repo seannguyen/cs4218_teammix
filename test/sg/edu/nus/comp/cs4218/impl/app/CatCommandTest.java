@@ -581,7 +581,7 @@ public class CatCommandTest {
 	public void testProcessInputStreamWords() throws CatException {
 		stdin = new ByteArrayInputStream("Hello World\n".getBytes());
 		catCommand.processInputStream(stdin, stdout);
-		assertEquals("Hello World\n", stdout.toString());
+		assertEquals("Hello World" + Configurations.NEWLINE, stdout.toString());
 	}
 	
 	/**

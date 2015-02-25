@@ -58,7 +58,7 @@ public class CallCommand implements Command {
 			if (this.inputStream != null && this.inputFile != null && this.inputFile.length() > 0) {
 				this.inputStream.close();
 			}
-			if (this.outputStream != null && this.inputFile != null && this.inputFile.length() > 0) {
+			if (this.outputStream != null && this.outputStream != null && this.outputFile.length() > 0) {
 				this.outputStream.close();
 			}
 		} catch (IOException e) {

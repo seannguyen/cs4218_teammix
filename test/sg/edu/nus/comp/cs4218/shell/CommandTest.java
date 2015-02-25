@@ -62,6 +62,15 @@ public class CommandTest {
 			ShellException {
 		// expect no throw
 		args.add(ARG1);
+		CallCommand callCmd = new CallCommand("echo", "", "", args);
+		callCmd.evaluate(this.inputStream, this.outputStream);
+	}
+	
+	@Test (expected = Exception.class)
+	public void callCommandNullIo() throws AbstractApplicationException,
+			ShellException {
+		// expect no throw
+		args.add(ARG1);
 		CallCommand callCmd = new CallCommand("echo", null, null, args);
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}

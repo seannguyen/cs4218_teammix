@@ -179,31 +179,31 @@ public class ShellTest {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
 		String result = outputStream.toString();
-		String expected = "cat:  : No argument(s)";
+		String expected = "cat: Null stdin";
 		assertEquals(expected, result);
 	}
 	
 	
 	
-//	@Test
-//	public void ioBeforeAppName()
-//			throws AbstractApplicationException, ShellException {
-//		String cmdLine = "<a.txt cat";
-//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//		shell.parseAndEvaluate(cmdLine, outputStream);
-//		String result = outputStream.toString();
-//		String expected = "this is a";
-//		assertEquals(expected, result);
-//	}
-//	
-//	@Test (expected = Exception.class)
-//	public void ioFromcmdSubstitution()
-//			throws AbstractApplicationException, ShellException {
-//		String cmdLine = "cat `cat b.txt`";
-//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//		shell.parseAndEvaluate(cmdLine, outputStream);
-//		String result = outputStream.toString();
-//		String expected = "this is a";
-//		assertEquals(expected, result);
-//	}
+	@Test
+	public void ioBeforeAppName()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "<a.txt cat";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+		String result = outputStream.toString();
+		String expected = "this is a" + Configurations.NEWLINE;
+		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void ioFromcmdSubstitution()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "cat `cat b.txt`";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+		String result = outputStream.toString();
+		String expected = "<a.txt" + Configurations.NEWLINE + Configurations.NEWLINE;
+		assertEquals(expected, result);
+	}
 }
