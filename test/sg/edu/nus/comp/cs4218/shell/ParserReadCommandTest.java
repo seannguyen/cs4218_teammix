@@ -22,7 +22,7 @@ import sg.edu.nus.comp.cs4218.impl.app.PwdCommand;
 import sg.edu.nus.comp.cs4218.impl.app.TailCommand;
 import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
 
-public class ParserFunctionalTest {
+public class ParserReadCommandTest {
 
 	private static final String APPNAME = "app";
 	private static final String TEXT1 = "abc";
@@ -398,6 +398,91 @@ public class ParserFunctionalTest {
 		compareCommands(expectedCmd, actualCmd);
 	}
 
+	//IO redirection
+	@Test
+	public void reIoNormal() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "app <a.txt >b.txt";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
+	@Test
+	public void reIoNoSpace() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "app<a.txt>b.txt";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
+	@Test
+	public void reIoBeforeAppName() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "<a.txt >b.txt app";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
+	@Test
+	public void reIoCmdSubstitute() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "app <a.txt >`echo b.txt`";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
+	@Test (expected = Exception.class)
+	public void reIoCmdSubstituteInvalidApp() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "app <a.txt >`ech b.txt`";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
+	@Test
+	public void reIoQuote() throws ShellException,
+			AbstractApplicationException {
+		String cmdLine = "app <a.txt >'b.txt'";
+
+		Vector<String> args = new Vector<String>();
+
+		SequenceCommand expectedCmd = buildSeqCommand(APPNAME, args, "b.txt", "a.txt");
+		SequenceCommand actualCmd = (SequenceCommand) parser
+				.parseCommandLine(cmdLine);
+
+		compareCommands(expectedCmd, actualCmd);
+	}
+	
 	// private helper methods
 
 	private void compareCommands(SequenceCommand cmd1, SequenceCommand cmd2) {
@@ -444,4 +529,5 @@ public class ParserFunctionalTest {
 		pipeCmd.addCommand(callCmd);
 		return seqCmd;
 	}
+
 }

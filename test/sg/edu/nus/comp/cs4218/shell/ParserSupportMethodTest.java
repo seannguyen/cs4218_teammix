@@ -22,8 +22,14 @@ import sg.edu.nus.comp.cs4218.impl.app.PwdCommand;
 import sg.edu.nus.comp.cs4218.impl.app.TailCommand;
 import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
 
-public class ParserMethodTest {
+public class ParserSupportMethodTest {
 
+	private static final String APPNAME = "app";
+	private static final String INPUT = "<a.txt";
+	private static final String INPUTFILE = "a.txt";
+	private static final String OUTPUT = ">b.txt";
+	private static final String OUTPUTFILE = "b.txt";
+	
 	Parser parser;
 
 	@BeforeClass
@@ -116,31 +122,143 @@ public class ParserMethodTest {
 
 	// Test Remove quote tokens
 	@Test
-	public void removeQuoteTokens() throws ShellException,
+	public void removeQuoteTokensSingle() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add("'abc'");
+		Vector<String> actual = parser.removeQuoteTokens(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("abc");
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void removeQuoteTokensDouble() throws ShellException,
 			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add("\"abc\"");
-		input.add("'abc'");
+		Vector<String> actual = parser.removeQuoteTokens(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("abc");
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void removeQuoteTokensBack() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
 		input.add("`abc`");
 		Vector<String> actual = parser.removeQuoteTokens(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add("abc");
-		expected.add("abc");
-		expected.add("abc");
 		compareVectorString(expected, actual);
 	}
-
+	
 	@Test
-	public void removeQuoteTokensNestedQuotes() throws ShellException,
+	public void removeQuoteTokensBackInDoubleQuote() throws ShellException,
 			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
-		input.add("\"abc `def`\"");
+		input.add("\"front`abc` back\"");
 		Vector<String> actual = parser.removeQuoteTokens(input);
 		Vector<String> expected = new Vector<String>();
-		expected.add("abc def");
+		expected.add("frontabc back");
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void removeQuoteTokensNested() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add("\"front'abc' back\"");
+		input.add("\"\"args2\"\"");
+		input.add("'front \"arg\"back'");
+		input.add("`front \"arg\" 'a'back`");
+		Vector<String> actual = parser.removeQuoteTokens(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("front'abc' back");
+		expected.add("args2");
+		expected.add("front \"arg\"back");
+		expected.add("front \"arg\" 'a'back");
 		compareVectorString(expected, actual);
 	}
 
+	//Test IO Redirection
+	@Test
+	public void ioRedirectionSimple() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add(APPNAME);
+		input.add(INPUT);
+		input.add(OUTPUT);
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add(INPUTFILE);
+		expected.add(OUTPUTFILE);
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void ioRedirectionInputOnly() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add(APPNAME);
+		input.add(INPUT);
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add(INPUTFILE);
+		expected.add("");
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void ioRedirectionOutputOnly() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add(APPNAME);
+		input.add(OUTPUT);
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("");
+		expected.add(OUTPUTFILE);
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void ioRedirectioEmptyInput() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add("");
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("");
+		expected.add("");
+		compareVectorString(expected, actual);
+	}
+	
+	@Test
+	public void ioRedirectioNoAppName() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = new Vector<String>();
+		input.add("");
+		input.add("");
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("");
+		expected.add("");
+		compareVectorString(expected, actual);
+	}
+
+	@Test (expected = Exception.class)
+	public void ioRedirectioNullInput() throws ShellException,
+			AbstractApplicationException {
+		Vector<String> input = null;
+		Vector<String> actual = parser.getIoRedirectories(input);
+		Vector<String> expected = new Vector<String>();
+		expected.add("");
+		expected.add("");
+		compareVectorString(expected, actual);
+	}
+	
 	@Test(expected = Exception.class)
 	public void removeQuoteTokensIncompleteQuote() throws ShellException,
 			AbstractApplicationException {
@@ -149,7 +267,8 @@ public class ParserMethodTest {
 		parser.removeQuoteTokens(input);
 	}
 
-	//Test 
+	//Test IO Redirection
+	
 	
 	// PRIVATE HELPER METHODS
 	private void compareVectorString(Vector<String> list1, Vector<String> list2) {

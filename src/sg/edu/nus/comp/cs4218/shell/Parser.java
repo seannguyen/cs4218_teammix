@@ -1,18 +1,6 @@
 package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -49,8 +37,9 @@ public class Parser {
 				result.add(element);
 				lastStop = i;
 			} else if (input.charAt(i) == Configurations.PIPE_TOKEN.charAt(0)
-					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN
-							.charAt(0)) {
+					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN.charAt(0)
+					|| input.charAt(i) == Configurations.IN_REIO_TOKEN.charAt(0)
+					|| input.charAt(i) == Configurations.OUT_REIO_TOKEN.charAt(0)) {
 				if (this.quoteFlags.get(i)) {
 					continue;
 				}
@@ -213,44 +202,39 @@ public class Parser {
 	protected Vector<String> getIoRedirectories(Vector<String> input)
 			throws ShellException, AbstractApplicationException {
 		String inputRedirectory = "", outputRedirectory = "";
-		// merge all IO redirection token with their directories
 		for (int i = 0; i < input.size(); i++) {
-			if (input.get(i).equals(Configurations.IN_REIO_TOKEN)
-					|| input.get(i).equals(
-							Configurations.OUT_REIO_TOKEN)
-					&& i < input.size() - 1) {
-				String mergedElement = input.get(i) + input.get(i + 1);
-				input.insertElementAt(mergedElement, i);
-				input.remove(i + 1);
-			}
-		}
-		for (int i = 0; i < input.size(); i++) {
-			if (input.get(i).startsWith(Configurations.IN_REIO_TOKEN)) {
+			if (input.get(i).equals((Configurations.IN_REIO_TOKEN))) {
 				if (inputRedirectory.length() > 0) {
 					error();
 				}
-				inputRedirectory = input.get(i);
+				if (i == input.size() - 1) {
+					input.remove(i);
+					continue;
+				}
+				inputRedirectory = input.get(i + 1);
+				input.remove(i);
 				input.remove(i);
 				inputRedirectory = substituteCommand(inputRedirectory);
-			} else if (input.get(i).startsWith(
-					Configurations.OUT_REIO_TOKEN)) {
+				i --;
+			} else if (input.get(i).equals((Configurations.OUT_REIO_TOKEN))) {
 				if (outputRedirectory.length() > 0) {
 					error();
 				}
-				outputRedirectory = input.get(i);
+				if (i == input.size() - 1) {
+					input.remove(i);
+					continue;
+				}
+				outputRedirectory = input.get(i + 1);
+				input.remove(i);
 				input.remove(i);
 				outputRedirectory = substituteCommand(outputRedirectory);
+				i --;
 			}
-		}
-		if (inputRedirectory.length() > 0) {
-			inputRedirectory = inputRedirectory.substring(1);
-		}
-		if (outputRedirectory.length() > 0) {
-			outputRedirectory = outputRedirectory.substring(1);
 		}
 		Vector<String> result = new Vector<String>();
 		result.add(inputRedirectory);
 		result.add(outputRedirectory);
+		result = removeQuoteTokens(result);
 		return result;
 	}
 
