@@ -134,12 +134,10 @@ public class LsCommandTest {
 	@Test
 	public void testZeroArg() throws LsException {
 		String args[] = {};
-		lsCommand.run(args, stdin, stdout);
 		Environment.currentDirectory = FOLDERPARENT + File.separator
-				+ FOLDERCHILD;
-		assertEquals("bin" + File.separator + "\tfolderParentTemp"
-				+ File.separator + "\tREADME.md" + "\tsrc" + File.separator
-				+ "\ttest" + File.separator + "\t", stdout.toString());
+            + FOLDERCHILD;
+		lsCommand.run(args, stdin, stdout);
+		assertEquals(FILECHILD  + "\t", stdout.toString());
 	}
 
 	/**
