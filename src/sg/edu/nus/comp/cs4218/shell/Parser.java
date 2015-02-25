@@ -80,38 +80,33 @@ public class Parser {
 		if (callLine.isEmpty()) {
 			return new CallCommand(null, null, null, null);
 		}
-		try {
-			Vector<String> elements = callLine;
-			// process IO redirection first
-			Vector<String> ioRedirectories = getIoRedirectories(elements);
-			if (elements.isEmpty()) {
-				return new CallCommand(null, null, null, null);
-			}
-
-			// then process command substitution and globing
-			elements = substituteCommand(elements);
-			Vector<String> namePart = new Vector<String>();
-			namePart.add(elements.get(0));
-			elements.remove(0);
-			namePart = removeQuoteTokens(namePart);
-			namePart = getFilesByGlob(namePart);
-			String appName = namePart.get(0);
-			namePart.remove(0);
-
-			elements = removeQuoteTokens(elements);
-			Vector<String> args = new Vector<String>();
-			if (!appName.equals(Configurations.APPNAME_FIND)) {
-				elements = getFilesByGlob(elements);
-			}
-			args.addAll(namePart);
-			args.addAll(elements);
-			CallCommand command = new CallCommand(appName,
-					ioRedirectories.get(0), ioRedirectories.get(1), args);
-			return command;
-		} catch (IOException e) {
-			error();
+		Vector<String> elements = callLine;
+		// process IO redirection first
+		Vector<String> ioRedirectories = getIoRedirectories(elements);
+		if (elements.isEmpty()) {
 			return new CallCommand(null, null, null, null);
 		}
+
+		// then process command substitution and globing
+		elements = substituteCommand(elements);
+		Vector<String> namePart = new Vector<String>();
+		namePart.add(elements.get(0));
+		elements.remove(0);
+		namePart = removeQuoteTokens(namePart);
+//			namePart = getFilesByGlob(namePart);
+		String appName = namePart.get(0);
+		namePart.remove(0);
+
+		elements = removeQuoteTokens(elements);
+		Vector<String> args = new Vector<String>();
+		if (!appName.equals(Configurations.APPNAME_FIND)) {
+//				elements = getFilesByGlob(elements);
+		}
+		args.addAll(namePart);
+		args.addAll(elements);
+		CallCommand command = new CallCommand(appName,
+				ioRedirectories.get(0), ioRedirectories.get(1), args);
+		return command;
 	}
 
 	protected Vector<String> substituteCommand(Vector<String> input)
@@ -160,60 +155,60 @@ public class Parser {
 		return result;
 	}
 
-	protected Vector<String> getFilesByGlob(Vector<String> input)
-			throws IOException {
-		for (int i = 0; i < input.size(); i++) {
-			final Vector<String> results = new Vector<String>();
-			String root = "." + File.separator;
-			Path startDir = Paths.get(root);
-			FileSystem fileSystem = FileSystems.getDefault();
-			String globPattern = "glob:" + root + input.get(i);
-			if (System.getProperty("file.separator") != null
-					&& System.getProperty("file.separator").equals(
-							Configurations.W_FILESEPARATOR)) {
-				globPattern = globPattern.replace("\\", "\\\\");
-			}
-			final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
-
-			FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
-				@Override
-				public FileVisitResult visitFile(Path file,
-						BasicFileAttributes attribs) {
-					return checkFileName(file);
-				}
-
-				@Override
-				public FileVisitResult preVisitDirectory(Path file,
-						BasicFileAttributes attribs) {
-					return checkFileName(file);
-				}
-
-				private FileVisitResult checkFileName(Path file) {
-					if (matcher.matches(file)) {
-						results.add(file.toString());
-					}
-					return FileVisitResult.CONTINUE;
-				}
-			};
-			Files.walkFileTree(startDir, matcherVisitor);
-			for (int j = 0; j < results.size(); j++) {
-				int originalLevelDeep = countOccurrences(root + input.get(i),
-						File.separator);
-				int resultLevelDeep = countOccurrences(results.get(j),
-						File.separator);
-				if (originalLevelDeep != resultLevelDeep) {
-					results.remove(j);
-					j--;
-				}
-			}
-			if (!results.isEmpty()) {
-				input.remove(i);
-				input.addAll(results);
-				i += results.size() - 1;
-			}
-		}
-		return input;
-	}
+//	protected Vector<String> getFilesByGlob(Vector<String> input)
+//			throws IOException {
+//		for (int i = 0; i < input.size(); i++) {
+//			final Vector<String> results = new Vector<String>();
+//			String root = "." + File.separator;
+//			Path startDir = Paths.get(root);
+//			FileSystem fileSystem = FileSystems.getDefault();
+//			String globPattern = "glob:" + root + input.get(i);
+//			if (System.getProperty("file.separator") != null
+//					&& System.getProperty("file.separator").equals(
+//							Configurations.W_FILESEPARATOR)) {
+//				globPattern = globPattern.replace("\\", "\\\\");
+//			}
+//			final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
+//
+//			FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
+//				@Override
+//				public FileVisitResult visitFile(Path file,
+//						BasicFileAttributes attribs) {
+//					return checkFileName(file);
+//				}
+//
+//				@Override
+//				public FileVisitResult preVisitDirectory(Path file,
+//						BasicFileAttributes attribs) {
+//					return checkFileName(file);
+//				}
+//
+//				private FileVisitResult checkFileName(Path file) {
+//					if (matcher.matches(file)) {
+//						results.add(file.toString());
+//					}
+//					return FileVisitResult.CONTINUE;
+//				}
+//			};
+//			Files.walkFileTree(startDir, matcherVisitor);
+//			for (int j = 0; j < results.size(); j++) {
+//				int originalLevelDeep = countOccurrences(root + input.get(i),
+//						File.separator);
+//				int resultLevelDeep = countOccurrences(results.get(j),
+//						File.separator);
+//				if (originalLevelDeep != resultLevelDeep) {
+//					results.remove(j);
+//					j--;
+//				}
+//			}
+//			if (!results.isEmpty()) {
+//				input.remove(i);
+//				input.addAll(results);
+//				i += results.size() - 1;
+//			}
+//		}
+//		return input;
+//	}
 
 	protected Vector<String> getIoRedirectories(Vector<String> input)
 			throws ShellException, AbstractApplicationException {
@@ -327,15 +322,15 @@ public class Parser {
 		return false;
 	}
 
-	private int countOccurrences(String input, String token) {
-		int counter = 0;
-		for (int i = 0; i < input.length(); i++) {
-			if (String.valueOf(input.charAt(i)).equals(token)) {
-				counter++;
-			}
-		}
-		return counter;
-	}
+//	private int countOccurrences(String input, String token) {
+//		int counter = 0;
+//		for (int i = 0; i < input.length(); i++) {
+//			if (String.valueOf(input.charAt(i)).equals(token)) {
+//				counter++;
+//			}
+//		}
+//		return counter;
+//	}
 
 	private void refreshParser() {
 		this.quoteFlags = new Vector<Boolean>();
