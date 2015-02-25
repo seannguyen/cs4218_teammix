@@ -82,6 +82,8 @@ public class Parser {
 		namePart.add(elements.get(0));
 		elements.remove(0);
 		namePart = removeQuoteTokens(namePart);
+		namePart = splitLine(namePart.firstElement());
+		
 //			namePart = getFilesByGlob(namePart);
 		String appName = namePart.get(0);
 		appName = appName.toLowerCase();

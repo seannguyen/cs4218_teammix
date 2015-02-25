@@ -83,6 +83,17 @@ public class ShellTest {
 		String expected = "abc";
 		assertEquals(expected, result);
 	}
+	
+	@Test
+	public void appNameFromCmdSubstitute2() throws AbstractApplicationException,
+			ShellException {
+		String cmdLine = "`cat c.txt`";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+		String result = outputStream.toString();
+		String expected = "abc";
+		assertEquals(expected, result);
+	}
 
 	@Test
 	public void appNameFromCmdSubstituteInQuote()
@@ -171,6 +182,8 @@ public class ShellTest {
 		String expected = "cat:  : No argument(s)";
 		assertEquals(expected, result);
 	}
+	
+	
 	
 //	@Test
 //	public void ioBeforeAppName()
