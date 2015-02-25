@@ -25,9 +25,7 @@ import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
 public class ParserSupportMethodTest {
 
 	private static final String APPNAME = "app";
-	private static final String INPUT = "<a.txt";
 	private static final String INPUTFILE = "a.txt";
-	private static final String OUTPUT = ">b.txt";
 	private static final String OUTPUTFILE = "b.txt";
 	
 	Parser parser;
@@ -188,8 +186,10 @@ public class ParserSupportMethodTest {
 			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add(APPNAME);
-		input.add(INPUT);
-		input.add(OUTPUT);
+		input.add(Configurations.IN_REIO_TOKEN);
+		input.add(INPUTFILE);
+		input.add(Configurations.OUT_REIO_TOKEN);
+		input.add(OUTPUTFILE);
 		Vector<String> actual = parser.getIoRedirectories(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add(INPUTFILE);
@@ -202,7 +202,8 @@ public class ParserSupportMethodTest {
 			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add(APPNAME);
-		input.add(INPUT);
+		input.add(Configurations.IN_REIO_TOKEN);
+		input.add(INPUTFILE);
 		Vector<String> actual = parser.getIoRedirectories(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add(INPUTFILE);
@@ -215,7 +216,8 @@ public class ParserSupportMethodTest {
 			AbstractApplicationException {
 		Vector<String> input = new Vector<String>();
 		input.add(APPNAME);
-		input.add(OUTPUT);
+		input.add(Configurations.OUT_REIO_TOKEN);
+		input.add(OUTPUTFILE);
 		Vector<String> actual = parser.getIoRedirectories(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add("");
