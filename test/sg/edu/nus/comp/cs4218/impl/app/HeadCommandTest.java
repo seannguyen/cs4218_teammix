@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
 
 public class HeadCommandTest {
@@ -31,9 +32,11 @@ public class HeadCommandTest {
 	final private static String INCORRECTARGMSG = "Incorrect argument(s)";
 	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
 	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
-	final private static String RESULT_10 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n";
-	final private static String RESULT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n";
-	final private static String RESULT_11 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n";
+	final private static String RESULT_SHORT = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "";
+	final private static String RESULT_10 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE;
+	final private static String RESULT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE;
+	final private static String RESULT_11 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE + "11. Compiler compliance level must be <= 1.7" + Configurations.NEWLINE;
+	final private static String RESULT_MAX = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE + "11. Compiler compliance level must be <= 1.7" + Configurations.NEWLINE + "12. END-OF-FILE" + Configurations.NEWLINE;
 	final private static String FOLDERTEST = "folderTest";
 	final private static String FOLDERTESTHIDE = ".FolderTestHide";
 	final private static String FILE = "textFile1.txt"; 
@@ -58,54 +61,55 @@ public class HeadCommandTest {
 	final private static Path PATHTOHIDDENFOLDERFILEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEEMPTY);
 	final private static Path PATHTOHIDDENFOLDERFILEHIDE = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDE);
 	final private static Path PATHTOHIDDENFOLDERFILEHIDEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
+	final private static Path[] FILESTOCREATE = {PATHTOFILEEMPTY, PATHTOFILESHORTHIDE, PATHTOFILESHORT, PATHTOFILE,
+	PATHTOFILEHIDE, PATHTOFILEHIDEEMPTY, PATHTOFOLDERFILE, PATHTOFOLDERFILEEMPTY, PATHTOFOLDERFILEHIDE, PATHTOFOLDERFILEHIDEEMPTY,
+    PATHTOHIDDENFOLDERFILE, PATHTOHIDDENFOLDERFILEEMPTY, PATHTOHIDDENFOLDERFILEHIDE, PATHTOHIDDENFOLDERFILEHIDEEMPTY};
 	private final File workingDir = new File(System.getProperty("user.dir"));
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws IOException {
-		String[] arrayOfFiles = {PATHTOFILE.toString(), PATHTOFILEHIDE.toString(), PATHTOFOLDERFILE.toString(), PATHTOFOLDERFILEHIDE.toString(), PATHTOHIDDENFOLDERFILE.toString(), PATHTOHIDDENFOLDERFILEHIDE.toString()};
-		String[] arrayOfShortFiles = {PATHTOFILESHORT.toString(), PATHTOFILESHORTHIDE.toString()};
-		Files.createDirectories(PATH);
-		Files.createDirectories(PATHHIDE);
-		try {
-			Files.createFile(PATHTOFILE);
-			Files.createFile(PATHTOFILEEMPTY);
-			Files.createFile(PATHTOFILEHIDE);
-			Files.createFile(PATHTOFILEHIDEEMPTY);
-			Files.createFile(PATHTOFILESHORT);
-			Files.createFile(PATHTOFILESHORTHIDE);
-			Files.createFile(PATHTOFOLDERFILE);
-			Files.createFile(PATHTOFOLDERFILEEMPTY);
-			Files.createFile(PATHTOFOLDERFILEHIDE);
-			Files.createFile(PATHTOFOLDERFILEHIDEEMPTY);
-			Files.createFile(PATHTOHIDDENFOLDERFILE);
-			Files.createFile(PATHTOHIDDENFOLDERFILEEMPTY);
-			Files.createFile(PATHTOHIDDENFOLDERFILEHIDE);
-			Files.createFile(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
-			
-			for(int i = 0; i < arrayOfFiles.length; i++) {
-				File file = new File(arrayOfFiles[i]);
-				FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.write(CONTENT_1);
-				bufferedWriter.close();
-			}	
-			
-			for(int i = 0; i < arrayOfShortFiles.length; i++) {
-				File file = new File(arrayOfShortFiles[i]);
-				FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.write(CONTENT_2);
-				bufferedWriter.close();
-			}
-		} catch (FileAlreadyExistsException e) {
-			System.err.println("File already exists: " + e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws IOException {
+        String[] arrayOfFiles = { PATHTOFILE.toString(), PATHTOFILEHIDE.toString(),
+        PATHTOFOLDERFILE.toString(), PATHTOFOLDERFILEHIDE.toString(),
+        PATHTOHIDDENFOLDERFILE.toString(),
+        PATHTOHIDDENFOLDERFILEHIDE.toString() };
+        String[] arrayOfShortFiles = { PATHTOFILESHORT.toString(),
+        PATHTOFILESHORTHIDE.toString() };
+        Files.createDirectories(PATH);
+        Files.createDirectories(PATHHIDE);
+        for(int i = 0; i < FILESTOCREATE.length; i++) {
+            try {
+              Files.createFile(FILESTOCREATE[i]);
+            } catch (FileAlreadyExistsException e) {
+                System.err.println("File already exists: " + e.getMessage());
+            }   
+        }
+        for (int i = 0; i < arrayOfFiles.length; i++) {
+            try {
+                File file = new File(arrayOfFiles[i]);
+                FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(CONTENT_1);
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < arrayOfShortFiles.length; i++) {
+            try {
+                File file = new File(arrayOfShortFiles[i]);
+                FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(CONTENT_2);
+                bufferedWriter.close();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+        }
+    }
 	
 	@Before
 	public void setUp() throws Exception {
@@ -121,6 +125,7 @@ public class HeadCommandTest {
 	
 	@AfterClass
 	public static void tearDownAfterClass() throws IOException {
+	  try {
 		Files.delete(PATHTOFILE);
 		Files.delete(PATHTOFILEEMPTY);
 		Files.delete(PATHTOFILEHIDE);
@@ -137,6 +142,9 @@ public class HeadCommandTest {
 		Files.delete(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
 		Files.delete(PATH);
 		Files.delete(PATHHIDE);
+	  } catch (IOException e) {
+        //e.printStackTrace(); ingore becos windows can't delete
+      }
 	}
 
 	/**
@@ -292,7 +300,7 @@ public class HeadCommandTest {
 	public void testHeadShortFile() throws HeadException {
 		String[] args = {FILESHORT};
 		headCommand.run(args, stdin, stdout);
-		assertEquals(CONTENT_2, stdout.toString());
+		assertEquals(RESULT_SHORT, stdout.toString());
 	}
 	
 	/**
@@ -305,7 +313,7 @@ public class HeadCommandTest {
 	public void testHeadShortFileHide() throws HeadException {
 		String[] args = {FILESHORTHIDE};
 		headCommand.run(args, stdin, stdout);
-		assertEquals(CONTENT_2, stdout.toString());
+		assertEquals(RESULT_SHORT, stdout.toString());
 	}
 	
 	/**
@@ -354,7 +362,7 @@ public class HeadCommandTest {
 	public void testHeadDisplayOverMaxLines() throws HeadException {
 		String[] args = {"-n", "100", FILE};
 		headCommand.run(args, stdin, stdout);
-		assertEquals(CONTENT_1, stdout.toString());
+		assertEquals(RESULT_MAX, stdout.toString());
 	}
 	
 	@Test

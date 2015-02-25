@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.exception.TailException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
 
@@ -32,7 +33,7 @@ public class WcCommandTest {
 	final private static String CHAR = "-m";
 	final private static String LINE = "-l";
 	final private static String TAB = "\t";
-	final private static String NEWLINE = "\n";
+	final private static String NEWLINE = Configurations.NEWLINE;
 	final private static String NOFILEMSG = "No such file or directory";
 	final private static String INCORRECTARGMSG = "Incorrect argument(s)";
 	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, tail, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
@@ -61,6 +62,9 @@ public class WcCommandTest {
 	final private static Path PATHTOHIDDENFOLDERFILEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEEMPTY);
 	final private static Path PATHTOHIDDENFOLDERFILEHIDE = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDE);
 	final private static Path PATHTOHIDDENFOLDERFILEHIDEEMPTY = Paths.get(FOLDERTESTHIDE + File.separator + FILEHIDEEMPTY);
+	final private static Path[] FILESTOCREATE = {PATHTOFILEEMPTY, PATHTOFILESHORTHIDE, PATHTOFILESHORT, PATHTOFILE,
+	    PATHTOFILEHIDE, PATHTOFILEHIDEEMPTY, PATHTOFOLDERFILE, PATHTOFOLDERFILEEMPTY, PATHTOFOLDERFILEHIDE, PATHTOFOLDERFILEHIDEEMPTY,
+	    PATHTOHIDDENFOLDERFILE, PATHTOHIDDENFOLDERFILEEMPTY, PATHTOHIDDENFOLDERFILEHIDE, PATHTOHIDDENFOLDERFILEHIDEEMPTY};
 	final private File workingDir = new File(System.getProperty("user.dir"));
 	final private static String TWOFILESALLOPT = "12" + TAB + "119" + TAB + "748" + TAB + FILE + NEWLINE + "12" + TAB + "119" + TAB + "748" + TAB + FILEHIDE + NEWLINE + "24" + TAB + "238" + TAB + "1496" + TAB + "total";
 	final private static String RESULTSALLOPT = "100" + TAB + "200" + TAB + "300" + TAB + "total";
@@ -74,41 +78,35 @@ public class WcCommandTest {
 		String[] arrayOfShortFiles = {PATHTOFILESHORT.toString(), PATHTOFILESHORTHIDE.toString()};
 		Files.createDirectories(PATH);
 		Files.createDirectories(PATHHIDE);
-		try {
-			Files.createFile(PATHTOFILE);
-			Files.createFile(PATHTOFILEEMPTY);
-			Files.createFile(PATHTOFILEHIDE);
-			Files.createFile(PATHTOFILEHIDEEMPTY);
-			Files.createFile(PATHTOFILESHORT);
-			Files.createFile(PATHTOFILESHORTHIDE);
-			Files.createFile(PATHTOFOLDERFILE);
-			Files.createFile(PATHTOFOLDERFILEEMPTY);
-			Files.createFile(PATHTOFOLDERFILEHIDE);
-			Files.createFile(PATHTOFOLDERFILEHIDEEMPTY);
-			Files.createFile(PATHTOHIDDENFOLDERFILE);
-			Files.createFile(PATHTOHIDDENFOLDERFILEEMPTY);
-			Files.createFile(PATHTOHIDDENFOLDERFILEHIDE);
-			Files.createFile(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
-			
-			for(int i = 0; i < arrayOfFiles.length; i++) {
-				File file = new File(arrayOfFiles[i]);
+		for(int i = 0; i < FILESTOCREATE.length; i++) {
+          try {
+                Files.createFile(FILESTOCREATE[i]);
+            } catch (FileAlreadyExistsException e) {
+                System.err.println("File already exists: " + e.getMessage());
+            }   
+        }
+		for(int i = 0; i < arrayOfFiles.length; i++) {
+			try {
+			    File file = new File(arrayOfFiles[i]);
 				FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 				bufferedWriter.write(CONTENT_1);
 				bufferedWriter.close();
-			}	
+			} catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		}	
 			
-			for(int i = 0; i < arrayOfShortFiles.length; i++) {
-				File file = new File(arrayOfShortFiles[i]);
+		for(int i = 0; i < arrayOfShortFiles.length; i++) {
+			try {
+		        File file = new File(arrayOfShortFiles[i]);
 				FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 				bufferedWriter.write(CONTENT_2);
 				bufferedWriter.close();
-			}
-		} catch (FileAlreadyExistsException e) {
-			System.err.println("File already exists: " + e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
+			} catch (IOException e) {
+	            e.printStackTrace();
+	        }
 		}
 	}
 	
@@ -126,22 +124,26 @@ public class WcCommandTest {
 	
 	@AfterClass
 	public static void tearDownAfterClass() throws IOException {
-		Files.delete(PATHTOFILE);
-		Files.delete(PATHTOFILEEMPTY);
-		Files.delete(PATHTOFILEHIDE);
-		Files.delete(PATHTOFILEHIDEEMPTY);
-		Files.delete(PATHTOFILESHORT);
-		Files.delete(PATHTOFILESHORTHIDE);
-		Files.delete(PATHTOFOLDERFILE);
-		Files.delete(PATHTOFOLDERFILEEMPTY);
-		Files.delete(PATHTOFOLDERFILEHIDE);
-		Files.delete(PATHTOFOLDERFILEHIDEEMPTY);
-		Files.delete(PATHTOHIDDENFOLDERFILE);
-		Files.delete(PATHTOHIDDENFOLDERFILEEMPTY);
-		Files.delete(PATHTOHIDDENFOLDERFILEHIDE);
-		Files.delete(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
-		Files.delete(PATH);
-		Files.delete(PATHHIDE);
+	  try {
+	      Files.delete(PATHTOFILE);
+		  Files.delete(PATHTOFILEEMPTY);
+		  Files.delete(PATHTOFILEHIDE);
+		  Files.delete(PATHTOFILEHIDEEMPTY);
+		  Files.delete(PATHTOFILESHORT);
+		  Files.delete(PATHTOFILESHORTHIDE);
+		  Files.delete(PATHTOFOLDERFILE);
+		  Files.delete(PATHTOFOLDERFILEEMPTY);
+		  Files.delete(PATHTOFOLDERFILEHIDE);
+		  Files.delete(PATHTOFOLDERFILEHIDEEMPTY);
+		  Files.delete(PATHTOHIDDENFOLDERFILE);
+		  Files.delete(PATHTOHIDDENFOLDERFILEEMPTY);
+		  Files.delete(PATHTOHIDDENFOLDERFILEHIDE);
+		  Files.delete(PATHTOHIDDENFOLDERFILEHIDEEMPTY);
+		  Files.delete(PATH);
+		  Files.delete(PATHHIDE);
+	  } catch (IOException e) {
+        //e.printStackTrace();
+      }
 	}
 
 	/**
