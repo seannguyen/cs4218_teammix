@@ -19,10 +19,12 @@ public class SimpleShell implements Shell {
 			Parser parser = new Parser();
 			Command command = parser.parseCommandLine(cmdline);
 			command.evaluate(null, stdout);
-		} catch (ShellException e) {
-			System.out.println(e.getMessage());
-		} catch (AbstractApplicationException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {
+			try {
+				stdout.write(e.getMessage().getBytes());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
