@@ -52,6 +52,9 @@ public class FindCommand implements Application {
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
+			if(!pattern.startsWith("*")) {
+				pattern = "**\\" + pattern;
+			}
 			if (!pattern.contains("*")) {
 			    pattern = "**" + pattern + "**";
 			    singleFlag = true;
@@ -61,6 +64,9 @@ public class FindCommand implements Application {
 			root = args[0].replace("*", ".");
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
+			if(!pattern.startsWith("*")) {
+				pattern = "**\\" + pattern;
+			}
 			if (!pattern.contains("*")) {
                 pattern = "**" + pattern + "**";
                 singleFlag = true;
@@ -79,22 +85,26 @@ public class FindCommand implements Application {
 
 		checkErrorStatus(error);
 
+		String splitter = "/";
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
 						Configurations.W_FILESEPARATOR)) {
 			root = root.replace("\\", "\\\\");
+			splitter = "\\\\";
 		}
 
 		for (String result : results) {
 			try {
 				String outString = result.replaceFirst(root, RELATIVE)
 						+ Configurations.NEWLINE;
-				String tmd[] = outString.split("\\\\");
+				String tmd[] = outString.split(splitter);
 				String last = tmd[tmd.length - 1];
 				if (singleFlag) {
 				  if (last.startsWith(pattern.replace("*", NOTHING)) &&
-				      last.length() == pattern.replace("*", NOTHING).length() + 2){
-				    stdout.write(outString.getBytes());
+				      last.length() == pattern.replace("*", NOTHING).length() + 2 ||
+				      last.length() == pattern.replace("*", NOTHING).length() + 1){
+					  
+					  stdout.write(outString.getBytes());
 				  }
 				} else {
 				  stdout.write(outString.getBytes());
