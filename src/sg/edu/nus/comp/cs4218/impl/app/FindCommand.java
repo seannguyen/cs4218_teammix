@@ -29,7 +29,9 @@ public class FindCommand implements Application {
 	protected final static String RELATIVE = ".";
 	protected final static String RELATIVE_INPUT = ".\\\\";
 	protected final static String FILE_SEPARATOR = "file.separator";
-
+	protected boolean singleFlag = false;
+	protected String splitter = "/";
+	protected int error = 0;
 	/**
 	 * Perform find command
 	 *
@@ -45,54 +47,29 @@ public class FindCommand implements Application {
 			throws FindException {
 		Vector<String> results = new Vector<String>();
 		String pattern = NOTHING, root = NOTHING;
-		boolean singleFlag = false;
-		int error = 0;
+		singleFlag = false;
+		error = 0;
 		if (args.length == 2) {
 			checkNameArg(args[0]);
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
-			if(!pattern.startsWith("*")) {
-				pattern = "**\\" + pattern;
-			}
-			if (!pattern.contains("*")) {
-			    pattern = "**" + pattern + "**";
-			    singleFlag = true;
-			}
+			pattern = formatPattern(pattern);
+			pattern = formatWildCard(pattern);
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
 			root = args[0].replace("*", ".");
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
-			if(!pattern.startsWith("*")) {
-				pattern = "**\\" + pattern;
-			}
-			if (!pattern.contains("*")) {
-                pattern = "**" + pattern + "**";
-                singleFlag = true;
-            }
+			pattern = formatPattern(pattern);
+			pattern = formatWildCard(pattern);
 		} else {
 			throw new FindException("Invalid Arguments");
 		}
 
-		try {
-			results = getFilesFromPattern(root, pattern);
-		} catch (IOException e) {
-			error = 1;
-		} catch (InvalidPathException e) {
-			error = 2;
-		}
-
+		results = getResults(pattern, root);
 		checkErrorStatus(error);
-
-		String splitter = "/";
-		if (System.getProperty(FILE_SEPARATOR) != null
-				&& System.getProperty(FILE_SEPARATOR).equals(
-						Configurations.W_FILESEPARATOR)) {
-			root = root.replace("\\", "\\\\");
-			splitter = "\\\\";
-		}
-
+		root = formatFileSeparator(root);
 		for (String result : results) {
 			try {
 				String outString = result.replaceFirst(root, RELATIVE)
@@ -103,7 +80,6 @@ public class FindCommand implements Application {
 				  if (last.startsWith(pattern.replace("*", NOTHING)) &&
 				      last.length() == pattern.replace("*", NOTHING).length() + 2 ||
 				      last.length() == pattern.replace("*", NOTHING).length() + 1){
-					  
 					  stdout.write(outString.getBytes());
 				  }
 				} else {
@@ -113,6 +89,71 @@ public class FindCommand implements Application {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Format root base on OS file separator
+	 * 
+	 * @param root
+	 * 			pattern matching root
+	 */
+	private String formatFileSeparator(String root) {
+		String newRoot = root;
+		if (System.getProperty(FILE_SEPARATOR) != null
+				&& System.getProperty(FILE_SEPARATOR).equals(
+						Configurations.W_FILESEPARATOR)) {
+			newRoot = root.replace("\\", "\\\\");
+			splitter = "\\\\";
+		}
+		return newRoot;
+	}
+
+	/**
+	 * Gets results from pattern matching of file names
+	 * Sets error index if error happens
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private Vector<String> getResults(String pattern, String root) {
+		Vector<String> results = new Vector<String>();
+		try {
+			results = getFilesFromPattern(root, pattern);
+		} catch (IOException e) {
+			error = 1;
+		} catch (InvalidPathException e) {
+			error = 2;
+		}
+		return results;
+	}
+
+	/**
+	 * Formats the pattern so as to recurse into directories
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private String formatPattern(String pattern) {
+		String newPattern = pattern;
+		if(!pattern.startsWith("*")) {
+			newPattern = "**\\" + pattern;
+		}
+		return newPattern;
+	}
+
+	/**
+	 * Formats the wildcard in pattern so as to allow pattern matching to work
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private String formatWildCard(String pattern) {
+		String newPattern = pattern;
+		if (!pattern.contains("*")) {
+		    newPattern = "**" + pattern + "**";
+		    singleFlag = true;
+		}
+		return newPattern;
 	}
 
 	/**
