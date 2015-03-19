@@ -48,7 +48,8 @@ public class SimpleShell implements Shell {
 				new FindCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_WC, new WcCommand());
 		Environment.nameAppMaps.put(Configurations.APPNAME_SED, new SedCommand());
-
+		Environment.nameAppMaps.put(Configurations.APPNAME_GREP, new GrepCommand());
+		
 		// setup shell
 		Scanner input = new Scanner(System.in);
 		Shell shell = new SimpleShell();
