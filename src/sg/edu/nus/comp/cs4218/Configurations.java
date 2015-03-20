@@ -38,4 +38,5 @@ public final class Configurations {
 	public static final String APPNAME_FIND = "find";
 	public static final String APPNAME_WC = "wc";
 	public static final String APPNAME_SED = "sed";
+	public static final String APPNAME_GREP = "grep";
 }

@@ -23,20 +23,14 @@ public class EchoCommand implements Application{
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws EchoException {	
 		String string;
 		if(args.length == 0) {					
-			return;
+			//processStdin();
 		} else {
 			StringBuilder stringBuilder = new StringBuilder();
 			for(int i = 0; i < args.length; i++) {
 				string = args[i];				
 				if(args[i].equals("")) {
 					return;
-				} else if(args[i].charAt(0) == '"') {
-					string = string.replaceAll("^\"|\"$", "");
-				} else if(args[i].charAt(0) == '\'') {
-					string = string.replaceAll("^\'|\'$", "");
-				} else {
-					string = string.replaceAll("\\\\", "");
-				}
+				} 
 				stringBuilder.append(string);
 				if (i != args.length) {
 					stringBuilder.append(SPACE_SEPERATOR);
@@ -48,5 +42,9 @@ public class EchoCommand implements Application{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void processStdin(InputStream stdin, OutputStream stdout) throws EchoException {
+		
 	}
 }
