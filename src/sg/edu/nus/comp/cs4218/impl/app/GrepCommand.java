@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.GrepException;
-import sg.edu.nus.comp.cs4218.exception.WcException;
 
 public class GrepCommand implements Application{
 	/**
@@ -73,12 +72,7 @@ public class GrepCommand implements Application{
 		} else if(isDirectory(file)) {							
 			throw new GrepException(" " + fileName + ":" + " Is a directory");
 		} else {
-            try {
-                String newLine = file.getName() + String.format("%n");
-                stdout.write(newLine.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           throw new GrepException(" " + fileName + ":" + " No such file or directory");
 		}
 	}
 	

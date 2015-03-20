@@ -60,14 +60,8 @@ public class CatCommand implements Application{
 			} else if(isDirectory(file)) {
 				//cat: sample/: Is a directory								
 				throw new CatException(" " + fileName + ":" + " Is a directory");
-			} else {
-			    // cat: sample.txt: No such file or directory
-                try {
-                    String newLine = file.getName() + String.format("%n");
-                    stdout.write(newLine.getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+			} else {			    
+				throw new CatException(fileName + ":" + " No such file or directory");
 			}
 		}		
 	}

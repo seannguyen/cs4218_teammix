@@ -66,7 +66,7 @@ public class GrepTest {
 
     @Test
     public void testGrepValidPatternAndNoMatchViaStdin() throws AbstractApplicationException {
-        String[] args = new String[]{"grep", "bar|z"};
+        String[] args = new String[]{"bar|z"};
         app.run(args, new ByteArrayInputStream(("adinda"   + System.lineSeparator()
                 + "riandy"   + System.lineSeparator()
                 + "sudarsan" + System.lineSeparator()
