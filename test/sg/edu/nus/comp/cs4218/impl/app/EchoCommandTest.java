@@ -63,7 +63,7 @@ public class EchoCommandTest {
 	public void testEchoWithDoubleQuotes() throws EchoException {
 		String[] args = {"\"abcdefg\"", "\"123asdfgh000\"", "\"LKJH12POI09qwe\""};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("abcdefg 123asdfgh000 LKJH12POI09qwe", stdout.toString());		
+		assertEquals("\"abcdefg\" \"123asdfgh000\" \"LKJH12POI09qwe\"", stdout.toString());		
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public class EchoCommandTest {
 	public void testEchoWithSingleQuotes() throws EchoException {
 		String[] args = {"\'abcdefg\'", "\'123asdfgh000\'", "\'LKJH12POI09qwe\'"};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("abcdefg 123asdfgh000 LKJH12POI09qwe", stdout.toString());		
+		assertEquals("\'abcdefg\' \'123asdfgh000\' \'LKJH12POI09qwe\'", stdout.toString());		
 	}
 	
 	/**
@@ -89,7 +89,7 @@ public class EchoCommandTest {
 	public void testEchoWithSingleQuotesInsideDoubleQuotes() throws EchoException {
 		String[] args = {"\"\'abcdefg\'\"", "\"123a\'sd\'fgh000\"", "\"LKJH12POI09qwe\'\'\""};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("\'abcdefg\' 123a\'sd\'fgh000 LKJH12POI09qwe\'\'", stdout.toString());		
+		assertEquals("\"\'abcdefg\'\" \"123a\'sd\'fgh000\" \"LKJH12POI09qwe\'\'\"", stdout.toString());		
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class EchoCommandTest {
 	public void testEchoWithDoubleQuotesInsideSingleQuotes() throws EchoException {
 		String[] args = {"\'\"abcdefg\"\'", "\'123a\"sd\"fgh000\'", "\'LKJH12POI09qwe\"\"\'"};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("\"abcdefg\" 123a\"sd\"fgh000 LKJH12POI09qwe\"\"", stdout.toString());		
+		assertEquals("\'\"abcdefg\"\' \'123a\"sd\"fgh000\' \'LKJH12POI09qwe\"\"\'", stdout.toString());		
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class EchoCommandTest {
 	public void testEchoWithSingleQuoteInsideDoubleQuotes() throws EchoException {
 		String[] args = {"\"\'abcdefg\"", "\"123a\'sdfgh000\"", "\"LKJH12POI09qwe\'\""};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("\'abcdefg 123a\'sdfgh000 LKJH12POI09qwe\'", stdout.toString());		
+		assertEquals("\"\'abcdefg\" \"123a\'sdfgh000\" \"LKJH12POI09qwe\'\"", stdout.toString());		
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class EchoCommandTest {
 	public void testEchoWithDoubleQuoteInsideSingleQuotes() throws EchoException {
 		String[] args = {"\'\"abcdefg\'", "\'123a\"sdfgh000\'", "\'LKJH12POI09qwe\"\'"};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("\"abcdefg 123a\"sdfgh000 LKJH12POI09qwe\"", stdout.toString());		
+		assertEquals("\'\"abcdefg\' \'123a\"sdfgh000\' \'LKJH12POI09qwe\"\'", stdout.toString());		
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class EchoCommandTest {
 	public void testEchoWithBackSlash() throws EchoException {
 		String[] args = {"\\asdfg", "zxcvb\\n", "qwerty\\"};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("asdfg zxcvbn qwerty", stdout.toString());		
+		assertEquals("\\asdfg zxcvb\\n qwerty\\", stdout.toString());		
 	}
 	
 	/**
@@ -206,6 +206,6 @@ public class EchoCommandTest {
 	public void testEchoDoubleSingleQuotesWithSpaces() throws EchoException {
 		String[] args = {"\"ASDqwert \' y09876ZXC\"", "\'ASDqwert \" y09876ZXC\'"};
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("ASDqwert \' y09876ZXC ASDqwert \" y09876ZXC", stdout.toString());		
+		assertEquals("\"ASDqwert \' y09876ZXC\" \'ASDqwert \" y09876ZXC\'", stdout.toString());		
 	}
 }
