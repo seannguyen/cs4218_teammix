@@ -2,10 +2,12 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -140,6 +142,7 @@ public class EchoCommandTest {
 	@Test
 	public void testEchoWithNoArgs() throws EchoException {
 		String[] args = {};
+		ByteArrayInputStream stdin = new ByteArrayInputStream(("").getBytes());
 		echoCommand.run(args, stdin, stdout);
 		assertEquals("", stdout.toString());		
 	}
@@ -208,4 +211,30 @@ public class EchoCommandTest {
 		echoCommand.run(args, stdin, stdout);
 		assertEquals("\"ASDqwert \' y09876ZXC\" \'ASDqwert \" y09876ZXC\'", stdout.toString());		
 	}
+	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Echo Stdin
+	 * 
+	 * @throw EchoException
+	 */
+	@Test
+	public void testEchoStdin() throws EchoException {
+		String[] args = {};
+		ByteArrayInputStream stdin = new ByteArrayInputStream(("adinda"   + System.lineSeparator()
+                + "riandy"   + System.lineSeparator()
+                + "sudarsan" + System.lineSeparator()
+                + "yuan qing").getBytes());
+		echoCommand.run(args, stdin, stdout);
+		assertEquals("adinda\nriandy\nsudarsan\nyuan qing\n", stdout.toString());
+	}
+	
+	/**
+	 * String[] args = new String[]{"bar|z"};
+        app.run(args, new ByteArrayInputStream(("adinda"   + System.lineSeparator()
+                + "riandy"   + System.lineSeparator()
+                + "sudarsan" + System.lineSeparator()
+                + "yuan qing").getBytes()), stdout);
+        Assert.assertEquals("", stdout.toString());
+	 */
 }
