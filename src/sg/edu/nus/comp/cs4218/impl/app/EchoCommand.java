@@ -1,7 +1,9 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -23,7 +25,7 @@ public class EchoCommand implements Application{
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws EchoException {	
 		String string;
 		if(args.length == 0) {					
-			//processStdin();
+			processStdin(stdin, stdout);
 		} else {
 			StringBuilder stringBuilder = new StringBuilder();
 			for(int i = 0; i < args.length; i++) {
@@ -44,7 +46,17 @@ public class EchoCommand implements Application{
 		}
 	}
 	
-	public void processStdin(InputStream stdin, OutputStream stdout) throws EchoException {
+	public void processStdin(InputStream stdin, OutputStream stdout) throws EchoException {		
+		String line = "";
+		BufferedReader bufferedReader = null;
 		
+		try { 
+			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+			while ((line = bufferedReader.readLine()) != null) {
+				stdout.write(line.getBytes());
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
