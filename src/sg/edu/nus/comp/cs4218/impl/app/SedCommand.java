@@ -153,6 +153,7 @@ public class SedCommand implements Application {
     } else {
       splitter = replacement.substring(1, 2);
       preSplitter = splitter;
+      //\.[]{}()*+-?^$|
       if ("|".equals(splitter) || "\\".equals(splitter) || "$".equals(splitter)
           || ".".equals(splitter) || "[".equals(splitter) || "]".equals(splitter)
           || "{".equals(splitter) || "}".equals(splitter) || "*".equals(splitter)

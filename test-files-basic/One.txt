@@ -1,5 +1,0 @@
-This is one.txt
-Not two.txt or three.txt
-Day 1 was a long day.
-Day 2 was a short day.
-Day 56 was great.
