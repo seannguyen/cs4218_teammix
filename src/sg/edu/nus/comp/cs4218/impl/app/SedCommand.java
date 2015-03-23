@@ -66,7 +66,7 @@ public class SedCommand implements Application {
           processSed(stdout, file, args[0]);
           if(i != args.length - 1) {
             try {
-              stdout.write((Configurations.NEWLINE).getBytes());
+              stdout.write((Configurations.NEWLINE + Configurations.NEWLINE).getBytes());
             } catch (IOException e) {
               e.printStackTrace();
             }
@@ -84,7 +84,6 @@ public class SedCommand implements Application {
               stdout.write((Configurations.NEWLINE + Configurations.NEWLINE).getBytes());
             }
           } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           }
         }
@@ -147,17 +146,34 @@ public class SedCommand implements Application {
    * @throws SedException
    */
   boolean validateReplacement(String replacement) throws SedException {
+    String preSplitter = "";
+    Boolean specSplitter = false;
     if (replacement.length() < 2) {
       throw new SedException(replacement + MSG);
     } else {
       splitter = replacement.substring(1, 2);
-      if ("|".equals(splitter)) {
-        splitter = "[^a-zA-Z0-9_\\[\\]\\-]";
+      preSplitter = splitter;
+      //\.[]{}()*+-?^$|
+      if ("|".equals(splitter) || "\\".equals(splitter) || "$".equals(splitter)
+          || ".".equals(splitter) || "[".equals(splitter) || "]".equals(splitter)
+          || "{".equals(splitter) || "}".equals(splitter) || "*".equals(splitter)
+          || "+".equals(splitter) || "-".equals(splitter) || "?".equals(splitter)
+          || "^".equals(splitter)) {
+        specSplitter = true;
+        splitter = "\\" + splitter;
       }
     }
     String[] parts = replacement.split(splitter);
     boolean gMode = false;
     if (parts.length == 3 || parts.length == 4) {
+      if(parts.length == 3 && !specSplitter &&
+          !replacement.endsWith(splitter)) {
+        throw new SedException(replacement + MSG);
+      }
+      if(parts.length == 3 && specSplitter &&
+          !replacement.endsWith(preSplitter)) {
+        throw new SedException(replacement + MSG);
+      }
       if (!"s".equals(parts[0])) {
         throw new SedException(replacement + MSG);
       }
