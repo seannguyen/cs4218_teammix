@@ -58,6 +58,7 @@ public class LsCommand implements Application {
             printResults(stdout, files);
             if (count < numOfDirectories && !files.isEmpty()) {
               stdout.write((Configurations.NEWLINE).getBytes());
+              stdout.write((Configurations.NEWLINE).getBytes());
             } else if (count < numOfDirectories) {
               stdout.write((Configurations.NEWLINE).getBytes());
 
@@ -83,6 +84,14 @@ public class LsCommand implements Application {
 
   }
 
+  /**
+   * Helper Method to print non directory files
+   *
+   * @param args
+   *          input arguments
+   * @param stdout
+   *          outputStream
+   */
   void printNonDirectory(OutputStream stdout, String... args) {
     skipNewLine = true;
     numOfDirectories = 0;
@@ -103,6 +112,9 @@ public class LsCommand implements Application {
     printResults(stdout, nonDirectoryFiles);
   }
 
+  /**
+   * Helper Method to print newline
+   */
   void printNewLine(OutputStream stdout) {
     if (!skipNewLine) {
       String newLines = Configurations.NEWLINE + Configurations.NEWLINE;
