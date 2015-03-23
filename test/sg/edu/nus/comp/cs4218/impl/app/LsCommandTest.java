@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,14 +17,17 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.LsException;
+import sg.edu.nus.comp.cs4218.exception.SedException;
 
 public class LsCommandTest {
 	private LsCommand lsCommand;
@@ -91,18 +95,20 @@ public class LsCommandTest {
 	 * Tests the helper method for getting the file list
 	 * 
 	 * @throws IOException
+	 * @throws LsException 
 	 */
 	@Test
-	public void testGetFiles() throws IOException {
+	public void testGetFiles() throws IOException, LsException {
 		List<File> files = lsCommand.getFiles(new File(FOLDERPARENT));
 		assertEquals(files.size(), 4);
 	}
 
 	/**
 	 * Tests helper convert list of files to string
+	 * @throws LsException 
 	 */
 	@Test
-	public void testConvertFilesToString() {
+	public void testConvertFilesToString() throws LsException {
 		List<File> files = lsCommand.getFiles(new File(FOLDERPARENT));
 		String converted = lsCommand.convertFilesToString(files);
 		assertTrue(
@@ -113,17 +119,38 @@ public class LsCommandTest {
 
 	/**
 	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
-	 * list files with 2 args (more than 1)
-	 * 
-	 * @throws LsException
-	 */
+	 * list files with 2 txt args (more than 1) one of with a . infront
+     */
 	@Test
 	public void testTwoArgs() throws LsException {
-		expectedEx.expect(LsException.class);
-		expectedEx.expectMessage("Invalid arguments");
-		String args[] = { "src", "test" };
+		String args[] = { "test-files-basic" + System.getProperty("file.separator") 
+		    + "One.txt", "test-files-basic"+ System.getProperty("file.separator") 
+		    + ".Two.txt" };
+		String expected = "One.txt\t";
+		
+		stdout = new ByteArrayOutputStream();
 		lsCommand.run(args, stdin, stdout);
+		Assert.assertEquals(expected, stdout.toString());
 	}
+	
+	/**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * list files with 2 txt args 2 folder args (more than 1) 2 files with . infront
+     */
+    @Test
+    public void testFourArgs() throws LsException {
+        String args[] = { "test-files-basic" + System.getProperty("file.separator") 
+            + "One.txt", "test-files-basic"+ System.getProperty("file.separator") 
+            + ".Two.txt" , "test-files-basic"+ System.getProperty("file.separator") 
+            + ".FolderTestHide", "test-files-basic"+ System.getProperty("file.separator") 
+            + "NormalFolder"};
+        String expected = "One.txt\t" + System.lineSeparator() + System.lineSeparator()
+            + "NormalFolder:";
+        
+        stdout = new ByteArrayOutputStream();
+        lsCommand.run(args, stdin, stdout);
+        Assert.assertEquals(expected, stdout.toString());
+    }
 
 	/**
 	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
@@ -153,4 +180,42 @@ public class LsCommandTest {
 		assertEquals(FILECHILD + "\t", stdout.toString());
 	}
 
+	 /**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * list files at missing directory file
+     * 
+     * @throws LsException
+     */
+    @Test(expected = LsException.class)
+    public void testMissingDirectory() throws LsException {
+        String args[] = { "Foo" };
+        lsCommand.run(args, stdin, stdout);
+    }
+    
+    /**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * list files at non directory file
+     * 
+     * @throws LsException
+     */
+    @Test(expected = LsException.class)
+    public void testNonDirectory() throws LsException {
+        String args[] = { "test-files-basic" + File.separator + "One.txt"};
+        lsCommand.run(args, stdin, stdout);
+    }
+    
+    /**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * list files at . directory file
+     * 
+     * @throws LsException
+     */
+    @Test
+    public void testDotDirectory() throws LsException {
+        String args[] = { "test-files-basic" + File.separator + ".FolderTestHide"};
+        lsCommand.run(args, stdin, stdout);
+        String expected = "textFile1.txt\ttextFile2.txt\t";
+        Assert.assertEquals(expected, stdout.toString());
+    }
+	
 }

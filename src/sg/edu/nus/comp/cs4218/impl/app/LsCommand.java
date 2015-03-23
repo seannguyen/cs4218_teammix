@@ -36,12 +36,12 @@ public class LsCommand implements Application {
     if (args.length > 1) {
       int count = 0;
       printNonDirectory(stdout, args);
-      printNewLine(stdout);
       for (String arg : args) {
         File targetDirectory = new File(arg);
         try {
           files = getFiles(targetDirectory);
           if (isDirectory(targetDirectory)) {
+            printNewLine(stdout);
             count++;
           }
           if (!targetDirectory.getName().startsWith(".") && files != null) {
@@ -123,6 +123,7 @@ public class LsCommand implements Application {
       } catch (IOException e) {
         e.printStackTrace();
       }
+      skipNewLine = true;
     }
   }
 
