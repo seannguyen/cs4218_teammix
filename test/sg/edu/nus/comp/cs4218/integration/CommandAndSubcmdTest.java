@@ -1,4 +1,4 @@
-package sg.edu.nus.comp.cs4218.intergration;
+package sg.edu.nus.comp.cs4218.integration;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,7 +104,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `echo \"test-files-basic\"`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "NormalFolder\\\tOne.txt\t";
+      String expected = "NormalFolder" + File.separator + "\tOne.txt\t";
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -120,9 +120,9 @@ public class CommandAndSubcmdTest {
   @Test
   public void testLsAndFind2()
           throws AbstractApplicationException, ShellException {
-      String input = "ls `find test-files-basic -name .FolderTestHide`";
+      String input = "ls `find test-files-basic -name .HideFolder`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "textFile1.txt\ttextFile2.txt\t";
+      String expected = "ls: No such file or directory";
       Assert.assertEquals(expected, stdout.toString());
   }
   

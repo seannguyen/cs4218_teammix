@@ -213,7 +213,7 @@ public class LsCommandTest {
      */
     @Test
     public void testDotDirectory() throws LsException {
-        String args[] = { "test-files-basic" + File.separator + ".FolderTestHide"};
+        String args[] = { "test-files-basic" + File.separator + ".HideFolder"};
         lsCommand.run(args, stdin, stdout);
         String expected = "textFile1.txt\ttextFile2.txt\t";
         Assert.assertEquals(expected, stdout.toString());

@@ -128,11 +128,11 @@ public class SedCommandTest {
             throws AbstractApplicationException {
         String replacement = "s" + "/" + "[5-6]"
                 + "/" + "java" + "/" + "g";
-        args = new String[] { replacement , "test-files-basic" + File.separator + ".FolderTestHide"
+        args = new String[] { replacement , "test-files-basic" + File.separator + ".HideFolder"
             ,"test-files-basic" + File.separator + "One.txt"
             , "test-files-basic" + File.separator + "NormalFolder"
             , "test-files-basic" + File.separator + ".Two.txt"};
-        String expected = ".FolderTestHide: Is a directory" + System.lineSeparator() + 
+        String expected = ".HideFolder: Is a directory" + System.lineSeparator() + 
                 System.lineSeparator() + 
                 "One.txt:" + System.lineSeparator() +
                 "This is one.txt" + System.lineSeparator() +
