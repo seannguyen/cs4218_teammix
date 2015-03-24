@@ -37,7 +37,7 @@ public class LsCommand implements Application {
       int count = 0;
       printNonDirectory(stdout, args);
       for (String arg : args) {
-        File targetDirectory = new File(arg);
+        File targetDirectory = new File(arg.replaceAll(Configurations.NEWLINE, ""));
         try {
           files = getFiles(targetDirectory);
           if (isDirectory(targetDirectory)) {
@@ -71,7 +71,7 @@ public class LsCommand implements Application {
         }
       }
     } else if (args.length == 1) {
-      File targetDirectory = new File(args[0]);
+      File targetDirectory = new File(args[0].replaceAll(Configurations.NEWLINE, ""));
       files = getFiles(targetDirectory);
       printResults(stdout, files);
     } else if (args.length == 0) {
@@ -97,7 +97,7 @@ public class LsCommand implements Application {
     numOfDirectories = 0;
     List<File> nonDirectoryFiles = new ArrayList<File>();
     for (String arg : args) {
-      File file = new File(arg);
+      File file = new File(arg.replaceAll(Configurations.NEWLINE, ""));
       if (Files.exists(file.toPath())) {
         if (isDirectory(file)) {
           numOfDirectories++;
@@ -157,7 +157,7 @@ public class LsCommand implements Application {
         File[] files = directory.listFiles();
         return Arrays.asList(files);
       } else {
-        throw new LsException(directory.getName() + ": Not a directory");
+        throw new LsException(directory.getName().replace(Configurations.NEWLINE, "") + ": Not a directory");
       }
     } else {
       throw new LsException("No such file or directory");

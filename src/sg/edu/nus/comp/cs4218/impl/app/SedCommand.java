@@ -23,6 +23,7 @@ public class SedCommand implements Application {
   protected final static String NOTHING = "";
   protected String splitter = "/";
   protected final String MSG = " :" + " replacement expression invalid";
+  protected int lines = 0;
 
   /**
    * Perform Sed command
@@ -44,44 +45,51 @@ public class SedCommand implements Application {
     } else if (args.length == 1) {
       processInputStream(stdin, stdout, args[0]);
     } else if (args.length == 2) {
-      fileName = getAbsolutePath(args[1]);
+      fileName = getAbsolutePath(args[1].replace(Configurations.NEWLINE, ""));
       File file = new File(fileName);
       if (doesFileExist(file)) {
-        processSed(stdout, file, args[0]);
+        processSed(stdout, file, args[0].replace(Configurations.NEWLINE, ""));
       } else if (isDirectory(file)) {
-        throw new SedException(" " + file.getName() + ":" + " Is a directory");
+        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Is a directory");
       } else {
-        throw new SedException(" " + file.getName() + ":" + " Does not exist");
+        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Does not exist");
       }
     } else if (args.length > 2) {
       for (int i = 1; i < args.length; i++) {
-        fileName = getAbsolutePath(args[i]);
+        fileName = getAbsolutePath(args[i].replace(Configurations.NEWLINE, ""));
         File file = new File(fileName);
         if (doesFileExist(file)) {
+
           try {
-            stdout.write((file.getName() + ":" + Configurations.NEWLINE).getBytes());
+            stdout.write((file.getName().replace(Configurations.NEWLINE, "") + ":" + Configurations.NEWLINE)
+                .getBytes());
           } catch (IOException e) {
             e.printStackTrace();
           }
           processSed(stdout, file, args[0]);
-          if(i != args.length - 1) {
-            try {
+          try {
+            if (i != args.length - 1 && lines <= 1) {
+              stdout.write((Configurations.NEWLINE).getBytes());
+            } else if (i != args.length - 1 && lines != 1) {
               stdout.write((Configurations.NEWLINE + Configurations.NEWLINE).getBytes());
-            } catch (IOException e) {
-              e.printStackTrace();
             }
+          } catch (IOException e) {
+            e.printStackTrace();
           }
         } else {
           try {
             if (isDirectory(file)) {
-              stdout.write((file.getName() + ": Is a directory")
-                  .getBytes());
+              stdout
+                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Is a directory")
+                      .getBytes());
             } else {
-              stdout.write((file.getName() + ": Does not exist")
+              stdout
+                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Does not exist")
                       .getBytes());
             }
-            if(i != args.length - 1) {
-              stdout.write((Configurations.NEWLINE + Configurations.NEWLINE).getBytes());
+            if (i != args.length - 1) {
+              stdout.write((Configurations.NEWLINE + Configurations.NEWLINE)
+                  .getBytes());
             }
           } catch (IOException e) {
             e.printStackTrace();
@@ -104,6 +112,7 @@ public class SedCommand implements Application {
    */
   private void processSed(OutputStream stdout, File file, String replacement)
       throws SedException {
+    lines = 0;
     boolean gMode = validateReplacement(replacement);
     String regExp = replacement.split(splitter)[1];
     String replace = replacement.split(splitter)[2];
@@ -113,6 +122,7 @@ public class SedCommand implements Application {
       Boolean isFirst = true, needNewLine = true;
       try {
         while ((line = bufferedReader.readLine()) != null) {
+          lines++;
           String newLine = line;
           if (!isFirst) {
             needNewLine = false;
@@ -153,12 +163,13 @@ public class SedCommand implements Application {
     } else {
       splitter = replacement.substring(1, 2);
       preSplitter = splitter;
-      //\.[]{}()*+-?^$|
+      // \.[]{}()*+-?^$|
       if ("|".equals(splitter) || "\\".equals(splitter) || "$".equals(splitter)
-          || ".".equals(splitter) || "[".equals(splitter) || "]".equals(splitter)
-          || "{".equals(splitter) || "}".equals(splitter) || "*".equals(splitter)
-          || "+".equals(splitter) || "-".equals(splitter) || "?".equals(splitter)
-          || "^".equals(splitter)) {
+          || ".".equals(splitter) || "[".equals(splitter)
+          || "]".equals(splitter) || "{".equals(splitter)
+          || "}".equals(splitter) || "*".equals(splitter)
+          || "+".equals(splitter) || "-".equals(splitter)
+          || "?".equals(splitter) || "^".equals(splitter)) {
         specSplitter = true;
         splitter = "\\" + splitter;
       }
@@ -166,12 +177,11 @@ public class SedCommand implements Application {
     String[] parts = replacement.split(splitter);
     boolean gMode = false;
     if (parts.length == 3 || parts.length == 4) {
-      if(parts.length == 3 && !specSplitter &&
-          !replacement.endsWith(splitter)) {
+      if (parts.length == 3 && !specSplitter && !replacement.endsWith(splitter)) {
         throw new SedException(replacement + MSG);
       }
-      if(parts.length == 3 && specSplitter &&
-          !replacement.endsWith(preSplitter)) {
+      if (parts.length == 3 && specSplitter
+          && !replacement.endsWith(preSplitter)) {
         throw new SedException(replacement + MSG);
       }
       if (!"s".equals(parts[0])) {
