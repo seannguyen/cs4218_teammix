@@ -58,6 +58,12 @@ public class FindCommand implements Application {
 			pattern = formatWildCard(pattern);
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
+			if(!doesFileExist(new File(args[0]))) {
+			  throw new FindException(args[0] + ": Does not exist");
+			}
+			if(!isDirectory(new File(args[0]))) {
+			  throw new FindException(args[0] + ": Is not a directory");
+			}
 			root = new File(args[0]).getAbsolutePath();
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
@@ -91,6 +97,32 @@ public class FindCommand implements Application {
 		}
 	}
 
+	 /**
+     * Check if given file is a directory
+     *
+     * @param file
+     *            file to be check for directory
+     */
+    public boolean isDirectory(File file) {
+        if(file.isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Checks if given file exist
+     *
+     * @param file
+     *            file to be checked
+     */
+    public boolean doesFileExist(File file) {
+        if(file.exists()) {
+            return true;
+        }
+        return false;
+    }
+    
 	/**
 	 * Format root base on OS file separator
 	 * 

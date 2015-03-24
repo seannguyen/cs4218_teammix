@@ -28,6 +28,7 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 import sg.edu.nus.comp.cs4218.exception.FindException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
+import sg.edu.nus.comp.cs4218.exception.SedException;
 
 public class FindCommandTest {
 	private FindCommand findCommand;
@@ -86,12 +87,12 @@ public class FindCommandTest {
 	
 	@AfterClass
 	public static void tearDownAfterClass() throws IOException {
-		Files.delete(PATHTOFILE);
-		Files.delete(PATHTOFILESUB);
-		Files.delete(PATHTOFILESUB2);
-		Files.delete(PATHSUB);
-		Files.delete(PATHSUB2);
-		Files.delete(Paths.get(FOLDERPARENT));
+	     Files.delete(PATHTOFILE);
+	     Files.delete(PATHTOFILESUB);
+	     Files.delete(PATHTOFILESUB2);
+	     Files.delete(PATHSUB);
+	     Files.delete(PATHSUB2);
+	     Files.delete(Paths.get(FOLDERPARENT));
 	}
 
 	/**
@@ -359,4 +360,28 @@ public class FindCommandTest {
 				+ File.separator + FILE + Configurations.NEWLINE,
 				stdout.toString());
 	}
+	
+	  /**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * Valid restricted search args {targetDirectory, -name, *.txt}
+     * 
+     * @throw FindException
+     */
+	 @Test(expected = FindException.class)
+    public void testDoesNotExistDirectory() throws FindException {
+        String args[] = { "WTF", "-name", "**.txt" };
+        findCommand.run(args, stdin, stdout);
+    }
+	 
+     /**
+     * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+     * Valid restricted search args {targetDirectory, -name, *.txt}
+     * 
+     * @throw FindException
+     */
+     @Test (expected = FindException.class)
+    public void testNonDirectoryTarget() throws FindException {
+        String args[] = {PATHTOFILE.toString(), "-name", "**.txt" };
+        findCommand.run(args, stdin, stdout);
+    }
 }
