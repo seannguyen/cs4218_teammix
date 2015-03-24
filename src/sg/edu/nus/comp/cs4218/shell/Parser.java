@@ -31,6 +31,14 @@ public class Parser {
 	}
 
 	// PROTECTED CORE METHODS
+	protected Vector<String> splitLine(Vector<String> input) throws ShellException {
+		Vector<String> result = new Vector<String>();
+		for (int i = 0; i < input.size(); i++) {
+			result.addAll(splitLine(input.get(i)));
+		}
+		return result;
+	}
+	
 
 	protected Vector<String> splitLine(String input) throws ShellException {
 		Vector<String> result = new Vector<String>();
@@ -60,6 +68,17 @@ public class Parser {
 				result.add(element);
 				result.add(token);
 				lastStop = i;
+			} else if (i < input.length() - Configurations.NEWLINE.length()) {
+				if (this.quoteFlags.get(i)) {
+					continue;
+				}
+				String consideredText = input.substring(i);
+				if (consideredText.startsWith(Configurations.NEWLINE)) {
+					String element = input.substring(lastStop + 1, i);
+					result.add(element);
+					i += Configurations.NEWLINE.length() - 1;
+					lastStop = i;
+				}
 			} else if (i == input.length() - 1) {
 				String element = input.substring(lastStop + 1, i + 1);
 				result.add(element);
@@ -101,6 +120,7 @@ public class Parser {
 		appName = appName.toLowerCase();
 		namePart.remove(0);
 
+		elements = splitLine(elements);
 		elements = removeQuoteTokens(elements);
 		Vector<String> args = new Vector<String>();
 		if (!appName.equals(Configurations.APPNAME_FIND)) {
@@ -140,9 +160,7 @@ public class Parser {
 							Command subCmd = parseCommandLine(subCommandLine);
 							ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 							subCmd.evaluate(null, outStream);
-							String evaluatedResult = Configurations.QUOTE_BACK
-									+ outStream.toString()
-									+ Configurations.QUOTE_BACK;
+							String evaluatedResult = outStream.toString();
 							String firstHalf = element.substring(0, i);
 							String secondHalf = element
 									.substring(lastQuotePos + 1);
