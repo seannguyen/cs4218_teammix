@@ -58,7 +58,7 @@ public class FindCommand implements Application {
 			pattern = formatWildCard(pattern);
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
-			root = args[0].replace("*", ".");
+			root = new File(args[0]).getAbsolutePath();
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
 			pattern = formatPattern(pattern);
@@ -136,7 +136,7 @@ public class FindCommand implements Application {
 	private String formatPattern(String pattern) {
 		String newPattern = pattern;
 		if(!pattern.startsWith("*")) {
-			newPattern = "**\\" + pattern;
+			newPattern =  "**" + pattern;
 		}
 		return newPattern;
 	}
@@ -172,11 +172,13 @@ public class FindCommand implements Application {
 		Path startDir = Paths.get(root);
 		FileSystem fileSystem = FileSystems.getDefault();
 		String globPattern = "glob:" + root + pattern;
+		
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
 						Configurations.W_FILESEPARATOR)) {
 			globPattern = globPattern.replace("\\", "\\\\");
 		}
+		//System.out.println(globPattern);
 		final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
 		FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
 			@Override

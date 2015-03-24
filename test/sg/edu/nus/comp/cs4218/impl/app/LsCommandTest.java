@@ -145,7 +145,8 @@ public class LsCommandTest {
             + ".FolderTestHide", "test-files-basic"+ System.getProperty("file.separator") 
             + "NormalFolder"};
         String expected = "One.txt\t" + System.lineSeparator() + System.lineSeparator()
-            + "NormalFolder:";
+            + "NormalFolder:" + System.lineSeparator()
+            + "Normal.txt\t";
         
         stdout = new ByteArrayOutputStream();
         lsCommand.run(args, stdin, stdout);
