@@ -26,6 +26,7 @@ public class GrepCommand implements Application{
 	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws GrepException {
+		String absFileName = "";
 		String fileName = "";
 		String pattern = "";
 		
@@ -42,16 +43,24 @@ public class GrepCommand implements Application{
 			if(pattern.equals("")) {
 				throw new GrepException("No pattern.");
 			}
-			for(int i = 1; i < args.length; i++) {
-				fileName = getAbsolutePath(args[i]);			
-				processFiles(pattern, fileName, stdin, stdout);
+			int numOfFiles = args.length - 1;
+			if(numOfFiles == 1) {
+				fileName = args[1];
+				absFileName = getAbsolutePath(fileName);
+				processFile(pattern, absFileName, fileName, stdin, stdout);
+			} else {
+				for(int i = 1; i < args.length; i++) {
+					fileName = args[i];
+					absFileName = getAbsolutePath(fileName);			
+					processFiles(pattern, absFileName, fileName, stdin, stdout);
+				}
 			}
 		}
 		
 	}
 	
-	public void processFiles(String pattern, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
-		File file = new File(fileName);	
+	public void processFile(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
+		File file = new File(absFileName);	
 		if(doesFileExist(file)) {
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -59,9 +68,10 @@ public class GrepCommand implements Application{
 				try {
 					while((line = bufferedReader.readLine()) != null) {							
 						if(line.contains(pattern)) {
-							line = line + String.format("%n");
+							line = line + String.format("%n");						
 							stdout.write(line.getBytes());						
 						}
+						
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -73,6 +83,45 @@ public class GrepCommand implements Application{
 			throw new GrepException(" " + fileName + ":" + " Is a directory");
 		} else {
            throw new GrepException(" " + fileName + ":" + " No such file or directory");
+		}
+	}
+	
+	public void processFiles(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
+		File file = new File(absFileName);	
+		if(doesFileExist(file)) {
+			try {
+				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+				String line;
+				try {
+					while((line = bufferedReader.readLine()) != null) {							
+						if(line.contains(pattern)) {
+							line = fileName + ":" + line + String.format("%n");						
+							stdout.write(line.getBytes());						
+						}
+						
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else if(isDirectory(file)) {						
+			//throw new GrepException(" " + fileName + ":" + " Is a directory");
+			String msg = "grep: " + fileName + ": Is a directory\n";
+			try {
+				stdout.write(msg.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+           //throw new GrepException(" " + fileName + ":" + " No such file or directory");
+			String msg = "grep: " + fileName + ": No such file or directory\n";
+			try {
+				stdout.write(msg.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
