@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -140,8 +141,9 @@ public class EchoCommandTest {
 	@Test
 	public void testEchoWithNoArgs() throws EchoException {
 		String[] args = {};
+		ByteArrayInputStream stdin = new ByteArrayInputStream(("").getBytes());
 		echoCommand.run(args, stdin, stdout);
-		assertEquals("", stdout.toString());		
+		assertEquals("", stdout.toString());	
 	}
 	
 	/**
@@ -207,5 +209,22 @@ public class EchoCommandTest {
 		String[] args = {"\"ASDqwert \' y09876ZXC\"", "\'ASDqwert \" y09876ZXC\'"};
 		echoCommand.run(args, stdin, stdout);
 		assertEquals("\"ASDqwert \' y09876ZXC\" \'ASDqwert \" y09876ZXC\'", stdout.toString());		
+	}
+	
+	/**
+	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
+	 * Echo stdin
+	 * 
+	 * @throw EchoException
+	 */
+	@Test
+	public void testEchoStdin() throws EchoException {
+		String[] args = {};
+		ByteArrayInputStream stdin = new ByteArrayInputStream(("adinda"   + System.lineSeparator()
+                + "riandy"   + System.lineSeparator()
+                + "sudarsan" + System.lineSeparator()
+                + "yuan qing").getBytes());
+		echoCommand.run(args, stdin, stdout);
+		assertEquals("adinda\nriandy\nsudarsan\nyuan qing\n", stdout.toString());		
 	}
 }
