@@ -59,6 +59,20 @@ public class GrepCommand implements Application{
 		
 	}
 	
+	/**
+	 * process a single file
+	 *
+	 * @param pattern
+	 *            string of pattern
+	 * @param absFileName
+	 *            absolute file name
+	 * @param fileName
+	 *            input file name      
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	public void processFile(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
 		File file = new File(absFileName);	
 		if(doesFileExist(file)) {
@@ -86,6 +100,20 @@ public class GrepCommand implements Application{
 		}
 	}
 	
+	/**
+	 * process multiple files
+	 *
+	 * @param pattern
+	 *            string of pattern
+	 * @param absFileName
+	 *            absolute file name
+	 * @param fileName
+	 *            input file name      
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
 	public void processFiles(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
 		File file = new File(absFileName);	
 		if(doesFileExist(file)) {
