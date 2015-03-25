@@ -136,11 +136,29 @@ public class CommandAndSubcmdTest {
   }
   
   @Test
+  public void testLsAndLsNegativeNotDirectory()
+          throws AbstractApplicationException, ShellException {
+      String input = "ls `ls test-files-basic" + File.separator +"One.txt`";
+      shell.parseAndEvaluate(input, stdout);
+      String expected = "ls: One.txt: Not a directory";
+      Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
   public void testLsAndFindaNonDirectory()
           throws AbstractApplicationException, ShellException {
       String input = "ls `find test-files-basic -name *.txt`";
       shell.parseAndEvaluate(input, stdout);
       String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t";
+      Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testLsAndEcho2()
+          throws AbstractApplicationException, ShellException {
+      String input = "ls `echo test-files-basic`";
+      shell.parseAndEvaluate(input, stdout);
+      String expected = "NormalFolder\\\tOne.txt\t";
       Assert.assertEquals(expected, stdout.toString());
   }
 }
