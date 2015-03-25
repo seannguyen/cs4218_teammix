@@ -70,12 +70,14 @@ public class CommandAndSubcmdTest {
   
   
   @Test
-  public void testSedAndLs()
-          throws AbstractApplicationException, ShellException {
-      String input = "sed s/txt/javax/g `ls test-files-basic`";
-      shell.parseAndEvaluate(input, stdout);
-      Assert.assertEquals("NormalFolder: Does not exist" + System.lineSeparator() + System.lineSeparator() +
-         "One.txt: Does not exist" , stdout.toString());
+  public void testSedAndLs() throws AbstractApplicationException,
+      ShellException {
+    String input = "sed s/txt/javax/g `ls test-files-basic`";
+    shell.parseAndEvaluate(input, stdout);
+    Assert
+        .assertEquals("NormalFolder: Does not exist" + System.lineSeparator()
+            + System.lineSeparator() + "One.txt: Does not exist",
+            stdout.toString());
   }
   
   @Test

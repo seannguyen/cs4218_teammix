@@ -18,6 +18,7 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
 public class LsCommand implements Application {
   protected Boolean skipNewLine = true;
   protected int numOfDirectories = 0;
+  protected Boolean multiple = false;
 
   /**
    * Perform List directory command
@@ -32,8 +33,10 @@ public class LsCommand implements Application {
   @Override
   public void run(String[] args, InputStream stdin, OutputStream stdout)
       throws LsException {
+    multiple = false;
     List<File> files = null;
     if (args.length > 1) {
+      multiple = true;
       int count = 0;
       printNonDirectory(stdout, args);
       for (String arg : args) {
@@ -52,16 +55,11 @@ public class LsCommand implements Application {
             if (!files.isEmpty() && count == numOfDirectories) {
               stdout.write((Configurations.NEWLINE).getBytes());
             }
-            if (files.isEmpty() && count < numOfDirectories) {
-              stdout.write((Configurations.NEWLINE).getBytes());
-            }
             printResults(stdout, files);
             if (count < numOfDirectories && !files.isEmpty()) {
               stdout.write((Configurations.NEWLINE).getBytes());
-              stdout.write((Configurations.NEWLINE).getBytes());
             } else if (count < numOfDirectories) {
               stdout.write((Configurations.NEWLINE).getBytes());
-
             }
           }
         } catch (IOException e) {
@@ -109,7 +107,9 @@ public class LsCommand implements Application {
     if (!nonDirectoryFiles.isEmpty()) {
       skipNewLine = false;
     }
-    printResults(stdout, nonDirectoryFiles);
+    if(!nonDirectoryFiles.isEmpty()) {
+      printResults(stdout, nonDirectoryFiles);
+    }
   }
 
   /**
@@ -117,7 +117,7 @@ public class LsCommand implements Application {
    */
   void printNewLine(OutputStream stdout) {
     if (!skipNewLine) {
-      String newLines = Configurations.NEWLINE + Configurations.NEWLINE;
+      String newLines = Configurations.NEWLINE;
       try {
         stdout.write(newLines.getBytes());
       } catch (IOException e) {
@@ -137,6 +137,7 @@ public class LsCommand implements Application {
     if (files != null) {
       try {
         stdout.write(convertFilesToString(files).getBytes());
+        stdout.write(Configurations.NEWLINE.getBytes());
       } catch (IOException e) {
         e.printStackTrace();
       }
