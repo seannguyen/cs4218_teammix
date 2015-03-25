@@ -78,7 +78,7 @@ public class FindCommand implements Application {
 		root = formatFileSeparator(root);
 		for (String result : results) {
 			try {
-				String outString = result.replaceFirst(root, RELATIVE)
+				String outString = result.replaceFirst(formatFileSeparator(Environment.currentDirectory), RELATIVE)
 						+ Configurations.NEWLINE;
 				String tmd[] = outString.split(splitter);
 				String last = tmd[tmd.length - 1];
@@ -210,7 +210,6 @@ public class FindCommand implements Application {
 						Configurations.W_FILESEPARATOR)) {
 			globPattern = globPattern.replace("\\", "\\\\");
 		}
-		//System.out.println(globPattern);
 		final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);
 		FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
 			@Override
