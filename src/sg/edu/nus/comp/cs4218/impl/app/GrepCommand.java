@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.GrepException;
 
@@ -94,9 +95,9 @@ public class GrepCommand implements Application{
 				e.printStackTrace();
 			}
 		} else if(isDirectory(file)) {							
-			throw new GrepException(" " + fileName + ":" + " Is a directory");
+			throw new GrepException(fileName + ":" + " Is a directory" + Configurations.NEWLINE);
 		} else {
-           throw new GrepException(" " + fileName + ":" + " No such file or directory");
+           throw new GrepException(fileName + ":" + " No such file or directory" + Configurations.NEWLINE);
 		}
 	}
 	
@@ -136,7 +137,7 @@ public class GrepCommand implements Application{
 			}
 		} else if(isDirectory(file)) {						
 			//throw new GrepException(" " + fileName + ":" + " Is a directory");
-			String msg = "grep: " + fileName + ": Is a directory\n";
+			String msg = "grep: " + fileName + ": Is a directory" + Configurations.NEWLINE;
 			try {
 				stdout.write(msg.getBytes());
 			} catch (IOException e) {
@@ -144,7 +145,7 @@ public class GrepCommand implements Application{
 			}
 		} else {
            //throw new GrepException(" " + fileName + ":" + " No such file or directory");
-			String msg = "grep: " + fileName + ": No such file or directory\n";
+			String msg = "grep: " + fileName + ": No such file or directory" + Configurations.NEWLINE;
 			try {
 				stdout.write(msg.getBytes());
 			} catch (IOException e) {

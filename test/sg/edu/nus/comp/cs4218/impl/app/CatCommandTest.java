@@ -294,9 +294,10 @@ public class CatCommandTest {
 	 */
 	@Test
 	public void testCatNoSuchFile() throws CatException {
+		expectedEx.expect(CatException.class);
+		expectedEx.expectMessage("No such file or directory");
 		String[] args = {"NoSuchFile.txt"};
-		catCommand.run(args, stdin, stdout);
-		assertEquals("NoSuchFile.txt" + Configurations.NEWLINE, stdout.toString());
+		catCommand.run(args, stdin, stdout);		
 	}
 	
 	/**
@@ -307,9 +308,10 @@ public class CatCommandTest {
 	 */
 	@Test
 	public void testCatNoSuchDirectory() throws CatException {
-		String[] args = {"NoSuchFile"};
+		expectedEx.expect(CatException.class);
+		expectedEx.expectMessage("No such file or directory");
+		String[] args = {"NoSuchFile"};		
 		catCommand.run(args, stdin, stdout);
-		assertEquals("NoSuchFile" + Configurations.NEWLINE, stdout.toString());
 	}
 	
 	/**
@@ -334,9 +336,10 @@ public class CatCommandTest {
 	 */
 	@Test
 	public void testCatNoSuchHiddenFile() throws CatException {
+		expectedEx.expect(CatException.class);
+		expectedEx.expectMessage("No such file or directory");
 		String[] args = {".NoSuchFile.txt"};
-		catCommand.run(args, stdin, stdout);
-		assertEquals(".NoSuchFile.txt" + Configurations.NEWLINE, stdout.toString());
+		catCommand.run(args, stdin, stdout);					
 	}
 	
 	/**
@@ -361,9 +364,10 @@ public class CatCommandTest {
 	 */
 	@Test
 	public void testCatNoSuchHiddenDirectory() throws CatException {
+		expectedEx.expect(CatException.class);
+		expectedEx.expectMessage("No such file or directory");
 		String[] args = {".NoSuchFile"};
-		catCommand.run(args, stdin, stdout);
-		assertEquals(".NoSuchFile" + Configurations.NEWLINE, stdout.toString());
+		catCommand.run(args, stdin, stdout);		
 	}
 	
 	/**
