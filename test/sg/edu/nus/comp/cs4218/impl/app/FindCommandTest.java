@@ -285,11 +285,11 @@ public class FindCommandTest {
 	public void testValidOneStar() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "*" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("." + File.separator + FOLDERSUB2 + Configurations.NEWLINE + 
-		    "." + File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
-			"." + File.separator + FOLDERSUB + Configurations.NEWLINE +
-			"." + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
-			"." + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
+		assertEquals("." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB2 + Configurations.NEWLINE + 
+		    "." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
+			"." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB + Configurations.NEWLINE +
+			"." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
+			"." + File.separator + FOLDERPARENT + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
 	}
 
 	/**
@@ -302,9 +302,9 @@ public class FindCommandTest {
 	public void testValidRestrictedTxt() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "*.txt" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("."+ File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
-		    "." + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
-		    "." + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
+		assertEquals("."+ File.separator + FOLDERPARENT + File.separator + FOLDERSUB2 + File.separator + FILESUB2 + Configurations.NEWLINE +
+		    "." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB + File.separator + FILESUB1 + Configurations.NEWLINE +
+		    "." + File.separator + FOLDERPARENT + File.separator + FILE + Configurations.NEWLINE, stdout.toString());
 	}
 
 	/**
@@ -317,14 +317,14 @@ public class FindCommandTest {
 	public void testValidCrossBounderies() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "**" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("." + File.separator + FOLDERSUB2
+		assertEquals("." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB2
 				+ Configurations.NEWLINE + "." + File.separator
-				+ FOLDERSUB2 + File.separator + FILESUB2
+				+ FOLDERPARENT + File.separator + FOLDERSUB2 + File.separator + FILESUB2
 				+ Configurations.NEWLINE + "." + File.separator
-				+ FOLDERSUB + Configurations.NEWLINE + "."
-				+ File.separator + FOLDERSUB + File.separator
+				+ FOLDERPARENT + File.separator + FOLDERSUB + Configurations.NEWLINE + "."
+				+ File.separator + FOLDERPARENT + File.separator + FOLDERSUB + File.separator
 				+ FILESUB1 + Configurations.NEWLINE + "."
-				+ File.separator + FILE + Configurations.NEWLINE,
+				+ File.separator + FOLDERPARENT + File.separator + FILE + Configurations.NEWLINE,
 				stdout.toString());
 	}
 
@@ -353,11 +353,11 @@ public class FindCommandTest {
 	public void testValidCrossBounderiesTxt() throws FindException {
 		String args[] = { FOLDERPARENT, "-name", "**.txt" };
 		findCommand.run(args, stdin, stdout);
-		assertEquals("." + File.separator + FOLDERSUB2 + File.separator
+		assertEquals("." + File.separator + FOLDERPARENT + File.separator + FOLDERSUB2 + File.separator
 				+ FILESUB2 + Configurations.NEWLINE + "."
-				+ File.separator + FOLDERSUB + File.separator
+				+ File.separator + FOLDERPARENT + File.separator + FOLDERSUB + File.separator
 				+ FILESUB1 + Configurations.NEWLINE + "."
-				+ File.separator + FILE + Configurations.NEWLINE,
+				+ File.separator + FOLDERPARENT + File.separator + FILE + Configurations.NEWLINE,
 				stdout.toString());
 	}
 	

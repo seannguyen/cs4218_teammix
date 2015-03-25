@@ -122,7 +122,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `find test-files-basic -name .HideFolder`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "ls: No such file or directory";
+      String expected = "textFile1.txt\ttextFile2.txt\t";
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -132,6 +132,15 @@ public class CommandAndSubcmdTest {
       String input = "ls `find test-files-basic -n .FolderTestHide`";
       shell.parseAndEvaluate(input, stdout);
       String expected = "find: Missing -name";
+      Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testLsAndFindaNonDirectory()
+          throws AbstractApplicationException, ShellException {
+      String input = "ls `find test-files-basic -name *.txt`";
+      shell.parseAndEvaluate(input, stdout);
+      String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t";
       Assert.assertEquals(expected, stdout.toString());
   }
 }

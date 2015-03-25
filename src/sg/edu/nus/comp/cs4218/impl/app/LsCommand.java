@@ -152,7 +152,6 @@ public class LsCommand implements Application {
    * @throws LsException
    */
   protected List<File> getFiles(File directory) throws LsException {
-	  System.out.println(directory.toPath());
     if (Files.exists(directory.toPath())) {
       if (isDirectory(directory)) {
         File[] files = directory.listFiles();
