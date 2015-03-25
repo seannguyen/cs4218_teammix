@@ -50,16 +50,18 @@ public class SedCommand implements Application {
       if (doesFileExist(file)) {
         processSed(stdout, file, args[0].replace(Configurations.NEWLINE, ""));
       } else if (isDirectory(file)) {
-        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Is a directory");
+        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Is a directory" + Configurations.NEWLINE);
       } else {
-        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Does not exist");
+        throw new SedException(" " + file.getName().replace(Configurations.NEWLINE, "") + ":" + " Does not exist" + Configurations.NEWLINE);
       }
     } else if (args.length > 2) {
       for (int i = 1; i < args.length; i++) {
+        if(args[i].replace(Configurations.NEWLINE, "").length() == 0) {
+          continue;
+        }
         fileName = getAbsolutePath(args[i].replace(Configurations.NEWLINE, ""));
         File file = new File(fileName);
         if (doesFileExist(file)) {
-
           try {
             stdout.write((file.getName().replace(Configurations.NEWLINE, "") + ":" + Configurations.NEWLINE)
                 .getBytes());
@@ -80,15 +82,15 @@ public class SedCommand implements Application {
           try {
             if (isDirectory(file)) {
               stdout
-                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Is a directory")
+                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Is a directory" + Configurations.NEWLINE)
                       .getBytes());
             } else {
               stdout
-                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Does not exist")
+                  .write((file.getName().replace(Configurations.NEWLINE, "") + ": Does not exist" + Configurations.NEWLINE)
                       .getBytes());
             }
-            if (i != args.length - 1) {
-              stdout.write((Configurations.NEWLINE + Configurations.NEWLINE)
+            if (i != args.length - 1 && !(i+1 == args.length - 1 && args[i+1].replace(Configurations.NEWLINE, "").length() == 0)) {
+              stdout.write((Configurations.NEWLINE)
                   .getBytes());
             }
           } catch (IOException e) {

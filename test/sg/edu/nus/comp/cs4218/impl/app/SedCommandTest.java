@@ -164,7 +164,6 @@ public class SedCommandTest {
 
     @Test
     public void validArgsWithRegexMatchUsingReplaceAll() throws AbstractApplicationException {
-
         args = new String[] { "s/[0-9]/2/g" };
         String expected = "The name \"scallop\" comes from the Old French escalope, which means \"shell\"." + System.lineSeparator();
         expected += "Their shells can be up to 22 centimetres (2 inches) across.";

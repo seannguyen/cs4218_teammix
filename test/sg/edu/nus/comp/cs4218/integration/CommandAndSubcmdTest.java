@@ -76,7 +76,7 @@ public class CommandAndSubcmdTest {
     shell.parseAndEvaluate(input, stdout);
     Assert
         .assertEquals("NormalFolder: Does not exist" + System.lineSeparator()
-            + System.lineSeparator() + "One.txt: Does not exist",
+            + System.lineSeparator() + "One.txt: Does not exist" + Configurations.NEWLINE,
             stdout.toString());
   }
   
@@ -106,7 +106,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `echo \"test-files-basic\"`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "NormalFolder" + File.separator + "\tOne.txt\t";
+      String expected = "NormalFolder" + File.separator + "\tOne.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -115,7 +115,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `find -name NormalFolder`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "Normal.txt\t";
+      String expected = "Normal.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -124,7 +124,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `find test-files-basic -name .HideFolder`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "textFile1.txt\ttextFile2.txt\t";
+      String expected = "textFile1.txt\ttextFile2.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -151,7 +151,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `find test-files-basic -name *.txt`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t";
+      String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -160,7 +160,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `echo test-files-basic`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "NormalFolder\\\tOne.txt\t";
+      String expected = "NormalFolder\\\tOne.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
 }
