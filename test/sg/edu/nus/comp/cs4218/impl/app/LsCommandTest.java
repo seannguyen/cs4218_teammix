@@ -130,7 +130,7 @@ public class LsCommandTest {
 		
 		stdout = new ByteArrayOutputStream();
 		lsCommand.run(args, stdin, stdout);
-		Assert.assertEquals(expected, stdout.toString());
+		Assert.assertEquals(expected + System.lineSeparator(), stdout.toString());
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class LsCommandTest {
         
         stdout = new ByteArrayOutputStream();
         lsCommand.run(args, stdin, stdout);
-        Assert.assertEquals(expected, stdout.toString());
+        Assert.assertEquals(expected + System.lineSeparator(), stdout.toString());
     }
 
 	/**
@@ -165,7 +165,7 @@ public class LsCommandTest {
 		Environment.currentDirectory = FOLDERPARENT + File.separator
             + FOLDERCHILD;
 		lsCommand.run(args, stdin, stdout);
-		assertEquals(FILECHILD  + "\t", stdout.toString());
+		assertEquals(FILECHILD  + "\t" + System.lineSeparator(), stdout.toString());
 	}
 
 	/**
@@ -178,7 +178,7 @@ public class LsCommandTest {
 	public void testTargetDirectory() throws LsException {
 		String args[] = { FOLDERPARENT + File.separator + FOLDERCHILD };
 		lsCommand.run(args, stdin, stdout);
-		assertEquals(FILECHILD + "\t", stdout.toString());
+		assertEquals(FILECHILD + "\t" + System.lineSeparator(), stdout.toString());
 	}
 
 	 /**
@@ -216,7 +216,7 @@ public class LsCommandTest {
         String args[] = { "test-files-basic" + File.separator + ".HideFolder"};
         lsCommand.run(args, stdin, stdout);
         String expected = "textFile1.txt\ttextFile2.txt\t";
-        Assert.assertEquals(expected, stdout.toString());
+        Assert.assertEquals(expected + System.lineSeparator(), stdout.toString());
     }
 	
 }
