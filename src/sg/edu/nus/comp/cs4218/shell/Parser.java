@@ -23,44 +23,37 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 public class Parser {
-	Vector<Boolean> quoteFlags = new Vector<Boolean>();
 
 	public Command parseCommandLine(String commandLine) throws ShellException,
 			AbstractApplicationException {
 		refreshParser();
-		Vector<String> preprocessedLine = splitLine(commandLine, true);
+		Vector<String> preprocessedLine = splitLine(commandLine);
 		return parseSequence(preprocessedLine);
 	}
 
 	// PROTECTED CORE METHODS
-	protected Vector<String> splitLineByApp(Vector<String> input, String appName)
+	protected Vector<String> splitLine(Vector<String> input)
 			throws ShellException {
 		Vector<String> result = new Vector<String>();
 		for (int i = 0; i < input.size(); i++) {
-			if (appName.equals(Configurations.APPNAME_CAT)
-					|| appName.equals(Configurations.APPNAME_HEAD)
-					|| appName.equals(Configurations.APPNAME_TAIL)
-					|| appName.equals(Configurations.APPNAME_ECHO)) {
-				result.addAll(splitLine(input.get(i), true));
-			} else {
-				result.addAll(splitLine(input.get(i), false));
-			}
+			result.addAll(splitLine(input.get(i)));
 		}
 		return result;
 	}
 
-	protected Vector<String> splitLine(String input, boolean isSplitBySpace)
-			throws ShellException {
+	protected Vector<String> splitLine(String input) throws ShellException {
 		Vector<String> result = new Vector<String>();
 		if (input == null || input.length() == 0) {
 			return result;
 		}
+
+		Vector<Boolean> quoteFlags = new Vector<Boolean>();
 		markQuotes(input);
 		int lastStop = -1;
 		for (int i = 0; i < input.length(); i++) {
-			if (isSplitBySpace && (input.charAt(i) == Configurations.SPACE_CHAR
-					|| input.charAt(i) == Configurations.TAB_CHAR)) {
-				if (this.quoteFlags.get(i)) {
+			if (input.charAt(i) == Configurations.SPACE_CHAR
+					|| input.charAt(i) == Configurations.TAB_CHAR) {
+				if (quoteFlags.get(i)) {
 					continue;
 				}
 				String element = input.substring(lastStop + 1, i);
@@ -73,7 +66,7 @@ public class Parser {
 							.charAt(0)
 					|| input.charAt(i) == Configurations.OUT_REIO_TOKEN
 							.charAt(0)) {
-				if (this.quoteFlags.get(i)) {
+				if (quoteFlags.get(i)) {
 					continue;
 				}
 				String element = input.substring(lastStop + 1, i);
@@ -82,7 +75,7 @@ public class Parser {
 				result.add(token);
 				lastStop = i;
 			} else if (i < input.length() - Configurations.NEWLINE.length()) {
-				if (this.quoteFlags.get(i)) {
+				if (quoteFlags.get(i)) {
 					continue;
 				}
 				String consideredText = input.substring(i);
@@ -95,6 +88,14 @@ public class Parser {
 			} else if (i == input.length() - 1) {
 				String element = input.substring(lastStop + 1, i + 1);
 				result.add(element);
+			} else if (quoteFlags.get(i)) {
+				// process sed
+				String remaining = input.substring(i);
+				String sedCommandLine = preprocessSedCommand(remaining);
+				if (sedCommandLine.length() > 0) {
+					i += sedCommandLine.length();
+					result.add(sedCommandLine);
+				}
 			}
 		}
 
@@ -126,14 +127,14 @@ public class Parser {
 		namePart.add(elements.get(0));
 		elements.remove(0);
 		namePart = removeQuoteTokens(namePart);
-		namePart = splitLine(namePart.firstElement(), true);
+		namePart = splitLine(namePart.firstElement());
 
 		namePart = getFilesByGlob(namePart);
 		String appName = namePart.get(0);
 		appName = appName.toLowerCase();
 		namePart.remove(0);
 
-		elements = splitLineByApp(elements, appName);
+		elements = splitLine(elements);
 		elements = removeQuoteTokens(elements);
 		Vector<String> args = new Vector<String>();
 		if (!appName.equals(Configurations.APPNAME_FIND)) {
@@ -329,6 +330,15 @@ public class Parser {
 	// PRIVATE HELPER METHODS (This methods are trivial, so no need test cases
 	// for this)
 
+	private String preprocessSedCommand(String input) {
+
+		if (!input.startsWith(Configurations.APPNAME_SED)) {
+			return "";
+		}
+
+		return null;
+	}
+
 	private SequenceCommand parseSequence(Vector<String> input)
 			throws ShellException, AbstractApplicationException {
 		SequenceCommand seqCommand = new SequenceCommand();
@@ -381,7 +391,6 @@ public class Parser {
 	}
 
 	private void refreshParser() {
-		this.quoteFlags = new Vector<Boolean>();
 	}
 
 	private Vector<Vector<String>> splitByToken(Vector<String> input,
@@ -427,33 +436,35 @@ public class Parser {
 		return stringBuilder.toString();
 	}
 
-	private void markQuotes(String input) throws ShellException {
+	private Vector<Boolean> markQuotes(String input) throws ShellException {
 		Stack<Character> quotes = new Stack<Character>();
+		Vector<Boolean> quoteFlags = new Vector<Boolean>();
 		for (int i = 0; i < input.length(); i++) {
 			if (isQuote(input.charAt(i))) {
 				if (quotes.isEmpty()) {
 					quotes.push(input.charAt(i));
-					this.quoteFlags.add(true);
+					quoteFlags.add(true);
 				} else if (quotes.peek() == Configurations.QUOTE_DOUBLE
 						&& input.charAt(i) == Configurations.QUOTE_BACK) {
 					quotes.push(Configurations.QUOTE_BACK);
-					this.quoteFlags.add(true);
+					quoteFlags.add(true);
 				} else if (input.charAt(i) == quotes.peek()) {
 					quotes.pop();
-					this.quoteFlags.add(true);
+					quoteFlags.add(true);
 				} else {
-					this.quoteFlags.add(false);
+					quoteFlags.add(false);
 				}
 			} else {
 				if (quotes.isEmpty()) {
-					this.quoteFlags.add(false);
+					quoteFlags.add(false);
 				} else {
-					this.quoteFlags.add(true);
+					quoteFlags.add(true);
 				}
 			}
 		}
 		if (quotes.size() != 0) {
 			error();
 		}
+		return quoteFlags;
 	}
 }

@@ -58,7 +58,7 @@ public class ParserSupportMethodTest {
 	@Test
 	public void splitLineSimple() throws ShellException {
 		String input = "app arg1 arg2";
-		Vector<String> actual = parser.splitLine(input, true);
+		Vector<String> actual = parser.splitLine(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add("app");
 		expected.add("arg1");
@@ -69,7 +69,7 @@ public class ParserSupportMethodTest {
 	@Test
 	public void splitLineNullInput() throws ShellException {
 		String input = null;
-		Vector<String> actual = parser.splitLine(input, true);
+		Vector<String> actual = parser.splitLine(input);
 		Vector<String> expected = new Vector<String>();
 		compareVectorString(expected, actual);
 	}
