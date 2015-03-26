@@ -16,6 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Stack;
 import java.util.Vector;
 
+import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;

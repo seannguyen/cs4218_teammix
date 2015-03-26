@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
