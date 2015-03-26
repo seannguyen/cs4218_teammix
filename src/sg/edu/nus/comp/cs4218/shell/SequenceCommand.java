@@ -19,6 +19,7 @@ public class SequenceCommand implements Command {
 			Command command = commands.get(i);
 			command.evaluate(stdin, stdout);
 		}
+		terminate();
 	}
 
 	@Override

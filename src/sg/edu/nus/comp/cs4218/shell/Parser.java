@@ -28,6 +28,9 @@ public class Parser {
 
 	public Command parseCommandLine(String commandLine) throws ShellException,
 			AbstractApplicationException {
+		if (commandLine == null || commandLine.length() == 0) {
+			error();
+		}
 		refreshParser();
 		Vector<String> preprocessedLine = splitLine(commandLine);
 		return parseSequence(preprocessedLine);
@@ -83,7 +86,8 @@ public class Parser {
 				i += sedCommandLine.length() - 1;
 				lastStop = i;
 				result.add(Configurations.APPNAME_SED);
-				result.add(sedCommandLine.substring(Configurations.APPNAME_SED.length()));
+				result.add(sedCommandLine.substring(Configurations.APPNAME_SED
+						.length()));
 			} else if (i < input.length() - Configurations.NEWLINE.length()) {
 				if (quoteFlags.get(i)) {
 					continue;
@@ -112,15 +116,15 @@ public class Parser {
 	}
 
 	protected CallCommand parseCall(Vector<String> callLine)
-			throws ShellException, AbstractApplicationException, IOException {
+			throws ShellException, AbstractApplicationException {
 		if (callLine.isEmpty()) {
-			return new CallCommand(null, null, null, null);
+			error();
 		}
 		Vector<String> elements = callLine;
 		// process IO redirection first
 		Vector<String> ioRedirectories = getIoRedirectories(elements);
 		if (elements.isEmpty()) {
-			return new CallCommand(null, null, null, null);
+			error();
 		}
 
 		// then process command substitution and globing
@@ -131,7 +135,11 @@ public class Parser {
 		namePart = removeQuoteTokens(namePart);
 		namePart = splitLine(namePart.firstElement());
 
-		namePart = getFilesByGlob(namePart);
+		try {
+			namePart = getFilesByGlob(namePart);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		String appName = namePart.get(0);
 		appName = appName.toLowerCase();
 		namePart.remove(0);
@@ -140,7 +148,11 @@ public class Parser {
 		elements = removeQuoteTokens(elements);
 		Vector<String> args = new Vector<String>();
 		if (!appName.equals(Configurations.APPNAME_FIND)) {
-			elements = getFilesByGlob(elements);
+			try {
+				elements = getFilesByGlob(elements);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		args.addAll(namePart);
 		args.addAll(elements);
@@ -396,12 +408,8 @@ public class Parser {
 		Vector<Vector<String>> calls = splitByToken(input,
 				Configurations.PIPE_TOKEN);
 		for (Vector<String> call : calls) {
-			try {
-				CallCommand callCmd = parseCall(call);
-				pipeCommand.addCommand(callCmd);
-			} catch (IOException e) {
-				throw new ShellException(Configurations.MESSAGE_E_PARSING);
-			}
+			CallCommand callCmd = parseCall(call);
+			pipeCommand.addCommand(callCmd);
 		}
 		return pipeCommand;
 	}

@@ -12,7 +12,6 @@ import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
-import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CatCommand;
 import sg.edu.nus.comp.cs4218.impl.app.CdCommand;
@@ -186,14 +185,75 @@ public class ShellTest {
 		assertEquals(expected, result);
 	}
 	
-	@Test
-	public void ioFromcmdSubstitution()
+	@Test (expected = ShellException.class)
+	public void emptyCommand()
 			throws AbstractApplicationException, ShellException {
-		String cmdLine = "cat `cat b.txt`";
+		String cmdLine = "";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
-		String result = outputStream.toString();
-		String expected = "<a.txt" + Configurations.NEWLINE + Configurations.NEWLINE;
-		assertEquals(expected, result);
+	}
+	
+//	@Test (expected = ShellException.class)
+//	public void emptyPipeCommand()
+//			throws AbstractApplicationException, ShellException {
+//		String cmdLine = "echo a;";
+//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//		shell.parseAndEvaluate(cmdLine, outputStream);
+//	}
+//	
+//	@Test (expected = ShellException.class)
+//	public void emptyCallCommand()
+//			throws AbstractApplicationException, ShellException {
+//		String cmdLine = "echo a|";
+//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//		shell.parseAndEvaluate(cmdLine, outputStream);
+//	}
+	
+	@Test (expected = ShellException.class)
+	public void commandWithOnlyIo()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "<a.txt > b.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+	
+	@Test (expected = ShellException.class)
+	public void multipleInputIo()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "<a.txt < b.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+	
+	@Test (expected = ShellException.class)
+	public void multipleOutputIo()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = ">a.txt > b.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+	
+	@Test
+	public void validOutputStream()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "echo abc >ramdomFile.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+	
+	@Test (expected = ShellException.class)
+	public void invalidInputFile()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "echo abc <notExist.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+	
+	@Test (expected = ShellException.class)
+	public void invalidOutputFile()
+			throws AbstractApplicationException, ShellException {
+		String cmdLine = "echo abc <no#/tExist.txt";
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		shell.parseAndEvaluate(cmdLine, outputStream);
 	}
 }

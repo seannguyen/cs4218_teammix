@@ -1,7 +1,7 @@
 package sg.edu.nus.comp.cs4218.shell;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,8 +99,8 @@ public class CallCommand implements Command {
 
 	private InputStream getInputStream(String fileName) throws ShellException {
 		try {
-			return new FileInputStream(fileName);
-		} catch (FileNotFoundException e) {
+			return new FileInputStream(Environment.currentDirectory + File.separator + fileName);
+		} catch (Exception e) {
 			error(fileName + ": " + Configurations.MESSGE_E_MISSF);
 			return null;
 		}
@@ -108,8 +108,8 @@ public class CallCommand implements Command {
 	
 	private OutputStream getOutputStream(String fileName) throws ShellException {
 		try {
-			return new FileOutputStream(fileName);
-		} catch (FileNotFoundException e) {
+			return new FileOutputStream(Environment.currentDirectory + File.separator + fileName);
+		} catch (Exception e) {
 			error(fileName + ": " + Configurations.MESSGE_E_MISSF + e.getMessage());
 			return null;
 		}
