@@ -23,6 +23,7 @@ import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class HeadCommandTest {
 	private HeadCommand headCommand;
@@ -368,7 +369,6 @@ public class HeadCommandTest {
 	@Test
 	public void testHeadIllegalOption() throws HeadException {
 		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {"-z", "10", FILE};
 		headCommand.run(args, stdin, stdout);
 	}
@@ -422,6 +422,7 @@ public class HeadCommandTest {
 		expectedEx.expectMessage(NOFILEMSG);
 		String[] args = {"NoSuchFile"};
 		headCommand.run(args, stdin, stdout);
+		assertEquals("", stdout.toString());
 	}
 	
 	/**
@@ -489,7 +490,6 @@ public class HeadCommandTest {
 	@Test
 	public void testHeadTwoFiles() throws HeadException {
 		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {FILE, FILEHIDE};
 		headCommand.run(args, stdin, stdout);		
 	}
@@ -517,7 +517,6 @@ public class HeadCommandTest {
 	@Test
 	public void testHeadNoFile() throws HeadException {
 		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {};
 		headCommand.run(args, stdin, stdout);
 	}
@@ -528,10 +527,8 @@ public class HeadCommandTest {
 	 * 
 	 * @throw HeadException
 	 */
-	@Test
+	@Test(expected = HeadException.class)
 	public void testHeadEmptyArg() throws HeadException {
-		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage("Null argument(s)");
 		String[] args = {""};
 		headCommand.run(args, stdin, stdout);
 	}
