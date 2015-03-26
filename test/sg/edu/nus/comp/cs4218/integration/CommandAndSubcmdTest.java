@@ -39,13 +39,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CommandAndSubcmdTest {
-  private static SimpleShell shell;
+  private SimpleShell shell;
   private static ByteArrayOutputStream stdout;
   private static ByteArrayInputStream stdin;
   String[] args;
 
   @Before
   public void setUp() throws Exception {
+	  Environment.currentDirectory = System.getProperty("user.dir");
       shell = new SimpleShell();
       stdout = new ByteArrayOutputStream();
       Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());

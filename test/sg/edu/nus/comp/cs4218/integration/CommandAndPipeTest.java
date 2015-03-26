@@ -39,13 +39,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CommandAndPipeTest {
-  private static SimpleShell shell;
+  private SimpleShell shell;
   private static ByteArrayOutputStream stdout;
   private static ByteArrayInputStream stdin;
   String[] args;
 
   @Before
   public void setUp() throws Exception {
+	  Environment.currentDirectory = System.getProperty("user.dir");
     shell = new SimpleShell();
     stdout = new ByteArrayOutputStream();
     Environment.nameAppMaps.put(Configurations.APPNAME_CD, new CdCommand());
@@ -192,13 +193,5 @@ public class CommandAndPipeTest {
     Assert.assertEquals(expected, stdout.toString());
   }
   
-  @Test
-  public void testLsNegativeNothingAndCat() throws AbstractApplicationException,
-      ShellException {
-    String input = "echo | sed s/Hide/Changed/g | wc -haha | sed s/txt/java/g";
-    shell.parseAndEvaluate(input, stdout);
-    String expected = "wc: illegal option -haha";
-    Assert.assertEquals(expected, stdout.toString());
-  }
   
 }
