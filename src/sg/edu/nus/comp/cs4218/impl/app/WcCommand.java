@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.WcException;
 
@@ -24,7 +25,11 @@ public class WcCommand implements Application {
 	protected boolean wordFlag = false;
 	protected boolean charFlag = false;
 	private boolean argFlag = false;
-
+	private boolean flag = false;
+	private int count = 0;
+	private String ERROR_MSG_DIRECTORY = "WcException: %1$s: Is a directory" + Configurations.NEWLINE;
+	private String ERROR_MSG = "WcException: %1$s: No such file or directory" + Configurations.NEWLINE;
+	
 	/**
 	 * Perform Wc command
 	 *
@@ -51,11 +56,14 @@ public class WcCommand implements Application {
 			}
 			if (args[i].equals("-l")) { // Print only the newline counts
 				lineFlag = true;
+				count++;
 			} else if (args[i].equals("-w")) { // Print only the word counts
 				wordFlag = true;
+				count++;
 			} else if (args[i].equals("-m")) { // Print only the character
 												// counts
 				charFlag = true;
+				count++;
 			} else if (args[i].charAt(0) == '-') {
 				// wc: illegal option -- z
 				resetAllCounters();
@@ -95,6 +103,11 @@ public class WcCommand implements Application {
 			resetAllCounters();
 			throw new WcException("No argument(s)");
 		}
+		
+		if(args.length == 1) {
+			flag = true;
+		}
+		
 		for (int i = 0; i < args.length; i++) {
 			fileName = getAbsolutePath(args[i]);
 			File file = new File(fileName);
@@ -120,12 +133,29 @@ public class WcCommand implements Application {
 			} else if (isDirectory(file)) {
 				// cat: sample/: Is a directory
 				resetAllCounters();
-				throw new WcException(" " + fileName + ":" + " Is a directory");
+				if(flag) {
+					throw new WcException(String.format(ERROR_MSG_DIRECTORY, fileName + ":"));
+				} else {
+					String errorMsg = String.format(ERROR_MSG_DIRECTORY, fileName + ":");
+					try {
+						stdout.write(errorMsg.getBytes());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			} else {
 				// cat: sample.txt: No such file or directory
 				resetAllCounters();
-				throw new WcException(" " + fileName + ":"
-						+ " No such file or directory");
+				if(flag) {
+					throw new WcException(String.format(ERROR_MSG, fileName + ":"));
+				} else {
+					String errorMsg = String.format(ERROR_MSG, fileName + ":");
+					try {
+						stdout.write(errorMsg.getBytes());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}			
 		}
 		if (args.length > 1) {
@@ -133,6 +163,8 @@ public class WcCommand implements Application {
 		}
 		resetAllCounters();
 	}
+	
+	
 
 	/**
 	 * Reset all counters to zero
