@@ -144,7 +144,8 @@ public class LsCommandTest {
             + ".Two.txt" , "test-files-basic"+ System.getProperty("file.separator") 
             + ".FolderTestHide", "test-files-basic"+ System.getProperty("file.separator") 
             + "NormalFolder"};
-        String expected = "One.txt\t" + System.lineSeparator() + System.lineSeparator()
+        String expected = "One.txt\t" +System.lineSeparator()+ Configurations.NEWLINE +
+                ".FolderTestHide: Does not exist" + Configurations.NEWLINE + Configurations.NEWLINE
             + "NormalFolder:" + System.lineSeparator()
             + "Normal.txt\t";
         
