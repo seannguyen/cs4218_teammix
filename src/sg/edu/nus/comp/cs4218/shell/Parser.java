@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
@@ -179,10 +180,12 @@ public class Parser {
 
 	protected Vector<String> getFilesByGlob(Vector<String> input)
 			throws IOException {
+		Vector<String> finalResults = new Vector<String>();
 		for (int i = 0; i < input.size(); i++) {
 			final Vector<String> results = new Vector<String>();
-			String root = "." + File.separator;
+			String root = Environment.currentDirectory + File.separator;
 			Path startDir = Paths.get(root);
+			
 			FileSystem fileSystem = FileSystems.getDefault();
 			String globPattern = "glob:" + root + input.get(i);
 			if (System.getProperty("file.separator") != null
@@ -223,13 +226,24 @@ public class Parser {
 					j--;
 				}
 			}
+			
+			//remove prefix in file name
+			int prefixLength = (Environment.currentDirectory + File.separator).length();
+			for (int j = 0; j < results.size(); j++) {
+				if (results.get(j).length() >= prefixLength) {
+					String newResult = results.get(j).substring(prefixLength);
+					results.remove(j);
+					results.insertElementAt(newResult, j);
+				}
+			}
+			
 			if (!results.isEmpty()) {
-				input.remove(i);
-				input.addAll(results);
-				i += results.size() - 1;
+				finalResults.addAll(results);
+			} else {
+				finalResults.add(input.get(i));
 			}
 		}
-		return input;
+		return finalResults;
 	}
 
 	protected Vector<String> getIoRedirectories(Vector<String> input)

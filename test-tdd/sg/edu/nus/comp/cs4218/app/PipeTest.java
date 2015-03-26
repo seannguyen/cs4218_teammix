@@ -3,11 +3,13 @@ package sg.edu.nus.comp.cs4218.app;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.GrepException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.shell.SimpleShell;
 
 import java.io.ByteArrayOutputStream;
 
@@ -21,7 +23,7 @@ public class PipeTest {
     @Before
     public void setUp() throws Exception {
         Environment.currentDirectory = System.getProperty("user.dir") + "/test-files-ef1";
-        shell = null; //TODO change here
+        shell = new SimpleShell();
     }
 
     @Test
