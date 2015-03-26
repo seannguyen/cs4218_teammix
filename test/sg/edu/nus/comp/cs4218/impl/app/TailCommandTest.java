@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.TailException;
 
 public class TailCommandTest {
@@ -30,8 +34,10 @@ public class TailCommandTest {
 	private OutputStream stdout;
 	final private static String NOFILEMSG = "No such file or directory";
 	final private static String INCORRECTARGMSG = "Incorrect argument(s)";
-	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
+	final private static String ILLEGALOPTIONMSG = "illegal option -- %1$s";
+	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";	
 	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
+	final private static String RESULT_CONTENT_1 = "%1$s3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
 	final private static String RESULT_SHORT = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "";
     final private static String RESULT_10 = "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE + "11. Compiler compliance level must be <= 1.7" + Configurations.NEWLINE + "12. END-OF-FILE" + Configurations.NEWLINE + "";
     final private static String RESULT_1 = "12. END-OF-FILE" + Configurations.NEWLINE + "";
@@ -401,7 +407,7 @@ public class TailCommandTest {
 	@Test
 	public void testTailIllegalOption() throws TailException {
 		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
+		expectedEx.expectMessage(String.format(ILLEGALOPTIONMSG, "-z"));
 		String[] args = {"-z", "10", FILE};
 		tailCommand.run(args, stdin, stdout);
 	}
@@ -415,7 +421,7 @@ public class TailCommandTest {
 	@Test
 	public void testTailInvalidArguments() throws TailException {
 		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
+		expectedEx.expectMessage(String.format(ILLEGALOPTIONMSG, "-z"));
 		String[] args = {"-z", FILEEMPTY, FILE};
 		tailCommand.run(args, stdin, stdout);
 	}
@@ -538,11 +544,10 @@ public class TailCommandTest {
 	 * @throw TailException
 	 */
 	@Test
-	public void testTailTwoFiles() throws TailException {
-		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
+	public void testTailTwoFiles() throws TailException {		
 		String[] args = {FILE, FILEHIDE};
 		tailCommand.run(args, stdin, stdout);		
+		assertEquals(String.format(RESULT_CONTENT_1, "==>" + FILE + "<==" + Configurations.NEWLINE) + String.format(RESULT_CONTENT_1, "==>" + FILEHIDE + "<==" + Configurations.NEWLINE), stdout.toString());
 	}
 	
 	/**
@@ -552,11 +557,10 @@ public class TailCommandTest {
 	 * @throw TailException
 	 */
 	@Test
-	public void testTailThreeFiles() throws TailException {
-		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
+	public void testTailThreeFiles() throws TailException {		
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
 		tailCommand.run(args, stdin, stdout);
+		assertEquals(String.format(RESULT_CONTENT_1, "==>" + FILE + "<==" + Configurations.NEWLINE)  + String.format(RESULT_CONTENT_1, "==>" + FILEEMPTY + "<==" + Configurations.NEWLINE) + String.format(RESULT_CONTENT_1, "==>" + FILEHIDE + "<==" + Configurations.NEWLINE) ,stdout.toString());
 	}
 	
 	/**
@@ -568,7 +572,7 @@ public class TailCommandTest {
 	@Test
 	public void testTailNoFile() throws TailException {
 		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
+		expectedEx.expectMessage("Null stdin");
 		String[] args = {};
 		tailCommand.run(args, stdin, stdout);
 	}
@@ -582,7 +586,7 @@ public class TailCommandTest {
 	@Test
 	public void testTailEmptyArg() throws TailException {
 		expectedEx.expect(TailException.class);
-		expectedEx.expectMessage("Null argument(s)");
+		expectedEx.expectMessage("Empty argument");
 		String[] args = {""};
 		tailCommand.run(args, stdin, stdout);
 	}
@@ -736,5 +740,28 @@ public class TailCommandTest {
 		File file = new File("NoSuchFolder");
 		Boolean result = tailCommand.isDirectory(file);
 		assertFalse(result);
+	}
+	
+	@Test
+	public void stdinForHead() throws AbstractApplicationException {
+		String pipeInputArg = "Oysters are a family of bivalves with rough, thick shells." + System.lineSeparator();
+		pipeInputArg += "Many species are edible, and are usually served raw." + System.lineSeparator();
+		pipeInputArg += "They are also good when cooked." + System.lineSeparator();
+		pipeInputArg += "In history, they were an important food source, especially in France and Britain." + System.lineSeparator();
+		pipeInputArg += "They used to grow in huge oyster beds, but were \"overfished\" in the 19th century." + System.lineSeparator();
+		pipeInputArg += "Nowadays they are more expensive, so eaten less often.";
+		stdin = new ByteArrayInputStream(pipeInputArg.getBytes());
+
+		String[] args = new String[] { };
+		String expected = "Oysters are a family of bivalves with rough, thick shells." + System.lineSeparator();
+		expected += "Many species are edible, and are usually served raw." + System.lineSeparator();
+		expected += "They are also good when cooked." + System.lineSeparator();
+		expected += "In history, they were an important food source, especially in France and Britain." + System.lineSeparator();
+		expected += "They used to grow in huge oyster beds, but were \"overfished\" in the 19th century." + System.lineSeparator();
+		expected += "Nowadays they are more expensive, so eaten less often." + Configurations.NEWLINE;
+
+		stdout = new ByteArrayOutputStream();
+		tailCommand.run(args, stdin, stdout);
+		Assert.assertEquals(expected, stdout.toString());
 	}
 }

@@ -68,13 +68,11 @@ public class TailCommand implements Application{
 			} catch(NumberFormatException e) {
 				e.printStackTrace();
 			}
-			//fileName = args[2];
 		} else if (args.length == 1 && !args[0].equals("-n")) {
 			singleFileFlag = true;
-			numOfFiles = 1;
+			numOfFiles = 1;			
 			numOfLines = DEFAULT_DISPLAY_LINES;
-			index = 0;
-			//fileName = args[0];			
+			index = 0;			
 		} else if(args.length > 0 && !args[0].equals("-n")) { 
 			index = 0;
 			numOfFiles = args.length;
@@ -99,8 +97,8 @@ public class TailCommand implements Application{
 		*/
 		String[] arrayOfFiles = new String[numOfFiles];
 		System.arraycopy(args, index, arrayOfFiles, 0, numOfFiles);
-		for(int i = index; i < numOfFiles; i++) { 
-			processFiles(stdout, listOfLines, fileName, numOfLines);
+		for(int i = 0; i < numOfFiles; i++) { 
+			processFiles(stdout, listOfLines, arrayOfFiles[i], numOfLines);
 		}
 	}
 	
@@ -155,14 +153,17 @@ public class TailCommand implements Application{
 	public void processFiles(OutputStream stdout,
 			ArrayList<String> listOfLines, String fileName, int numOfLines)
 			throws TailException {
+		if(fileName.equals("")) {
+			throw new TailException("Empty argument");
+		}
 		fileName = getAbsolutePath(fileName);
 		File file = new File(fileName);
 
 		if (doesFileExist(file)) {
 			listOfLines = addLinesToArrayListFromFile(listOfLines, numOfLines, file);
 			try {
-				if(singleFileFlag) {
-					String title = "==>" + fileName + "<==" + Configurations.NEWLINE;
+				if(!singleFileFlag) {
+					String title = "==>" + file.getName()+ "<==" + Configurations.NEWLINE;
 					stdout.write(title.getBytes());
 				}
 				outputLines(stdout, listOfLines, numOfLines);
