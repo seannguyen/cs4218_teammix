@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
@@ -684,4 +688,28 @@ public class HeadCommandTest {
 		Boolean result = headCommand.isDirectory(file);
 		assertFalse(result);
 	}
+	
+    @Test
+    public void stdinForHead() throws AbstractApplicationException {
+
+        String pipeInputArg = "Oysters are a family of bivalves with rough, thick shells." + System.lineSeparator();
+        pipeInputArg += "Many species are edible, and are usually served raw." + System.lineSeparator();
+        pipeInputArg += "They are also good when cooked." + System.lineSeparator();
+        pipeInputArg += "In history, they were an important food source, especially in France and Britain." + System.lineSeparator();
+        pipeInputArg += "They used to grow in huge oyster beds, but were \"overfished\" in the 19th century." + System.lineSeparator();
+        pipeInputArg += "Nowadays they are more expensive, so eaten less often.";
+        stdin = new ByteArrayInputStream(pipeInputArg.getBytes());
+
+        String[] args = new String[] { };
+        String expected = "Oysters are a family of bivalves with rough, thick shells." + System.lineSeparator();
+        expected += "Many species are edible, and are usually served raw." + System.lineSeparator();
+        expected += "They are also good when cooked." + System.lineSeparator();
+        expected += "In history, they were an important food source, especially in France and Britain." + System.lineSeparator();
+        expected += "They used to grow in huge oyster beds, but were \"overfished\" in the 19th century." + System.lineSeparator();
+        expected += "Nowadays they are more expensive, so eaten less often." + Configurations.NEWLINE;
+
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, stdin, stdout);
+        Assert.assertEquals(expected, stdout.toString());
+    }
 }
