@@ -46,6 +46,7 @@ public class SedCommand implements Application {
       processInputStream(stdin, stdout, args[0]);
     } else if (args.length == 2) {
       fileName = getAbsolutePath(args[1].replace(Configurations.NEWLINE, ""));
+      
       File file = new File(fileName);
       if (doesFileExist(file)) {
         processSed(stdout, file, args[0].replace(Configurations.NEWLINE, ""));

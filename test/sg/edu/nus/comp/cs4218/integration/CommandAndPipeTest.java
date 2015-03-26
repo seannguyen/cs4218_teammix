@@ -33,14 +33,13 @@ import sg.edu.nus.comp.cs4218.impl.app.PwdCommand;
 import sg.edu.nus.comp.cs4218.impl.app.SedCommand;
 import sg.edu.nus.comp.cs4218.impl.app.TailCommand;
 import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
-import sg.edu.nus.comp.cs4218.shell.Shell;
 import sg.edu.nus.comp.cs4218.shell.SimpleShell;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CommandAndPipeTest {
-  private static Shell shell;
+  private static SimpleShell shell;
   private static ByteArrayOutputStream stdout;
   private static ByteArrayInputStream stdin;
   String[] args;
@@ -146,18 +145,18 @@ public class CommandAndPipeTest {
   }
   
   @Test
-  public void testFindAndCatAndCat() throws AbstractApplicationException,
+  public void testFindAndSedAndSed() throws AbstractApplicationException,
       ShellException {
-    String input = "find test-files-basic -name *.txt | cat | sed s/txt/java/g";
+    String input = "find test-files-basic -name *.txt | sed s/Hide/Changed/g | sed s/txt/java/g";
     shell.parseAndEvaluate(input, stdout);
     String expected = "." + File.separator + "test-files-basic"
-        + File.separator + ".HideFolder" + File.separator + ".textFile3.txt"
+        + File.separator + ".ChangedFolder" + File.separator + ".textFile3.txt"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".HideFolder" + File.separator + ".textFile4.txt"
+        + File.separator + ".ChangedFolder" + File.separator + ".textFile4.txt"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".HideFolder" + File.separator + "textFile1.txt"
+        + File.separator + ".ChangedFolder" + File.separator + "textFile1.txt"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".HideFolder" + File.separator + "textFile2.txt"
+        + File.separator + ".ChangedFolder" + File.separator + "textFile2.txt"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
         + File.separator + ".Two.txt" + System.lineSeparator() + "."
         + File.separator + "test-files-basic" + File.separator + "NormalFolder"
@@ -165,4 +164,41 @@ public class CommandAndPipeTest {
         + File.separator + "test-files-basic" + File.separator + "One.txt" +  System.lineSeparator();
     Assert.assertEquals(expected, stdout.toString());
   }
+  
+  @Test
+  public void testFindAndCatAndWc() throws AbstractApplicationException,
+      ShellException {
+    String input = "find test-files-basic -name *.txt | cat | wc";
+    shell.parseAndEvaluate(input, stdout);
+    String expected = "7\t7\t280\t" +  System.lineSeparator();
+    Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testFindAndWc2() throws AbstractApplicationException,
+      ShellException {
+    String input = "find test-files-basic -name *.txt | wc";
+    shell.parseAndEvaluate(input, stdout);
+    String expected = "7\t7\t280\t" +  System.lineSeparator();
+    Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testFindAndSedAndNegativeCommandAndSed() throws AbstractApplicationException,
+      ShellException {
+    String input = "find test-files-basic -name *.txt | sed s/Hide/Changed/g | wc -haha | sed s/txt/java/g";
+    shell.parseAndEvaluate(input, stdout);
+    String expected = "wc: illegal option -haha";
+    Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testLsNegativeNothingAndCat() throws AbstractApplicationException,
+      ShellException {
+    String input = "echo | sed s/Hide/Changed/g | wc -haha | sed s/txt/java/g";
+    shell.parseAndEvaluate(input, stdout);
+    String expected = "wc: illegal option -haha";
+    Assert.assertEquals(expected, stdout.toString());
+  }
+  
 }

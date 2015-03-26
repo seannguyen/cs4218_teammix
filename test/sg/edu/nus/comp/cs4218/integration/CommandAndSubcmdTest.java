@@ -33,14 +33,13 @@ import sg.edu.nus.comp.cs4218.impl.app.PwdCommand;
 import sg.edu.nus.comp.cs4218.impl.app.SedCommand;
 import sg.edu.nus.comp.cs4218.impl.app.TailCommand;
 import sg.edu.nus.comp.cs4218.impl.app.WcCommand;
-import sg.edu.nus.comp.cs4218.shell.Shell;
 import sg.edu.nus.comp.cs4218.shell.SimpleShell;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CommandAndSubcmdTest {
-  private static Shell shell;
+  private static SimpleShell shell;
   private static ByteArrayOutputStream stdout;
   private static ByteArrayInputStream stdin;
   String[] args;
