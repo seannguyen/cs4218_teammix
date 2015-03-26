@@ -41,6 +41,10 @@ public class TailCommand implements Application{
 		int index = 0;
 		singleFileFlag = false;
 
+		if(args.length > 0 && args[0].startsWith("-") && !args[0].equals("-n")) {
+			throw new TailException("illegal option -- " + args[0]);
+		}
+		
 		if(args.length > 3 && args[0].equals("-n")) {
 			try {
 				numOfLines = Integer.parseInt(args[1]);
@@ -83,9 +87,9 @@ public class TailCommand implements Application{
 					//illegal line count -- numOfLines
 					throw new TailException("illegal line count -- " + numOfLines);
 				}
-				processInputStream(numOfLines, stdin, stdout);
+				processInputStream(listOfLines, numOfLines, stdin, stdout);
 			} else {
-				processInputStream(DEFAULT_DISPLAY_LINES, stdin, stdout);
+				processInputStream(listOfLines, DEFAULT_DISPLAY_LINES, stdin, stdout);
 			}
 		}
 		/*
@@ -109,19 +113,16 @@ public class TailCommand implements Application{
 	 * 			OutputStream
 	 * @throws TailException 
 	 */
-	public void processInputStream(int numOfLines, InputStream stdin, OutputStream stdout) throws TailException {		 			
+	public void processInputStream(ArrayList<String> listOfLines, int numOfLines, InputStream stdin, OutputStream stdout) throws TailException {		 			
 		BufferedReader bufferedReader = null;
 		String line;
 		
 		if(stdin == null) {
 			throw new TailException("Null stdin");
 		}
-		try { 
-			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-			while ((line = bufferedReader.readLine()) != null && numOfLines-- > 0) {
-				String newLine = line + String.format("%n");
-				stdout.write(newLine.getBytes());
-			} 
+		try { 			
+			listOfLines = addLinesToArrayListFromInputStream(listOfLines, numOfLines, stdin);
+			outputLines(stdout, listOfLines, numOfLines);			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -136,6 +137,21 @@ public class TailCommand implements Application{
 		return;
 	}
 	
+	private ArrayList<String> addLinesToArrayListFromInputStream(			
+			ArrayList<String> listOfLines, int numOfLines, InputStream stdin) {
+		BufferedReader bufferedReader = null;
+		bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+		String line;
+		try {
+			while ((line = bufferedReader.readLine()) != null) {						
+				listOfLines.add(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return listOfLines;
+	}
+
 	public void processFiles(OutputStream stdout,
 			ArrayList<String> listOfLines, String fileName, int numOfLines)
 			throws TailException {
@@ -145,6 +161,10 @@ public class TailCommand implements Application{
 		if (doesFileExist(file)) {
 			listOfLines = addLinesToArrayListFromFile(listOfLines, numOfLines, file);
 			try {
+				if(singleFileFlag) {
+					String title = "==>" + fileName + "<==" + Configurations.NEWLINE;
+					stdout.write(title.getBytes());
+				}
 				outputLines(stdout, listOfLines, numOfLines);
 			} catch (IOException e) {				
 				e.printStackTrace();
