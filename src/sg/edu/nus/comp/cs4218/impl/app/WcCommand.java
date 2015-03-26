@@ -26,7 +26,6 @@ public class WcCommand implements Application {
 	protected boolean charFlag = false;
 	private boolean argFlag = false;
 	private boolean flag = false;
-	private int count = 0;
 	private String ERROR_MSG_DIRECTORY = "%1$s%2$s: Is a directory" + Configurations.NEWLINE;
 	private String ERROR_MSG = "%1$s%2$s: No such file or directory" + Configurations.NEWLINE;
 	
@@ -56,14 +55,11 @@ public class WcCommand implements Application {
 			}
 			if (args[i].equals("-l")) { // Print only the newline counts
 				lineFlag = true;
-				count++;
 			} else if (args[i].equals("-w")) { // Print only the word counts
 				wordFlag = true;
-				count++;
 			} else if (args[i].equals("-m")) { // Print only the character
 												// counts
 				charFlag = true;
-				count++;
 			} else if (args[i].charAt(0) == '-') {
 				// wc: illegal option -- z
 				resetAllCounters();
@@ -132,36 +128,30 @@ public class WcCommand implements Application {
 				}
 			} else if (isDirectory(file)) {
 				// cat: sample/: Is a directory
-				if(flag) {
-					resetAllCounters();
-					throw new WcException(String.format(ERROR_MSG_DIRECTORY, "", fileName + ":"));
-				} else {
-					String errorMsg = String.format(ERROR_MSG_DIRECTORY, "wc: ", fileName + ":");
-					try {
-						stdout.write(errorMsg.getBytes());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);
 			} else {
-				// cat: sample.txt: No such file or directory				
-				if(flag) {
-					resetAllCounters();
-					throw new WcException(String.format(ERROR_MSG, "", fileName + ":"));
-				} else {
-					String errorMsg = String.format(ERROR_MSG, "wc: ", fileName + ":");
-					try {
-						stdout.write(errorMsg.getBytes());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				// cat: sample.txt: No such file or directory	
+				printExceptions(ERROR_MSG, fileName, stdout);				
 			}			
 		}
 		if (args.length > 1) {
 			printTotalResults(stdout);
 		}
 		resetAllCounters();
+	}
+
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws WcException {
+		if(flag) {
+			resetAllCounters();
+			throw new WcException(String.format(msg, "", fileName + ":"));
+		} else {
+			String errorMsg = String.format(msg, "wc: ", fileName + ":");
+			try {
+				stdout.write(errorMsg.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	
