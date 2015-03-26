@@ -33,6 +33,8 @@ public class HeadCommandTest {
 	final private static String INCORRECTARGMSG = "Incorrect argument(s)";
 	final private static String CONTENT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n6. Prerequisites\n7. CS4218 Shell requires the following versions of software:\n8. JDK 7\n9. Eclipse 4.3\n10. JUnit 4\n11. Compiler compliance level must be <= 1.7\n12. END-OF-FILE\n";
 	final private static String CONTENT_2 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
+	final private static String RESULT_CONTENT_2 = "%1$s1. CS4218 Shell is a command interpreter that provides a set of tools (applications):\n2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc.\n3. Apart from that, CS4218 Shell is a language for calling and combining these application.\n4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files.\n5. More details can be found in \"Project Description.pdf\" in IVLE.\n";
+	final private static String RESULT_CONTENT_1 = "%1$s1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE;
 	final private static String RESULT_SHORT = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "";
 	final private static String RESULT_10 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE + "2. cd, pwd, ls, cat, echo, head, tail, grep, sed, find and wc." + Configurations.NEWLINE + "3. Apart from that, CS4218 Shell is a language for calling and combining these application." + Configurations.NEWLINE + "4. The language supports quoting of input data, semicolon operator for calling sequences of applications, command substitution and piping for connecting applications\' inputs and outputs, IO-redirection to load and save data processed by applications from/to files." + Configurations.NEWLINE + "5. More details can be found in \"Project Description.pdf\" in IVLE." + Configurations.NEWLINE + "6. Prerequisites" + Configurations.NEWLINE + "7. CS4218 Shell requires the following versions of software:" + Configurations.NEWLINE + "8. JDK 7" + Configurations.NEWLINE + "9. Eclipse 4.3" + Configurations.NEWLINE + "10. JUnit 4" + Configurations.NEWLINE;
 	final private static String RESULT_1 = "1. CS4218 Shell is a command interpreter that provides a set of tools (applications):" + Configurations.NEWLINE;
@@ -376,7 +378,6 @@ public class HeadCommandTest {
 	@Test
 	public void testHeadInvalidArguments() throws HeadException {
 		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {"-z", FILEEMPTY, FILE};
 		headCommand.run(args, stdin, stdout);
 	}
@@ -489,9 +490,9 @@ public class HeadCommandTest {
 	 */
 	@Test
 	public void testHeadTwoFiles() throws HeadException {
-		expectedEx.expect(HeadException.class);
 		String[] args = {FILE, FILEHIDE};
-		headCommand.run(args, stdin, stdout);		
+		headCommand.run(args, stdin, stdout);	
+		assertEquals(String.format(RESULT_CONTENT_1, "==>" + FILE + "<=="+Configurations.NEWLINE) + String.format(RESULT_CONTENT_1, "==>" +FILEHIDE +"<=="+Configurations.NEWLINE),stdout.toString());
 	}
 	
 	/**
@@ -502,10 +503,10 @@ public class HeadCommandTest {
 	 */
 	@Test
 	public void testHeadThreeFiles() throws HeadException {
-		expectedEx.expect(HeadException.class);
-		expectedEx.expectMessage(INCORRECTARGMSG);
 		String[] args = {FILE, FILEEMPTY, FILEHIDE};
 		headCommand.run(args, stdin, stdout);
+		assertEquals(String.format(RESULT_CONTENT_1, "==>" + FILE + "<=="+Configurations.NEWLINE) + "==>" + FILEEMPTY + "<=="+Configurations.NEWLINE + String.format(RESULT_CONTENT_1, "==>" +FILEHIDE +"<=="+Configurations.NEWLINE),stdout.toString());
+		
 	}
 	
 	/**

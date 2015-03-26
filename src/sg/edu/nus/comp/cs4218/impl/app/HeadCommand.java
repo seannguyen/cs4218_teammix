@@ -39,7 +39,9 @@ public class HeadCommand implements Application{
 		int numOfFiles = 0;
 		int index = 0;
 		singleFileFlag = false;
-
+		if(args.length > 0 && args[0].startsWith("-") && !args[0].equals("-n")) {
+			throw new HeadException("illegal line count -- " + args[0] );
+		}
 		if(args.length > 3 && args[0].equals("-n")) {
 			try {				
 				numOfLines = Integer.parseInt(args[1]);
@@ -97,7 +99,7 @@ public class HeadCommand implements Application{
 	}
 	
 	public void processFiles(OutputStream stdout, String fileName,
-			int numOfLines) throws HeadException {
+			int numOfLines) throws HeadException {		
 		fileName = getAbsolutePath(fileName);
 		File file = new File(fileName);
 
@@ -107,7 +109,7 @@ public class HeadCommand implements Application{
 				String line;
 				try {
 					if(!singleFileFlag) {
-						String title = "==>" + fileName + "<==" + Configurations.NEWLINE;
+						String title = "==>" + file.getName() + "<==" + Configurations.NEWLINE;
 						stdout.write(title.getBytes());
 					}
 					while ((line = bufferedReader.readLine()) != null && numOfLines-- > 0) {
