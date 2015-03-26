@@ -10,6 +10,7 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -151,18 +152,18 @@ public class CommandAndPipeTest {
     String input = "find test-files-basic -name *.txt | sed s/Hide/Changed/g | sed s/txt/java/g";
     shell.parseAndEvaluate(input, stdout);
     String expected = "." + File.separator + "test-files-basic"
-        + File.separator + ".ChangedFolder" + File.separator + ".textFile3.txt"
+        + File.separator + ".ChangedFolder" + File.separator + ".textFile3.java"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".ChangedFolder" + File.separator + ".textFile4.txt"
+        + File.separator + ".ChangedFolder" + File.separator + ".textFile4.java"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".ChangedFolder" + File.separator + "textFile1.txt"
+        + File.separator + ".ChangedFolder" + File.separator + "textFile1.java"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".ChangedFolder" + File.separator + "textFile2.txt"
+        + File.separator + ".ChangedFolder" + File.separator + "textFile2.java"
         + System.lineSeparator() + "." + File.separator + "test-files-basic"
-        + File.separator + ".Two.txt" + System.lineSeparator() + "."
+        + File.separator + ".Two.java" + System.lineSeparator() + "."
         + File.separator + "test-files-basic" + File.separator + "NormalFolder"
-        + File.separator + "Normal.txt" + System.lineSeparator() + "."
-        + File.separator + "test-files-basic" + File.separator + "One.txt" +  System.lineSeparator();
+        + File.separator + "Normal.java" + System.lineSeparator() + "."
+        + File.separator + "test-files-basic" + File.separator + "One.java";
     Assert.assertEquals(expected, stdout.toString());
   }
   
@@ -184,9 +185,9 @@ public class CommandAndPipeTest {
     Assert.assertEquals(expected, stdout.toString());
   }
   
-  @Test
+  @Test(expected = WcException.class)
   public void testFindAndSedAndNegativeCommandAndSed() throws AbstractApplicationException,
-      ShellException {
+      ShellException, WcException{
     String input = "find test-files-basic -name *.txt | sed s/Hide/Changed/g | wc -haha | sed s/txt/java/g";
     shell.parseAndEvaluate(input, stdout);
     String expected = "wc: illegal option -haha";
