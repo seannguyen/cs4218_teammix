@@ -71,11 +71,12 @@ public class CommandAndSubcmdTest {
   }
   
   
-  @Test(expected = SedException.class)
+  @Test
   public void testSedAndLsNegativeCase() throws AbstractApplicationException,
       ShellException {
     String input = "sed s/txt/javax/g `ls test-files-basic`";
     shell.parseAndEvaluate(input, stdout);
+    Assert.assertEquals("NormalFolder: Does not exist" + Configurations.NEWLINE + Configurations.NEWLINE +"One.txt: Does not exist"+Configurations.NEWLINE , stdout.toString());
   }
   
   @Test
@@ -171,5 +172,4 @@ public class CommandAndSubcmdTest {
     		  + Configurations.NEWLINE + "NormalFolder: Does not exist";
       Assert.assertEquals(expected, stdout.toString());
   }
-  
 }

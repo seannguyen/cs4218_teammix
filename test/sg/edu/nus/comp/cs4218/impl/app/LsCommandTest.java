@@ -78,7 +78,7 @@ public class LsCommandTest {
 
 	@After
 	public void tearDown() {
-		Environment.currentDirectory = workingDir.getAbsolutePath();
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@AfterClass

@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
@@ -116,12 +117,14 @@ public class WcCommandTest {
 	public void setUp() throws Exception {
 		wcCommand = new WcCommand();		
 		stdout = new java.io.ByteArrayOutputStream();		
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		wcCommand = null;
 		stdout = null;
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@AfterClass
