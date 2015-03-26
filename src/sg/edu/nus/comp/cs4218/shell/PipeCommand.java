@@ -29,6 +29,7 @@ public class PipeCommand implements Command {
 			} else {
 				ByteArrayInputStream pipeIn = new ByteArrayInputStream(
 						pipeOut.toByteArray());
+				pipeOut.reset();
 				commands.get(i).evaluate(pipeIn, pipeOut);
 			}
 		}
