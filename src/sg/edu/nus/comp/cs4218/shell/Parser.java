@@ -40,7 +40,6 @@ public class Parser {
 		return result;
 	}
 	
-
 	protected Vector<String> splitLine(String input) throws ShellException {
 		Vector<String> result = new Vector<String>();
 		if (input == null || input.length() == 0) {
