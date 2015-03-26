@@ -13,6 +13,7 @@ import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.exception.HeadException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
 
 public class CatCommand implements Application{
@@ -102,6 +103,42 @@ public class CatCommand implements Application{
 	}
 	
 	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws CatException 
+	 */
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws CatException {		 			
+		BufferedReader bufferedReader = null;
+		String line;
+		
+		if(stdin == null) {
+			throw new CatException("Null stdin");
+		}
+		try { 
+			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+			while ((line = bufferedReader.readLine()) != null) {
+				String newLine = line + String.format("%n");
+				stdout.write(newLine.getBytes());
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return;
+	}
+	
+	/**
 	 * Get absolute path of given filePath
 	 *
 	 * @param filePath
@@ -138,41 +175,5 @@ public class CatCommand implements Application{
 			return true;
 		}
 		return false;
-	}
-	
-	/**
-	 * Print stdin to stdout
-	 * 
-	 * @param stdin
-	 * 			InputStream
-	 * @param stdout
-	 * 			OutputStream
-	 * @throws CatException 
-	 */
-	public void processInputStream(InputStream stdin, OutputStream stdout) throws CatException {		 
-		BufferedReader bufferedReader = null;
-		String line;
-		
-		if(stdin == null) {
-			throw new CatException("Null stdin");
-		}
-		try { 
-			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-			while ((line = bufferedReader.readLine()) != null) {
-				stdout.write(line.getBytes());	
-				stdout.write(String.format("%n").getBytes());
-			} 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (bufferedReader != null) {
-				try {
-					bufferedReader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return;
 	}
 }

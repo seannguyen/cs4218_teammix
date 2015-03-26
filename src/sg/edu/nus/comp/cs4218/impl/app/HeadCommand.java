@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
@@ -13,6 +14,7 @@ import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 
 public class HeadCommand implements Application{
 	private boolean singleFileFlag = false;
@@ -36,6 +38,7 @@ public class HeadCommand implements Application{
 		int numOfLines = 0;
 		int numOfFiles = 0;
 		int index = 0;
+		singleFileFlag = false;
 
 		if(args.length > 3 && args[0].equals("-n")) {
 			try {				
@@ -63,16 +66,27 @@ public class HeadCommand implements Application{
 			} catch(NumberFormatException e) {
 				e.printStackTrace();
 			}			
-		} else if (args.length == 1) {
+		} else if (args.length == 1 && !args[0].equals("-n") ) {
+			singleFileFlag = true;
 			numOfLines = DEFAULT_NUM_OF_LINES;			
 			numOfFiles = 1;
 			index = 0;
-		} else if(args.length > 0 && !args[0].equals("-n")) {
+		} else if(args.length > 0 && !args[0].equals("-n")) {			
 			index = 0;
 			numOfFiles = args.length;
 			numOfLines = DEFAULT_NUM_OF_LINES;
 		} else {
-			throw new HeadException("Incorrect argument(s)");
+			//throw new HeadException("Incorrect argument(s)");
+			if(args.length == 2 && args[0].equals("-n")) {
+				numOfLines = Integer.parseInt(args[1]);
+				if(numOfLines < 0) {
+					//illegal line count -- numOfLines
+					throw new HeadException("illegal line count -- " + numOfLines);
+				}
+				processInputStream(numOfLines, stdin, stdout);
+			} else {
+				processInputStream(DEFAULT_NUM_OF_LINES, stdin, stdout);
+			}
 		}
 		
 		String[] arrayOfFiles = new String[numOfFiles];
@@ -81,7 +95,7 @@ public class HeadCommand implements Application{
 			processFiles(stdout, arrayOfFiles[i], numOfLines);
 		}
 	}
-
+	
 	public void processFiles(OutputStream stdout, String fileName,
 			int numOfLines) throws HeadException {
 		fileName = getAbsolutePath(fileName);
@@ -111,7 +125,7 @@ public class HeadCommand implements Application{
 			printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);
 		} else {
 			// head: sample.txt: No such file or directory
-			printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);
+			printExceptions(ERROR_MSG, fileName, stdout);
 		}
 	}
 	
@@ -137,6 +151,42 @@ public class HeadCommand implements Application{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws HeadException 
+	 */
+	public void processInputStream(int numOfLines, InputStream stdin, OutputStream stdout) throws HeadException {		 			
+		BufferedReader bufferedReader = null;
+		String line;
+		
+		if(stdin == null) {
+			throw new HeadException("Null stdin");
+		}
+		try { 
+			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+			while ((line = bufferedReader.readLine()) != null && numOfLines-- > 0) {
+				String newLine = line + String.format("%n");
+				stdout.write(newLine.getBytes());
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return;
 	}
 	
 	/**
