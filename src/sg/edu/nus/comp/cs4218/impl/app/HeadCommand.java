@@ -91,7 +91,7 @@ public class HeadCommand implements Application{
 		
 		String[] arrayOfFiles = new String[numOfFiles];
 		System.arraycopy(args, index, arrayOfFiles, 0, numOfFiles);
-		for(int i = index; i < numOfFiles; i++) {
+		for(int i = 0; i < numOfFiles; i++) {
 			processFiles(stdout, arrayOfFiles[i], numOfLines);
 		}
 	}
