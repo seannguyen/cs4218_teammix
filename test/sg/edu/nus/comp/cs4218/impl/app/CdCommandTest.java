@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,7 +29,6 @@ public class CdCommandTest {
 
 	@Before
 	public void setUp() throws Exception {
-		stdout = new ByteArrayOutputStream();
 		fileTemp = File.createTempFile("cd1", "");
 		folderTemp1 = Files.createTempDirectory("cdFolderTemp1").toFile();
 		folderTemp2 = Files.createTempDirectory(workingDir.toPath(),
