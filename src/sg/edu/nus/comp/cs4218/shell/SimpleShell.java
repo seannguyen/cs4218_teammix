@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.shell;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.Configurations;

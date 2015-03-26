@@ -15,6 +15,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.Configurations;
@@ -48,7 +50,7 @@ public class Parser {
 		}
 
 		Vector<Boolean> quoteFlags = new Vector<Boolean>();
-		markQuotes(input);
+		quoteFlags = markQuotes(input);
 		int lastStop = -1;
 		for (int i = 0; i < input.length(); i++) {
 			if (input.charAt(i) == Configurations.SPACE_CHAR
@@ -74,6 +76,14 @@ public class Parser {
 				result.add(element);
 				result.add(token);
 				lastStop = i;
+			} else if (!quoteFlags.get(i)
+					&& preprocessSedCommand(input.substring(i)).length() > 0) {
+				// process sed
+				String sedCommandLine = preprocessSedCommand(input.substring(i));
+				i += sedCommandLine.length() - 1;
+				lastStop = i;
+				result.add(Configurations.APPNAME_SED);
+				result.add(sedCommandLine.substring(Configurations.APPNAME_SED.length()));
 			} else if (i < input.length() - Configurations.NEWLINE.length()) {
 				if (quoteFlags.get(i)) {
 					continue;
@@ -88,14 +98,6 @@ public class Parser {
 			} else if (i == input.length() - 1) {
 				String element = input.substring(lastStop + 1, i + 1);
 				result.add(element);
-			} else if (quoteFlags.get(i)) {
-				// process sed
-				String remaining = input.substring(i);
-				String sedCommandLine = preprocessSedCommand(remaining);
-				if (sedCommandLine.length() > 0) {
-					i += sedCommandLine.length();
-					result.add(sedCommandLine);
-				}
 			}
 		}
 
@@ -327,15 +329,52 @@ public class Parser {
 		return result;
 	}
 
+	protected String preprocessSedCommand(String input) throws ShellException {
+		String result = "";
+		String token = getFirstSymbol(input);
+		input += Configurations.WHITESPACE;
+		if (token == null
+				|| token.length() == 0
+				|| (!input.startsWith(Configurations.APPNAME_SED
+						+ Configurations.WHITESPACE) && !input
+							.startsWith(Configurations.APPNAME_SED
+									+ Configurations.TAB_CHAR))) {
+			return "";
+		}
+		Pattern p = Pattern.compile(Configurations.APPNAME_SED
+				+ Configurations.WHITESPACEREGEX + "+s[" + token + "][^ "
+				+ token + "]*[" + token + "][^ " + token + "]*[" + token
+				+ "][^ " + token + "]*" + Configurations.WHITESPACEREGEX,
+				Pattern.CASE_INSENSITIVE);
+		for (int i = 0; i < input.length(); i++) {
+			result = input.substring(0, i + 1);
+			Matcher m = p.matcher(result);
+			if (m.find()) {
+				if (result.equals(input)) {
+					return result.substring(0, result.length() - 1);
+				} else {
+					return result;
+				}
+			}
+		}
+		return "";
+	}
+
 	// PRIVATE HELPER METHODS (This methods are trivial, so no need test cases
 	// for this)
 
-	private String preprocessSedCommand(String input) {
+	private boolean containSymbol(String input) {
+		Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(input);
+		return m.find();
+	}
 
-		if (!input.startsWith(Configurations.APPNAME_SED)) {
-			return "";
+	private String getFirstSymbol(String input) {
+		for (int i = 0; i < input.length(); i++) {
+			if (containSymbol(input.substring(i, i + 1))) {
+				return input.substring(i, i + 1);
+			}
 		}
-
 		return null;
 	}
 
