@@ -28,20 +28,29 @@ public class Parser {
 	public Command parseCommandLine(String commandLine) throws ShellException,
 			AbstractApplicationException {
 		refreshParser();
-		Vector<String> preprocessedLine = splitLine(commandLine);
+		Vector<String> preprocessedLine = splitLine(commandLine, true);
 		return parseSequence(preprocessedLine);
 	}
 
 	// PROTECTED CORE METHODS
-	protected Vector<String> splitLine(Vector<String> input) throws ShellException {
+	protected Vector<String> splitLineByApp(Vector<String> input, String appName)
+			throws ShellException {
 		Vector<String> result = new Vector<String>();
 		for (int i = 0; i < input.size(); i++) {
-			result.addAll(splitLine(input.get(i)));
+			if (appName.equals(Configurations.APPNAME_CAT)
+					|| appName.equals(Configurations.APPNAME_HEAD)
+					|| appName.equals(Configurations.APPNAME_TAIL)
+					|| appName.equals(Configurations.APPNAME_ECHO)) {
+				result.addAll(splitLine(input.get(i), true));
+			} else {
+				result.addAll(splitLine(input.get(i), false));
+			}
 		}
 		return result;
 	}
-	
-	protected Vector<String> splitLine(String input) throws ShellException {
+
+	protected Vector<String> splitLine(String input, boolean isSplitBySpace)
+			throws ShellException {
 		Vector<String> result = new Vector<String>();
 		if (input == null || input.length() == 0) {
 			return result;
@@ -49,8 +58,8 @@ public class Parser {
 		markQuotes(input);
 		int lastStop = -1;
 		for (int i = 0; i < input.length(); i++) {
-			if (input.charAt(i) == Configurations.SPACE_CHAR
-					|| input.charAt(i) == Configurations.TAB_CHAR) {
+			if (isSplitBySpace && (input.charAt(i) == Configurations.SPACE_CHAR
+					|| input.charAt(i) == Configurations.TAB_CHAR)) {
 				if (this.quoteFlags.get(i)) {
 					continue;
 				}
@@ -58,9 +67,12 @@ public class Parser {
 				result.add(element);
 				lastStop = i;
 			} else if (input.charAt(i) == Configurations.PIPE_TOKEN.charAt(0)
-					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN.charAt(0)
-					|| input.charAt(i) == Configurations.IN_REIO_TOKEN.charAt(0)
-					|| input.charAt(i) == Configurations.OUT_REIO_TOKEN.charAt(0)) {
+					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN
+							.charAt(0)
+					|| input.charAt(i) == Configurations.IN_REIO_TOKEN
+							.charAt(0)
+					|| input.charAt(i) == Configurations.OUT_REIO_TOKEN
+							.charAt(0)) {
 				if (this.quoteFlags.get(i)) {
 					continue;
 				}
@@ -114,14 +126,14 @@ public class Parser {
 		namePart.add(elements.get(0));
 		elements.remove(0);
 		namePart = removeQuoteTokens(namePart);
-		namePart = splitLine(namePart.firstElement());
-		
+		namePart = splitLine(namePart.firstElement(), true);
+
 		namePart = getFilesByGlob(namePart);
 		String appName = namePart.get(0);
 		appName = appName.toLowerCase();
 		namePart.remove(0);
 
-		elements = splitLine(elements);
+		elements = splitLineByApp(elements, appName);
 		elements = removeQuoteTokens(elements);
 		Vector<String> args = new Vector<String>();
 		if (!appName.equals(Configurations.APPNAME_FIND)) {
@@ -129,8 +141,8 @@ public class Parser {
 		}
 		args.addAll(namePart);
 		args.addAll(elements);
-		CallCommand command = new CallCommand(appName,
-				ioRedirectories.get(0), ioRedirectories.get(1), args);
+		CallCommand command = new CallCommand(appName, ioRedirectories.get(0),
+				ioRedirectories.get(1), args);
 		return command;
 	}
 
@@ -185,7 +197,7 @@ public class Parser {
 			final Vector<String> results = new Vector<String>();
 			String root = Environment.currentDirectory + File.separator;
 			Path startDir = Paths.get(root);
-			
+
 			FileSystem fileSystem = FileSystems.getDefault();
 			String globPattern = "glob:" + root + input.get(i);
 			if (System.getProperty("file.separator") != null
@@ -226,9 +238,10 @@ public class Parser {
 					j--;
 				}
 			}
-			
-			//remove prefix in file name
-			int prefixLength = (Environment.currentDirectory + File.separator).length();
+
+			// remove prefix in file name
+			int prefixLength = (Environment.currentDirectory + File.separator)
+					.length();
 			for (int j = 0; j < results.size(); j++) {
 				if (results.get(j).length() >= prefixLength) {
 					String newResult = results.get(j).substring(prefixLength);
@@ -236,7 +249,7 @@ public class Parser {
 					results.insertElementAt(newResult, j);
 				}
 			}
-			
+
 			if (!results.isEmpty()) {
 				finalResults.addAll(results);
 			} else {
@@ -262,7 +275,7 @@ public class Parser {
 				input.remove(i);
 				input.remove(i);
 				inputRedirectory = substituteCommand(inputRedirectory);
-				i --;
+				i--;
 			} else if (input.get(i).equals((Configurations.OUT_REIO_TOKEN))) {
 				if (outputRedirectory.length() > 0) {
 					error();
@@ -275,7 +288,7 @@ public class Parser {
 				input.remove(i);
 				input.remove(i);
 				outputRedirectory = substituteCommand(outputRedirectory);
-				i --;
+				i--;
 			}
 		}
 		Vector<String> result = new Vector<String>();
