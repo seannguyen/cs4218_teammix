@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
@@ -9,7 +8,6 @@ import java.util.Arrays;
 import java.util.Stack;
 
 import sg.edu.nus.comp.cs4218.Application;
-import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 
@@ -51,11 +49,6 @@ public class CdCommand implements Application {
 			throw new CdException(arg + "Not a directory");
 		} else {
 			Environment.currentDirectory = newDirectory.getAbsolutePath();
-		}
-		try {
-			stdout.write((Configurations.NEWLINE).getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
