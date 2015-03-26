@@ -70,8 +70,11 @@ public class WcCommand implements Application {
 			}
 		}
 		if (!argFlag) {
+			//resetAllCounters();
+			//throw new WcException("Null stdin");
+			processInputStream(stdin, stdout);
 			resetAllCounters();
-			throw new WcException("Null stdin");
+			return;
 		}
 	}
 
@@ -286,7 +289,7 @@ public class WcCommand implements Application {
 	 * 			OutputStream
 	 * @throws WcException 
 	 */
-	public void processInputStream(InputStream stdin, OutputStream stdout) throws WcException {		 
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws WcException {		 			
 		BufferedReader bufferedReader = null;
 		String line;
 		

@@ -1127,4 +1127,17 @@ public class WcCommandTest {
 		assertEquals(0, wcCommand.wordCount);
 		assertEquals(0, wcCommand.charCount);
 	}
+	
+	/**
+	 * Test InputStream
+	 * input args InputStream OutputStream
+	 * 
+	 * @throw WcException
+	 */
+	@Test
+	public void testInputStream() throws WcException {
+		InputStream in = new ByteArrayInputStream("a\nb\nc\n".getBytes());
+		wcCommand.run(new String[] { "-l", "-m", "-w" }, in, stdout);
+		assertEquals("3\t3\t6\t\n", stdout.toString());
+	}
 }
