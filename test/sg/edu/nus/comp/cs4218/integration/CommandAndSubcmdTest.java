@@ -7,7 +7,9 @@ import org.junit.Test;
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.LsException;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
@@ -39,7 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CommandAndSubcmdTest {
-  private SimpleShell shell;
+  private static Shell shell;
   private static ByteArrayOutputStream stdout;
   private static ByteArrayInputStream stdin;
   String[] args;
@@ -128,7 +130,7 @@ public class CommandAndSubcmdTest {
       Assert.assertEquals(expected, stdout.toString());
   }
   
-  @Test
+  @Test(expected = AbstractApplicationException.class)
   public void testLsAndFindNegativeCaseMissingName()
           throws AbstractApplicationException, ShellException {
       String input = "ls `find test-files-basic -n .FolderTestHide`";
@@ -137,9 +139,9 @@ public class CommandAndSubcmdTest {
       Assert.assertEquals(expected, stdout.toString());
   }
   
-  @Test
+  @Test(expected = LsException.class)
   public void testLsAndLsNegativeNotDirectory()
-          throws AbstractApplicationException, ShellException {
+          throws AbstractApplicationException, LsException, ShellException {
       String input = "ls `ls test-files-basic" + File.separator +"One.txt`";
       shell.parseAndEvaluate(input, stdout);
       String expected = "ls: One.txt: Not a directory";
@@ -148,7 +150,7 @@ public class CommandAndSubcmdTest {
   
   @Test
   public void testLsAndFindaNonDirectory()
-          throws AbstractApplicationException, ShellException {
+          throws AbstractApplicationException, ShellException{
       String input = "ls `find test-files-basic -name *.txt`";
       shell.parseAndEvaluate(input, stdout);
       String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t" + Configurations.NEWLINE;

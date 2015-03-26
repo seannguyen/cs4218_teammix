@@ -10,10 +10,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 
-public class CatCommand implements Application{	
+public class CatCommand implements Application{
+	private String ERROR_MSG_DIRECTORY = "%1$s%2$s: Is a directory" + Configurations.NEWLINE;
+	private String ERROR_MSG = "%1$s%2$s: No such file or directory" + Configurations.NEWLINE;
+	boolean singleFileFlag = false;
 	/**
 	 * Perform cat command
 	 *
@@ -26,12 +31,17 @@ public class CatCommand implements Application{
 	 */	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws CatException {
-		String fileName = "";
+		String fileName = "";		
+		singleFileFlag = false;
 		
 		if(args.length == 0) {
 			//throw new CatException(" " + fileName + ":" + " No argument(s)");
 			processInputStream(stdin, stdout);
 			return;
+		}
+		
+		if(args.length == 1) {
+			singleFileFlag = true;
 		}
 	
 		for(int i = 0; i < args.length; i++) {
@@ -46,7 +56,7 @@ public class CatCommand implements Application{
 				try {
 					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 					String line;
-					try {
+					try {						
 						while((line = bufferedReader.readLine()) != null) {	
 							String newLine = line + String.format("%n");														
 							stdout.write(newLine.getBytes());
@@ -57,13 +67,38 @@ public class CatCommand implements Application{
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
-			} else if(isDirectory(file)) {
-				//cat: sample/: Is a directory								
-				throw new CatException(" " + fileName + ":" + " Is a directory");
-			} else {			    
-				throw new CatException(fileName + ":" + " No such file or directory");
+			} else if (isDirectory(file)) {
+				// cat: sample/: Is a directory
+				printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);
+			} else {
+				// cat: sample.txt: No such file or directory	
+				printExceptions(ERROR_MSG, fileName, stdout);				
 			}
 		}		
+	}
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw WcException
+	 */
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws CatException {
+		if(singleFileFlag) {			
+			throw new CatException(String.format(msg, "", fileName + ":"));
+		} else {
+			String errorMsg = String.format(msg, "cat: ", fileName + ":");
+			try {
+				stdout.write(errorMsg.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
