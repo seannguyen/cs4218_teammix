@@ -172,4 +172,24 @@ public class CommandAndSubcmdTest {
     		  + Configurations.NEWLINE + "NormalFolder: Does not exist";
       Assert.assertEquals(expected, stdout.toString());
   }
+  
+  @Test
+  public void testCatAndEchoAndEcho()
+          throws AbstractApplicationException, ShellException {
+      String input = "tail -n 1 `echo test-files-basic` `echo " + File.separator + "NormalFolder`";
+      shell.parseAndEvaluate(input, stdout);
+      String expected = "tail: test-files-basic:: Is a directory" + Configurations.NEWLINE + 
+    		  "tail: NormalFolder:: No such file or directory"  + Configurations.NEWLINE;
+      Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
+  public void testGrepAndEchoAndEcho()
+          throws AbstractApplicationException, ShellException {
+      String input = "grep basic `echo test-files-basic` `echo " + File.separator + "NormalFolder`";
+      shell.parseAndEvaluate(input, stdout);
+      String expected = "grep: test-files-basic: Is a directory" + Configurations.NEWLINE + 
+    		  "grep: "+File.separator+"NormalFolder: No such file or directory"  + Configurations.NEWLINE;
+      Assert.assertEquals(expected, stdout.toString());
+  }
 }

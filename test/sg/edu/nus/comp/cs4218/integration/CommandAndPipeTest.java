@@ -177,6 +177,15 @@ public class CommandAndPipeTest {
   }
   
   @Test
+  public void testCatAndHeadAndWc() throws AbstractApplicationException,
+      ShellException {
+    String input = "cat test-files-basic" + File.separator +"One.txt | head -n 1 | wc";
+    shell.parseAndEvaluate(input, stdout);
+    String expected = "1\t3\t16\t" +  System.lineSeparator();
+    Assert.assertEquals(expected, stdout.toString());
+  }
+  
+  @Test
   public void testFindAndWc2() throws AbstractApplicationException,
       ShellException {
     String input = "find test-files-basic -name *.txt | wc";

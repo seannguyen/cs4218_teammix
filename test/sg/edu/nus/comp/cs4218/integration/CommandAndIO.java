@@ -157,16 +157,16 @@ public class CommandAndIO {
 	    Assert.assertEquals("ab" + Configurations.NEWLINE, stdout.toString());
 	  }	
 	  
-	  @Test
+	  @Test(expected = ShellException.class)
 	  public void testNegativeCase1InvalidFirst() throws AbstractApplicationException,
 	      ShellException {
-	    String input = "''; echo a > shouldnotappear.txt";
+	    String input = "''; echo a > none.txt";
 	    shell.parseAndEvaluate(input, stdout);
-	    File file = new File("shouldnotappear.txt");
+	    File file = new File("nonee.txt");
 		assertTrue(!file.exists());
 	  }	
 	  
-	  @Test
+	  @Test(expected = ShellException.class)
 	  public void testNegativeCase2InvalidLast() throws AbstractApplicationException,
 	      ShellException {
 	    String input = "`echo a > shouldappear.txt`; ''";
@@ -175,12 +175,12 @@ public class CommandAndIO {
 		assertTrue(file.exists());
 	  }	
 	  
-	  @Test
+	  @Test(expected = ShellException.class)
 	  public void testNegativeCase3InvalidOverall() throws AbstractApplicationException,
 	      ShellException {
-	    String input = "`echo a > shouldnotappear.txt`; ;";
+	    String input = "`echo a > none.txt`; ;";
 	    shell.parseAndEvaluate(input, stdout);
-	    File file = new File("shouldnotappear.txt");
-		assertTrue(file.exists());
+	    File file = new File("nonee.txt");
+		assertTrue(!file.exists());
 	  }	
 }
