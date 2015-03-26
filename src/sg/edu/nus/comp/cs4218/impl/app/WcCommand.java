@@ -27,8 +27,8 @@ public class WcCommand implements Application {
 	private boolean argFlag = false;
 	private boolean flag = false;
 	private int count = 0;
-	private String ERROR_MSG_DIRECTORY = "WcException: %1$s: Is a directory" + Configurations.NEWLINE;
-	private String ERROR_MSG = "WcException: %1$s: No such file or directory" + Configurations.NEWLINE;
+	private String ERROR_MSG_DIRECTORY = "%1$s%2$s: Is a directory" + Configurations.NEWLINE;
+	private String ERROR_MSG = "%1$s%2$s: No such file or directory" + Configurations.NEWLINE;
 	
 	/**
 	 * Perform Wc command
@@ -132,11 +132,11 @@ public class WcCommand implements Application {
 				}
 			} else if (isDirectory(file)) {
 				// cat: sample/: Is a directory
-				resetAllCounters();
 				if(flag) {
-					throw new WcException(String.format(ERROR_MSG_DIRECTORY, fileName + ":"));
+					resetAllCounters();
+					throw new WcException(String.format(ERROR_MSG_DIRECTORY, "", fileName + ":"));
 				} else {
-					String errorMsg = String.format(ERROR_MSG_DIRECTORY, fileName + ":");
+					String errorMsg = String.format(ERROR_MSG_DIRECTORY, "wc: ", fileName + ":");
 					try {
 						stdout.write(errorMsg.getBytes());
 					} catch (IOException e) {
@@ -144,12 +144,12 @@ public class WcCommand implements Application {
 					}
 				}
 			} else {
-				// cat: sample.txt: No such file or directory
-				resetAllCounters();
+				// cat: sample.txt: No such file or directory				
 				if(flag) {
-					throw new WcException(String.format(ERROR_MSG, fileName + ":"));
+					resetAllCounters();
+					throw new WcException(String.format(ERROR_MSG, "", fileName + ":"));
 				} else {
-					String errorMsg = String.format(ERROR_MSG, fileName + ":");
+					String errorMsg = String.format(ERROR_MSG, "wc: ", fileName + ":");
 					try {
 						stdout.write(errorMsg.getBytes());
 					} catch (IOException e) {
@@ -179,6 +179,7 @@ public class WcCommand implements Application {
 		lineFlag = false;
 		wordFlag = false;
 		charFlag = false;
+		flag = false;
 	}
 
 	/**
