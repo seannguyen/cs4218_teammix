@@ -140,6 +140,9 @@ public class Parser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		if (namePart == null || namePart.isEmpty()) {
+			error();
+		}
 		String appName = namePart.get(0);
 		appName = appName.toLowerCase();
 		namePart.remove(0);
