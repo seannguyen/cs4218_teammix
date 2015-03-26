@@ -11,6 +11,7 @@ import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.shell.SimpleShell;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 
 public class GlobbingTest {
@@ -21,7 +22,7 @@ public class GlobbingTest {
 
     @Before
     public void setUp() throws Exception {
-        Environment.currentDirectory = System.getProperty("user.dir") + "/test-files-ef1";
+        Environment.currentDirectory = System.getProperty("user.dir") + File.separator + "test-files-ef1";
         shell = new SimpleShell();
     }
 
@@ -31,18 +32,18 @@ public class GlobbingTest {
         stdout = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdLine, stdout);
 
-        String expected = "no*matches" + System.lineSeparator();
+        String expected = "no*matches";
         Assert.assertEquals(expected, stdout.toString());
     }
 
 
     @Test
     public void returnOriginalArgWhenFileNameIsBetweenDirectories() throws AbstractApplicationException, ShellException {
-        String cmdLine = "echo oyster1337/*/mussel7715";
+        String cmdLine = "echo oyster1337" + File.separator + "*" + File.separator + "mussel7715";
         stdout = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdLine, stdout);
 
-        String expected = "oyster1337/*/mussel7715"  + System.lineSeparator();
+        String expected = "oyster1337" + File.separator + "*" + File.separator + "mussel7715";
         Assert.assertEquals(expected, stdout.toString());
     }
 
@@ -53,7 +54,7 @@ public class GlobbingTest {
         stdout = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdLine, stdout);
 
-        String expected = "5callop.txt133 5callop.txt139" + System.lineSeparator();
+        String expected = "5callop.txt133 5callop.txt139";
 
         Assert.assertEquals(expected, stdout.toString());
     }
@@ -65,7 +66,7 @@ public class GlobbingTest {
         stdout = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdLine, stdout);
 
-        String expected = "5callop.txt133 5callop.txt139 clam1533 oyster1337 sca110p.txt339" + System.lineSeparator();
+        String expected = "5callop.txt133 5callop.txt139 clam1533 oyster1337 sca110p.txt339";
 
         Assert.assertEquals(expected, stdout.toString());
     }

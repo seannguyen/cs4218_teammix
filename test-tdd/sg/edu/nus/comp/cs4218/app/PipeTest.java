@@ -70,7 +70,7 @@ public class PipeTest {
         stdout = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdLine, stdout);
 
-        String expected = "" + System.lineSeparator();
+        String expected = "";
         Assert.assertEquals(expected, stdout.toString());
     }
 
