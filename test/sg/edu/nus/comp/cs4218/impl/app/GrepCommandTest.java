@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.GrepException;
 
 public class GrepCommandTest {
@@ -137,6 +138,7 @@ public class GrepCommandTest {
 	public void setUp() throws Exception {
 		grepCommand = new GrepCommand();		
 		stdout = new ByteArrayOutputStream();
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After

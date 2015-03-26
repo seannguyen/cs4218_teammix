@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 public class EchoCommandTest {
@@ -21,6 +22,7 @@ public class EchoCommandTest {
 	public void setUp() throws Exception {
 		echoCommand = new EchoCommand();
 		stdout = new java.io.ByteArrayOutputStream();
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After

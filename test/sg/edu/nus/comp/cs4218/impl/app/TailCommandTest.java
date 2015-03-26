@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.TailException;
 
@@ -117,7 +118,8 @@ public class TailCommandTest {
 	@Before
 	public void setUp() throws Exception {
 		tailCommand = new TailCommand();		
-		stdout = new java.io.ByteArrayOutputStream();		
+		stdout = new java.io.ByteArrayOutputStream();
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After

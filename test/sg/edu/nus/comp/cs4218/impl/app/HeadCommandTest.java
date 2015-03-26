@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.HeadException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
@@ -121,7 +122,8 @@ public class HeadCommandTest {
 	@Before
 	public void setUp() throws Exception {
 		headCommand = new HeadCommand();		
-		stdout = new java.io.ByteArrayOutputStream();		
+		stdout = new java.io.ByteArrayOutputStream();	
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After

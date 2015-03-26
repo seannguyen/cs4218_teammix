@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
 public class CatCommandTest {
@@ -99,6 +100,7 @@ public class CatCommandTest {
 	public void setUp() throws Exception {
 		catCommand = new CatCommand();		
 		stdout = new ByteArrayOutputStream();
+		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
 	@After
