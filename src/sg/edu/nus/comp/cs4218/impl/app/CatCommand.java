@@ -70,10 +70,10 @@ public class CatCommand implements Application{
 				}
 			} else if (isDirectory(file)) {
 				// cat: sample/: Is a directory
-				printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);
+				printExceptions(ERROR_MSG_DIRECTORY, file.getName(), stdout);
 			} else {
 				// cat: sample.txt: No such file or directory	
-				printExceptions(ERROR_MSG, fileName, stdout);				
+				printExceptions(ERROR_MSG, file.getName(), stdout);				
 			}
 		}		
 	}
