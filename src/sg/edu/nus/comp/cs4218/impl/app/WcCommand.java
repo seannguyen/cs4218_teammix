@@ -25,7 +25,7 @@ public class WcCommand implements Application {
 	protected boolean wordFlag = false;
 	protected boolean charFlag = false;
 	private boolean argFlag = false;
-	private boolean flag = false;
+	private boolean singleFileFlag = false;
 	private String ERROR_MSG_DIRECTORY = "%1$s%2$s: Is a directory" + Configurations.NEWLINE;
 	private String ERROR_MSG = "%1$s%2$s: No such file or directory" + Configurations.NEWLINE;
 	
@@ -101,7 +101,7 @@ public class WcCommand implements Application {
 		}
 		
 		if(args.length == 1) {
-			flag = true;
+			singleFileFlag = true;
 		}
 		
 		for (int i = 0; i < args.length; i++) {
@@ -139,9 +139,21 @@ public class WcCommand implements Application {
 		}
 		resetAllCounters();
 	}
-
+	
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw WcException
+	 */
 	public void printExceptions(String msg, String fileName, OutputStream stdout) throws WcException {
-		if(flag) {
+		if(singleFileFlag) {
 			resetAllCounters();
 			throw new WcException(String.format(msg, "", fileName + ":"));
 		} else {
@@ -169,7 +181,7 @@ public class WcCommand implements Application {
 		lineFlag = false;
 		wordFlag = false;
 		charFlag = false;
-		flag = false;
+		singleFileFlag = false;
 	}
 
 	/**
