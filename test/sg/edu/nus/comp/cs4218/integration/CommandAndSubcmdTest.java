@@ -160,7 +160,7 @@ public class CommandAndSubcmdTest {
           throws AbstractApplicationException, ShellException {
       String input = "ls `echo test-files-basic`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "NormalFolder\\\tOne.txt\t" + Configurations.NEWLINE;
+      String expected = "NormalFolder"+File.separator + "\tOne.txt\t" + Configurations.NEWLINE;
       Assert.assertEquals(expected, stdout.toString());
   }
 }
