@@ -12,6 +12,7 @@ import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CatCommand;
 import sg.edu.nus.comp.cs4218.impl.app.CdCommand;
@@ -140,48 +141,36 @@ public class ShellTest {
 		assertEquals(expected, result);
 	}
 	
-	@Test
+	@Test (expected = ShellException.class)
 	public void incomleteCommands()
 			throws AbstractApplicationException, ShellException {
 		String cmdLine = "echo \"front `echo middle back\"";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
-		String result = outputStream.toString();
-		String expected = "shell: " + Configurations.MESSAGE_E_PARSING;
-		assertEquals(expected, result);
 	}
 	
-	@Test
+	@Test (expected = ShellException.class)
 	public void missingApp()
 			throws AbstractApplicationException, ShellException {
 		String cmdLine = "someapp arg1";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
-		String result = outputStream.toString();
-		String expected = "shell: " + Configurations.MESSAGE_E_MISSA;
-		assertEquals(expected, result);
 	}
 	
-	@Test
+	@Test (expected = ShellException.class)
 	public void missingDir()
 			throws AbstractApplicationException, ShellException {
 		String cmdLine = "cat <somedir.txt";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
-		String result = outputStream.toString();
-		String expected = "shell: somedir.txt: " + Configurations.MESSGE_E_MISSF;
-		assertEquals(expected, result);
 	}
 	
-	@Test
+	@Test (expected = AbstractApplicationException.class)
 	public void appError()
 			throws AbstractApplicationException, ShellException {
 		String cmdLine = "cat";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
-		String result = outputStream.toString();
-		String expected = "cat: Null stdin";
-		assertEquals(expected, result);
 	}
 	
 	

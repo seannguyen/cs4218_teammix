@@ -84,7 +84,7 @@ public class ParserSupportMethodTest {
 		Vector<String> actual = parser.substituteCommand(input);
 		Vector<String> expected = new Vector<String>();
 		expected.add("app");
-		expected.add("`abc`");
+		expected.add("abc");
 		compareVectorString(expected, actual);
 	}
 
@@ -95,7 +95,7 @@ public class ParserSupportMethodTest {
 		input.add("`echo abc``echo def`");
 		Vector<String> actual = parser.substituteCommand(input);
 		Vector<String> expected = new Vector<String>();
-		expected.add("`abc``def`");
+		expected.add("abcdef");
 		compareVectorString(expected, actual);
 	}
 
@@ -106,7 +106,7 @@ public class ParserSupportMethodTest {
 		input.add("\"`echo abc`\"");
 		Vector<String> actual = parser.substituteCommand(input);
 		Vector<String> expected = new Vector<String>();
-		expected.add("\"`abc`\"");
+		expected.add("\"abc\"");
 		compareVectorString(expected, actual);
 	}
 
