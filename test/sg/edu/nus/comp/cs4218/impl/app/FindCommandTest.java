@@ -105,12 +105,17 @@ public class FindCommandTest {
 	public void testGetFilesInRestricted() throws IOException {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"*");
-		assertEquals(results.size(), 3);
+		assertEquals(results.size(), 5);
+
 		assertEquals(results.get(0), FOLDERPARENT + File.separator
 				+ FOLDERSUB2);
 		assertEquals(results.get(1), FOLDERPARENT + File.separator
-				+ FOLDERSUB);
+				+ FOLDERSUB2 + File.separator + FILESUB2);
 		assertEquals(results.get(2), FOLDERPARENT + File.separator
+				+ FOLDERSUB);
+		assertEquals(results.get(3), FOLDERPARENT + File.separator
+				+ FOLDERSUB + File.separator + FILESUB1);
+		assertEquals(results.get(4), FOLDERPARENT + File.separator
 				+ FILE);
 	}
 
@@ -124,11 +129,15 @@ public class FindCommandTest {
 	public void testGetFilesWithPatternRestricted() throws IOException {
 		Vector<String> results = findCommand.getFilesFromPattern(FOLDERPARENT,
 				"*Sub*");
-		assertEquals(results.size(), 2);
+		assertEquals(results.size(), 4);
 		assertEquals(results.get(0), FOLDERPARENT + File.separator
-				+ FOLDERSUB2);
+		+ FOLDERSUB2);
 		assertEquals(results.get(1), FOLDERPARENT + File.separator
+		+ FOLDERSUB2 + File.separator + FILESUB2);
+		assertEquals(results.get(2), FOLDERPARENT + File.separator
 				+ FOLDERSUB);
+		assertEquals(results.get(3), FOLDERPARENT + File.separator
+				+ FOLDERSUB+ File.separator + FILESUB1);
 
 	}
 

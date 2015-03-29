@@ -54,7 +54,7 @@ public class FindCommand implements Application {
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
 			pattern = pattern.replace("*", "**");
-			pattern = formatPattern(pattern);
+			//pattern = formatPattern(pattern);
 			pattern = formatWildCard(pattern);
 		} else if (args.length == 3) {
 			checkNameArg(args[1]);
@@ -203,7 +203,7 @@ public class FindCommand implements Application {
 		String root = start + File.separator;
 		Path startDir = Paths.get(root);
 		FileSystem fileSystem = FileSystems.getDefault();
-		String globPattern = "glob:" + root + pattern;
+		String globPattern = "glob:" + start + "**" + File.separator + pattern;
 		
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
