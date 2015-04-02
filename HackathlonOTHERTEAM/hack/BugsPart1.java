@@ -1,5 +1,4 @@
 package hack;
-
 import static org.junit.Assert.assertEquals;
 import integration.Utilities;
 
@@ -29,15 +28,20 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.FindException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.app.AppCat;
 import sg.edu.nus.comp.cs4218.impl.app.AppFind;
+import sg.edu.nus.comp.cs4218.impl.app.AppGrep;
 import sg.edu.nus.comp.cs4218.impl.app.AppSed;
 import sg.edu.nus.comp.cs4218.impl.app.AppWc;
 
 public class BugsPart1 {
   ShellLogic shell;
+  OutputStream stdout;
   AppSed sed;
   AppFind find;
   AppWc wc;
+  AppGrep grep;
+  AppCat cat;
   static final String TEST_DIR = "testResources" + File.separator
           + "IntegrationTest";
   private final static String FILE = "testFile1.txt";
@@ -74,11 +78,13 @@ public class BugsPart1 {
   
   @Before
   public void setUp() throws Exception {
-
+	  OutputStream stdout = new ByteArrayOutputStream();
       shell = new ShellLogic();
       sed = new AppSed();
       find = new AppFind();
       wc = new AppWc();
+      grep = new AppGrep();
+      cat = new AppCat();
       Environment.currentDirectory = System.getProperty("user.dir");
   }
 
@@ -215,7 +221,7 @@ public class BugsPart1 {
      @Test
  	public void testWithNoNewlineAtTheEndOfFile() throws Exception {
  		InputStream in = new ByteArrayInputStream("a\nb\nc".getBytes());
- 		testApp.run(new String[] {}, in, stdout);
+ 		wc.run(new String[] {}, in, stdout);
  		assertEquals("File\nLines: 2\nWords: 3\nCharacters: 5\n", stdout.toString());
  	}
      
@@ -228,10 +234,10 @@ public class BugsPart1 {
       * Unit Level Testing
       */
      @Test
- 	public void testExistingFileAndNonExistingFile() {
+ 	public void testGREPExistingFileAndNonExistingFile() {
  		String[] args = {"a", FILE, FOLDER};
  		try {
- 			appGrep.run(args, stdin, stdout);
+ 			grep.run(args, null, stdout);
  		} catch (AbstractApplicationException e) {
  			e.printStackTrace();
  		}
@@ -247,10 +253,10 @@ public class BugsPart1 {
       * Unit Level Testing
       */
     @Test
- 	public void testExistingFileAndNonExistingFile() {
+ 	public void testCATExistingFileAndNonExistingFile() {
  		String[] args = {FILE, FOLDER};
  		try {
- 			appCat.run(args, stdin, stdout);
+ 			cat.run(args, null, stdout);
  		} catch (AbstractApplicationException e) {
  			e.printStackTrace();
  		}
@@ -266,10 +272,10 @@ public class BugsPart1 {
      * Unit Level Testing
      */
    @Test
-	public void testExistingFileAndNonExistingFile() {
+	public void testWCExistingFileAndNonExistingFile() {
 		String[] args = {FILE, FOLDER};
 		try {
-			appWc.run(args, stdin, stdout);
+			wc.run(args, null, stdout);
 		} catch (AbstractApplicationException e) {
 			e.printStackTrace();
 		}
