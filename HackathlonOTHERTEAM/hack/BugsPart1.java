@@ -3,8 +3,10 @@ package hack;
 import static org.junit.Assert.assertEquals;
 import integration.Utilities;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TreeSet;
 
@@ -20,12 +22,13 @@ import sg.edu.nus.comp.cs4218.exception.FindException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.AppFind;
 import sg.edu.nus.comp.cs4218.impl.app.AppSed;
-
+import sg.edu.nus.comp.cs4218.impl.app.AppWc;
 
 public class BugsPart1 {
   ShellLogic shell;
   AppSed sed;
   AppFind find;
+  AppWc wc;
   static final String TEST_DIR = "testResources" + File.separator
           + "IntegrationTest";
 
@@ -35,6 +38,7 @@ public class BugsPart1 {
       shell = new ShellLogic();
       sed = new AppSed();
       find = new AppFind();
+      wc = new AppWc();
       Environment.currentDirectory = System.getProperty("user.dir");
   }
 
@@ -47,10 +51,10 @@ public class BugsPart1 {
   
   
   /**
-   * The bug is due to invalid handling of “ symbol [|] from SHELL when passing
+   * The bug is due to invalid handling of ï¿½ symbol [|] from SHELL when passing
    * inputs to Application SED Ref Project_description.pdf , Section SED,
-   * "Note that the symbols “/” used to separate regexp and replacement string can be substituted by any
-      other symbols. For example, “s/a/b/” and “s|a|b|” are the same replacement rules."
+   * "Note that the symbols ï¿½/ï¿½ used to separate regexp and replacement string can be substituted by any
+      other symbols. For example, ï¿½s/a/b/ï¿½ and ï¿½s|a|b|ï¿½ are the same replacement rules."
       
       System Level Testing
    */
@@ -87,8 +91,8 @@ public class BugsPart1 {
     * Thus if [REPLACEMENT] contains s/a/b (2 Backslash) This is invalid.
     * 
     *  Ref Project_description.pdf , Section SED,
-    *  "Note that the symbols “/” used to separate regexp and replacement string can be substituted by any
-    * other symbols. For example, “s/a/b/” and “s|a|b|” are the same replacement rules."
+    *  "Note that the symbols ï¿½/ï¿½ used to separate regexp and replacement string can be substituted by any
+    * other symbols. For example, ï¿½s/a/b/ï¿½ and ï¿½s|a|b|ï¿½ are the same replacement rules."
     * 
     * 
     * 
@@ -131,7 +135,7 @@ public class BugsPart1 {
      *  37917_2
      *      
      *  Ref Project_description.pdf , Section Find,
-     *  "PATTERN – file name with some parts replaced with * (asterisk)"
+     *  "PATTERN ï¿½ file name with some parts replaced with * (asterisk)"
      * 
      *   Unit Level Testing
     * @throws AbstractApplicationException 
@@ -149,5 +153,21 @@ public class BugsPart1 {
        assertEquals(expected, output.toString());
      }
      
-     
+     /**
+      * Given the input stream:
+      * a\n
+      * b\n
+      * c
+      * 
+      * The return result is Lines: 2 Words: 2 Characters: 5
+      * whereas the expected result is Lines: 2 Words: 3 Characters: 5
+      * 
+      * Unit Level Testing
+      */
+     @Test
+ 	public void testWithNoNewlineAtTheEndOfFile() throws Exception {
+ 		InputStream in = new ByteArrayInputStream("a\nb\nc".getBytes());
+ 		testApp.run(new String[] {}, in, stdout);
+ 		assertEquals("File\nLines: 2\nWords: 3\nCharacters: 5\n", stdout.toString());
+ 	}
 }
