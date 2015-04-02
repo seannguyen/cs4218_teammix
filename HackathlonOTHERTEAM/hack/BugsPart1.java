@@ -105,10 +105,10 @@ public class BugsPart1 {
 	}
   
   /**
-   * The bug is due to invalid handling of ï¿½ symbol [|] from SHELL when passing
+   * The bug is due to invalid handling of "|" symbol [|] from SHELL when passing
    * inputs to Application SED Ref Project_description.pdf , Section SED,
-   * "Note that the symbols ï¿½/ï¿½ used to separate regexp and replacement string can be substituted by any
-      other symbols. For example, ï¿½s/a/b/ï¿½ and ï¿½s|a|b|ï¿½ are the same replacement rules."
+   * "Note that the symbols "/" used to separate regexp and replacement string can be substituted by any
+      other symbols. For example, "s/a/b/" and "s|a|b|" are the same replacement rules."
       
       System Level Testing
    */
@@ -145,8 +145,8 @@ public class BugsPart1 {
     * Thus if [REPLACEMENT] contains s/a/b (2 Backslash) This is invalid.
     * 
     *  Ref Project_description.pdf , Section SED,
-    *  "Note that the symbols ï¿½/ï¿½ used to separate regexp and replacement string can be substituted by any
-    * other symbols. For example, ï¿½s/a/b/ï¿½ and ï¿½s|a|b|ï¿½ are the same replacement rules."
+    *  "Note that the symbols "/" used to separate regexp and replacement string can be substituted by any
+    * other symbols. For example, "s/a/b/" and "s|a|b|" are the same replacement rules."
     * 
     * 
     * 
@@ -281,4 +281,157 @@ public class BugsPart1 {
 		}
 		assertEquals("wc: TEST: Is a directory\nFile\nLines: 2\nWords: 3\nCharacters: 5\n", stdout.toString());
 	}
+   
+   /**
+    * when find -name *.java
+    * Output should be all the all the java files starting from root directory
+    * However, an exception msg is throw stating that there are too many args.
+    * 
+    * With Ref from, Project Description section find
+    * find [PATH] -name PATTERN
+        PATTERN – file name with some parts replaced with * (asterisk).
+        PATH – the root directory for search. If not specified, use the current directory.
+    * 
+    * 
+    * For ease of expected results, I have chosen to find files ending with .md instead
+    * base on current directory which is usr.dir, the output should be README.md
+    * 
+    * System Level Testing
+   * @throws ShellException 
+    */
+  @Test
+   public void testShellandFindWithoutGivenPathAndWithAStarInPattern() throws ShellException {
+       String cmdLine = "find -name *.md";
+       OutputStream output = new ByteArrayOutputStream();
+       try {
+         shell.parseAndEvaluate(cmdLine, output);
+       } catch (AbstractApplicationException e) {
+           e.printStackTrace();
+       }
+       assertEquals("README.md", output.toString());
+   }
+   
+  
+  /**
+   * Finding directory in current directory as root
+   * when find -name src
+   * The application should still return a result showing the folder
+   * In this case, I am finding a folder called src and it exist.
+   * There for the result should be:
+   * src
+   * 
+   *  
+   * With Ref from, Project Description section find
+   * find [PATH] -name PATTERN
+       PATTERN – file name with some parts replaced with * (asterisk).
+       PATH – the root directory for search. If not specified, use the current directory.
+   * 
+   * 
+   * For ease of expected results, I have chosen to find files ending with .md instead
+   * base on current directory which is usr.dir, the output should be README.md
+   * 
+   * System Level Testing
+  * @throws ShellException 
+   */
+ @Test
+  public void testFindNoPathButFindForDirectory() throws ShellException {
+       String[] args = {"-name", "src"};
+      OutputStream output = new ByteArrayOutputStream();
+      try {
+        find.run(args, null, output);
+      } catch (AbstractApplicationException e) {
+          e.printStackTrace();
+      }
+      assertEquals("src", output.toString());
+  }
+ 
+ 
+ /**
+  * PipingCommand seems unresponsive when find all javafiles and piping to cat is used.
+  * find -name *.java | cat
+  * 
+  * The result should have been output of all java files(recursively) found and passing it to cat
+  * and cat outputting the same output.
+  * 
+  * The function find src -name *.java works fine, so I believe your team agrees that
+  * finding files recursively is part of the project requirements.
+  * 
+  * You guys can change the test case to reduce the number of results. But I hope
+  * I manage to explain clearly.
+  * thanks
+  * 
+  * System Level Testing
+ * @throws ShellException 
+  */
+ @Test
+ public void testFindAllJavaFilesAndPipingToCat() throws ShellException {
+     String cmdLine = "find -name *.java | cat";
+     OutputStream output = new ByteArrayOutputStream();
+     String expected = 
+     "src" + File.separator + "logic" + File.separator + "MainLogic.java" + 
+     "src" + File.separator + "logic" + File.separator + "ShellLogic.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "Application.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "Command.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "Environment.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "AbstractApplicationException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "CatException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "CdException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "EchoException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "FindException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "GrepException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "HeadException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "LsException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "PwdException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "SedException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "ShellException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "TailException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "exception" + File.separator + "WcException.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppCat.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppCd.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppEcho.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppFind.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppGrep.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppHead.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppLs.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppPwd.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppSed.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppTail.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppWc.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "Utilities.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "CallCmd.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "PipeCmd.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "SeqCmd.java" + 
+     "src" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "Shell.java" + 
+
+
+     "test" + File.separator + "integration" + File.separator + "GrepAndPipeTest.java" + 
+     "test" + File.separator + "integration" + File.separator + "GrepAndSubcmdTest.java" + 
+     "test" + File.separator + "integration" + File.separator + "RedirectOrFindOnStateChangeTest.java" + 
+     "test" + File.separator + "integration" + File.separator + "Utilities.java" + 
+     "test" + File.separator + "logic" + File.separator + "ShellLogicTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppCatTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppCdTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppEchoTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppFindTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppGrepTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppHeadTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppLsTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppPwdTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppSedTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppTailTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "AppWcTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "RandoopForAppFind" + File.separator + "RandoopTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "RandoopForAppFind" + File.separator + "RandoopTest0.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "app" + File.separator + "UtilitiesTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "CallCmdTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "PipeCmdTest.java" + 
+     "test" + File.separator + "sg" + File.separator + "edu" + File.separator + "nus" + File.separator + "comp" + File.separator + "cs4218" + File.separator + "impl" + File.separator + "cmd" + File.separator + "SeqCmdTest.java";
+     
+     try {
+       shell.parseAndEvaluate(cmdLine, output);
+     } catch (AbstractApplicationException e) {
+         e.printStackTrace();
+     }
+     assertEquals(expected, output.toString());
+ }
 }
