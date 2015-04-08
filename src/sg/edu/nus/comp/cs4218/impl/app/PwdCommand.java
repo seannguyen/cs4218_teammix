@@ -27,8 +27,9 @@ public class PwdCommand implements Application {
 			throws PwdException {
 		if (args.length == 0) {
 			try {
-				stdout.write(verifyDirectory(Environment.currentDirectory)
-						.getBytes());
+				String output = verifyDirectory(Environment.currentDirectory) + System.lineSeparator();
+				
+				stdout.write(output.getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
