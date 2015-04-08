@@ -118,8 +118,9 @@ public class LsCommand implements Application {
 	 *            input arguments
 	 * @param stdout
 	 *            outputStream
+	 * @throws LsException 
 	 */
-	void printNonDirectory(OutputStream stdout, String... args) {
+	void printNonDirectory(OutputStream stdout, String... args) throws LsException {
 		skipNewLine = true;
 		numOfDirectories = 0;
 		List<File> nonDirectoryFiles = new ArrayList<File>();
@@ -130,6 +131,8 @@ public class LsCommand implements Application {
 					numOfDirectories++;
 				} else {
 					nonDirectoryFiles.add(file);
+					throw new LsException(file.getName() + " is not a directory");
+					
 				}
 			}
 		}

@@ -53,7 +53,11 @@ public class FindCommand implements Application {
 			checkNameArg(args[0]);
 			root = Environment.currentDirectory;
 			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);
-			pattern = pattern.replace("*", "**");
+			if(!pattern.startsWith("*") && !pattern.endsWith("*")) {
+				pattern = pattern.replace("*", "tmdla");
+			} else {
+				pattern = pattern.replace("*", "**");
+			}
 			//pattern = formatPattern(pattern);
 			pattern = formatWildCard(pattern);
 		} else if (args.length == 3) {
@@ -76,6 +80,13 @@ public class FindCommand implements Application {
 		results = getResults(pattern, root);
 		checkErrorStatus(error);
 		root = formatFileSeparator(root);
+		if(results.size() == 0) {
+			try {
+				stdout.write(System.lineSeparator().getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		for (String result : results) {
 			try {
 				String outString = result.replaceFirst(formatFileSeparator(Environment.currentDirectory), RELATIVE)
