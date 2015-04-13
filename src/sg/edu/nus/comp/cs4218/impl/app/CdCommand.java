@@ -82,7 +82,8 @@ public class CdCommand implements Application {
 		if (System.getProperty(FILE_SEPARATOR) != null
 				&& System.getProperty(FILE_SEPARATOR).equals(
 						Configurations.W_FILESEPARATOR)) {
-			newRoot = root.replace("\\", "\\\\");
+		    newRoot = root.replace("/", "\\");
+			newRoot = newRoot.replace("\\", "\\\\");
 		}
 		return newRoot;
 	}
@@ -97,13 +98,13 @@ public class CdCommand implements Application {
 	 *            a relative directory
 	 * @return formated Directory
 	 */
-	protected static String formatDirectory(String currAbsoluteDir,
-			String newRelativeDir) {
+	protected static String formatDirectory(String curAbsoluteDir,
+			String newwRelativeDir) {
 		String separator = File.separator;
 		if (("\\").equals(File.separator)) {
 			separator = ("\\\\");
 		}
-		String curAbsoluteDir = formatFileSeparator(currAbsoluteDir);
+		String newRelativeDir = formatFileSeparator(newwRelativeDir);
 		if (curAbsoluteDir == null) {
 			return NOTHING;
 		} else {
