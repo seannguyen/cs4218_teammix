@@ -1,0 +1,47 @@
+Team: TeamMix
+Documentation for Hackathlon
+
+1.	public void testChangeDirectoryAndPrintPwdInSubCommand() 
+		
+2.	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd()
+			
+3.	public void testAppNameForCaseSensitive() 
+		
+4.	public void testNumberLargerThanIntegerValue() {
+	
+5.	public void testGlobbingAsteriskInQuotesForGrep() 
+		
+6.	public void testCommandStartingWithSemiColon() 
+	
+7.	public void testGrepWithFileNamesReadFromCatInSubCmd() 
+		
+8.	public void testEchoAppWithoutArgument() {
+		
+9.	public void testEchoAppWithStdin() 
+		
+10.	public void testApplicationEndingWithNewline() 
+		
+11.	public void testPipeCommandWithLsFollowedByGrep() 
+		
+12.	public void testGrepRegexPatterns() 
+		
+13.	public void testFindAppWithoutAsteriskInPattern()  FIX
+		
+14.	public void testFindAppAsteriskInMiddleOfName()    FIX
+		
+15.	public void testCdRelativePathFromOneLevelAbove()  FIX
+		
+16.	public void testLsWithPattern() {                  FIX
+		
+17.	public void testLsMultiplePaths() 
+	INVALID: Because We implemented Ls to handle more than one file
+		 Discussed with Our TA(MECHTAEV SERGEY) on this matter 
+		
+18.	public void testHeadTailMultipleFiles(){   
+	INVALID: Because We implemented Head and Tail to handle more than one file
+		 Discussed with Our TA(MECHTAEV SERGEY) on this matter 
+		
+19.	public void testSedEmptyReplacement() 
+		
+20.	public void testWcNewlineCount() 		
+

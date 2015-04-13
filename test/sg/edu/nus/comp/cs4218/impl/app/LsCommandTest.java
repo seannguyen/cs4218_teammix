@@ -121,7 +121,7 @@ public class LsCommandTest {
 	 * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
 	 * list files with 2 txt args (more than 1) one of with a . infront
      */
-	@Test
+	@Test (expected = LsException.class)
 	public void testTwoArgs() throws LsException {
 		String args[] = { "test-files-basic" + System.getProperty("file.separator") 
 		    + "One.txt", "test-files-basic"+ System.getProperty("file.separator") 
@@ -137,7 +137,7 @@ public class LsCommandTest {
      * Test void run(String[] args, InputStream stdin, OutputStream stdout) Test
      * list files with 2 txt args 2 folder args (more than 1) 2 files with . infront
      */
-    @Test
+    @Test (expected = LsException.class)
     public void testFourArgs() throws LsException {
         String args[] = { "test-files-basic" + System.getProperty("file.separator") 
             + "One.txt", "test-files-basic"+ System.getProperty("file.separator") 

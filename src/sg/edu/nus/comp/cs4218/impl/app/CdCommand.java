@@ -8,12 +8,13 @@ import java.util.Arrays;
 import java.util.Stack;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 
 public class CdCommand implements Application {
 	protected final static String NOTHING = "";
-
+	protected final static String FILE_SEPARATOR = "file.separator";
 	/**
 	 * Perform change directory command
 	 *
@@ -71,6 +72,23 @@ public class CdCommand implements Application {
 	}
 
 	/**
+	 * Format root base on OS file separator
+	 * 
+	 * @param root
+	 * 			pattern matching root
+	 */
+	private static String formatFileSeparator(String root) {
+		String newRoot = root;
+		if (System.getProperty(FILE_SEPARATOR) != null
+				&& System.getProperty(FILE_SEPARATOR).equals(
+						Configurations.W_FILESEPARATOR)) {
+			newRoot = root.replace("\\", "\\\\");
+		}
+		return newRoot;
+	}
+	
+	
+	/**
 	 * Format given new relative directory path into a absolute directory
 	 *
 	 * @param curAbsoluteDir
@@ -79,13 +97,13 @@ public class CdCommand implements Application {
 	 *            a relative directory
 	 * @return formated Directory
 	 */
-	protected static String formatDirectory(String curAbsoluteDir,
+	protected static String formatDirectory(String currAbsoluteDir,
 			String newRelativeDir) {
 		String separator = File.separator;
 		if (("\\").equals(File.separator)) {
 			separator = ("\\\\");
 		}
-
+		String curAbsoluteDir = formatFileSeparator(currAbsoluteDir);
 		if (curAbsoluteDir == null) {
 			return NOTHING;
 		} else {
