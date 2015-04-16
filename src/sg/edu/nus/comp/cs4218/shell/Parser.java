@@ -144,7 +144,6 @@ public class Parser {
 			error();
 		}
 		String appName = namePart.get(0);
-		appName = appName.toLowerCase();
 		namePart.remove(0);
 
 		elements = splitLine(elements);
