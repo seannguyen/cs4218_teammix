@@ -3,11 +3,11 @@ Documentation for Hackathlon
 
 1.	public void testChangeDirectoryAndPrintPwdInSubCommand() 
 		
-2.	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd()
+2.	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd() FIXED
 			
-3.	public void testAppNameForCaseSensitive() 
+3.	public void testAppNameForCaseSensitive()  						FIXED
 		
-4.	public void testNumberLargerThanIntegerValue() {
+4.	public void testNumberLargerThanIntegerValue()
 	
 5.	public void testGlobbingAsteriskInQuotesForGrep() 
 		
@@ -15,7 +15,7 @@ Documentation for Hackathlon
 	
 7.	public void testGrepWithFileNamesReadFromCatInSubCmd() 
 		
-8.	public void testEchoAppWithoutArgument() {
+8.	public void testEchoAppWithoutArgument()
 		
 9.	public void testEchoAppWithStdin() 
 		
@@ -25,13 +25,13 @@ Documentation for Hackathlon
 		
 12.	public void testGrepRegexPatterns() 
 		
-13.	public void testFindAppWithoutAsteriskInPattern()  FIX
+13.	public void testFindAppWithoutAsteriskInPattern()  FIXED
 		
-14.	public void testFindAppAsteriskInMiddleOfName()    FIX
+14.	public void testFindAppAsteriskInMiddleOfName()    FIXED
 		
-15.	public void testCdRelativePathFromOneLevelAbove()  FIX
+15.	public void testCdRelativePathFromOneLevelAbove()  FIXED
 		
-16.	public void testLsWithPattern() {                  FIX
+16.	public void testLsWithPattern()			           FIXED
 		
 17.	public void testLsMultiplePaths() 
 	INVALID: Because We implemented Ls to handle more than one file
