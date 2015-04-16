@@ -406,6 +406,9 @@ public class Parser {
 
 	private PipeCommand parsePipe(Vector<String> input) throws ShellException,
 			AbstractApplicationException {
+		if (input.isEmpty()) {
+			error();
+		}
 		PipeCommand pipeCommand = new PipeCommand();
 		Vector<Vector<String>> calls = splitByToken(input,
 				Configurations.PIPE_TOKEN);
@@ -501,7 +504,7 @@ public class Parser {
 					quotes.pop();
 					quoteFlags.add(true);
 				} else {
-					quoteFlags.add(false);
+					quoteFlags.add(true);
 				}
 			} else {
 				if (quotes.isEmpty()) {

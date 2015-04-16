@@ -66,7 +66,6 @@ public class HackathlonFix {
 		shell.parseAndEvaluate(cmd, stdout);
 		assertEquals("Scallops live in all the world's oceans." + System.lineSeparator(), stdout.toString());
 	}
-		
 
 	/**
 	 * Only a directory should be given to a ls application.
@@ -102,37 +101,13 @@ public class HackathlonFix {
 		shell.parseAndEvaluate(cmd, stdout);
 		assertEquals(System.lineSeparator(), stdout.toString());
 	}
-
-	/**
-	 * The shell suppose to print out the changed directory instead of
-	 * printing out the previous directory.  
-	 * Also discussed in forum on 26/03/2015: "Cd and Substitute Command" 
-	 */
-	@Test
-	public void testChangeDirectoryAndPrintPwdInSubCommand() 
-			throws AbstractApplicationException, ShellException{
-		String currDir = Environment.currentDirectory + File.separator + 
-				"test-files-basic";
-		cmd = "cd test-files-basic ; echo `pwd`";
-		shell.parseAndEvaluate(cmd, stdout);
-		assertEquals(currDir, stdout.toString());
-	}
-	
-	 /* The single quote within the double quote which is in a
-	 * sub-command should be printed without any error since the 
-	 * single quote is within a pair of double quote.
-	 */
-	@Test
-	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd()
-			throws ShellException, AbstractApplicationException {
-		cmd = "echo `echo \"hell'o\"`";
-		shell.parseAndEvaluate(cmd, stdout);
-		assertEquals("hell'o", stdout.toString());
-	}
 	
 	/**
 	 * An application with capital letter should be considered as invalid.
 	 * Also discussed in forum on 16/01/2015: "Character Case handling"
+	 * 
+	 * BUG_ID:  testAppNameForCaseSensitive()
+	 * fix location in: Parser, remove line 146
 	 */
 	@Test(expected = ShellException.class)
 	public void testAppNameForCaseSensitive() 
@@ -141,8 +116,12 @@ public class HackathlonFix {
 		shell.parseAndEvaluate(cmd, stdout);
 	}
 	
-	/* Command starting with semicolon should throw error in shell
+	/** 
+	 * Command starting with semicolon should throw error in shell
 	 * Also tested with CYGWIN terminal
+	 * 
+	 * BUG_ID:  testCommandStartingWithSemiColon()
+	 * fix location in: Parser, added condition at line 409
 	 */
 	@Test(expected = ShellException.class)
 	public void testCommandStartingWithSemiColon() 
@@ -150,6 +129,5 @@ public class HackathlonFix {
 		cmd = ";echo hello";
 		shell.parseAndEvaluate(cmd, stdout);
 	}
-	
 
 }
