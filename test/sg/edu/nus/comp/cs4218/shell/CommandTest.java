@@ -102,4 +102,13 @@ public class CommandTest {
 		callCmd.evaluate(this.inputStream, this.outputStream);
 	}
 
+	@Test
+	public void callCommandValidInputFileName()
+			throws AbstractApplicationException, ShellException {
+		args.add(ARG1);
+		CallCommand callCmd = new CallCommand("cat",
+				"a.txt", null, args);
+		callCmd.evaluate(this.inputStream, this.outputStream);
+	}
+	
 }

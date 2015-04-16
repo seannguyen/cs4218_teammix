@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.shell;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -255,5 +256,19 @@ public class ShellTest {
 		String cmdLine = "echo abc <no#/tExist.txt";
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		shell.parseAndEvaluate(cmdLine, outputStream);
+	}
+
+	@Test
+	public void mainTest() {
+		try {
+			Environment.running = false;
+			SimpleShell.main(null);
+		} catch (AbstractApplicationException e) {
+			//pass
+		} catch (ShellException e) {
+			//pass
+		} catch (IOException e) {
+			//pass
+		}
 	}
 }

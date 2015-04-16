@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.shell;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,34 +86,28 @@ public class CallCommand implements Command {
 	//private helper methods
 
 	private void initIoStreams(InputStream stdin, OutputStream stdout) throws ShellException {
-		if (inputFile != null && inputFile.length() > 0) {
-			this.inputStream = getInputStream(inputFile);
-		} else {
-			this.inputStream = stdin;
-		}
-		if (outputFile != null && outputFile.length() > 0) {
-			this.outputStream = getOutputStream(outputFile);
-		} else {
-			this.outputStream = stdout;
+		try {
+			if (inputFile != null && inputFile.length() > 0) {
+				this.inputStream = getInputStream(inputFile);
+			} else {
+				this.inputStream = stdin;
+			}
+			if (outputFile != null && outputFile.length() > 0) {
+				this.outputStream = getOutputStream(outputFile);
+			} else {
+				this.outputStream = stdout;
+			}
+		} catch (Exception e) {
+			error(Configurations.MESSGE_E_MISSF + e.getMessage());
 		}
 	}
 
-	private InputStream getInputStream(String fileName) throws ShellException {
-		try {
+	private InputStream getInputStream(String fileName) throws ShellException, FileNotFoundException {
 			return new FileInputStream(Environment.currentDirectory + File.separator + fileName);
-		} catch (Exception e) {
-			error(fileName + ": " + Configurations.MESSGE_E_MISSF);
-			return null;
-		}
 	}
 	
-	private OutputStream getOutputStream(String fileName) throws ShellException {
-		try {
-			return new FileOutputStream(Environment.currentDirectory + File.separator + fileName);
-		} catch (Exception e) {
-			error(fileName + ": " + Configurations.MESSGE_E_MISSF + e.getMessage());
-			return null;
-		}
+	private OutputStream getOutputStream(String fileName) throws ShellException, FileNotFoundException {
+		return new FileOutputStream(Environment.currentDirectory + File.separator + fileName);
 	}
 
 	private void error(String message) throws ShellException {
