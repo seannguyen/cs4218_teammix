@@ -145,13 +145,11 @@ public class CommandAndSubcmdTest {
       Assert.assertEquals(expected, stdout.toString());
   }
   
-  @Test
+  @Test (expected = LsException.class)
   public void testLsAndFindaNonDirectory()
           throws AbstractApplicationException, ShellException{
       String input = "ls `find test-files-basic -name *.txt`";
       shell.parseAndEvaluate(input, stdout);
-      String expected = "textFile1.txt\ttextFile2.txt\tNormal.txt\tOne.txt\t" + Configurations.NEWLINE;
-      Assert.assertEquals(expected, stdout.toString());
   }
   
   @Test

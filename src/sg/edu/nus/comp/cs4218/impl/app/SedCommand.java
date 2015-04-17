@@ -70,9 +70,7 @@ public class SedCommand implements Application {
           }
           processSed(stdout, file, args[0]);
           try {
-            if (i != args.length - 1 && lines <= 1) {
-              stdout.write((Configurations.NEWLINE).getBytes());
-            } else if (i != args.length - 1 && lines != 1) {
+            if (i != args.length - 1 && lines != 1) {
               stdout.write((Configurations.NEWLINE + Configurations.NEWLINE).getBytes());
             }
           } catch (IOException e) {

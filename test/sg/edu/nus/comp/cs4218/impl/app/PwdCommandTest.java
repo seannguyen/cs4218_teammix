@@ -158,7 +158,7 @@ public class PwdCommandTest {
 	public void pwdZeroArgs() throws PwdException {
 		String args[] = {};
 		pwdCommand.run(args, stdin, stdout);
-		assertEquals(Environment.currentDirectory, stdout.toString());
+		assertEquals(Environment.currentDirectory + System.lineSeparator(), stdout.toString());
 	}
 
 	/**

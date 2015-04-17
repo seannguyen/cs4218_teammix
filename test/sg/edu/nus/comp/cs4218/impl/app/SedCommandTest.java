@@ -63,6 +63,16 @@ public class SedCommandTest {
         app.run(args, stdin, stdout);
         Assert.assertEquals("banana apple apple" + System.lineSeparator(), stdout.toString());
     }
+    
+    @Test (expected = SedException.class)
+    public void testSedDirectoryFile()
+            throws AbstractApplicationException {
+        String replacement = "s" + "/" + "apple"
+                + "/" + "banana" + "/";
+        args = new String[] { replacement , "test-files-basic"};
+        app.run(args, stdin, stdout);
+    }
+    
 
     @Test
     public void testSedMulyipleFilesWordsReplaceOne()
