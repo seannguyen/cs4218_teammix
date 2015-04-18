@@ -51,7 +51,8 @@ public class GrepCommand implements Application{
 				processFile(pattern, absFileName, fileName, stdin, stdout);
 			} else {
 				for(int i = 1; i < args.length; i++) {
-					fileName = args[i];
+					fileName = args[i].trim();
+					System.out.println(fileName); //testing remove later
 					absFileName = getAbsolutePath(fileName);			
 					processFiles(pattern, absFileName, fileName, stdin, stdout);
 				}
@@ -116,7 +117,7 @@ public class GrepCommand implements Application{
 	 *            outputStream
 	 */	
 	public void processFiles(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
-		File file = new File(absFileName);	
+		File file = new File(absFileName);			
 		if(doesFileExist(file)) {
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
