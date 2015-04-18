@@ -615,4 +615,25 @@ public class CatCommandTest {
 		catCommand.processInputStream(stdin, stdout);
 		assertEquals("", stdout.toString());
 	}
+	
+	@Test
+    public void testAbsoluteDirectory() throws CatException {
+        String out = catCommand.getAbsolutePath(Environment.currentDirectory + File.separator +"a.txt");
+        assertEquals(Environment.currentDirectory + File.separator +"a.txt", out);
+    }
+	
+	@Test
+	public void testHelperPrintExceptions() throws CatException {
+	  catCommand.printExceptions("test msg", "a.txt", stdout);
+	  assertEquals("test msg", stdout.toString());
+	}
+	
+	@Test
+    public void testMutipleDirectoriesAndOneNotExist() throws CatException {
+	  String[] args = { "src" , "test-files-basic", "als.txt" };
+      catCommand.run(args, stdin, stdout);
+      assertEquals("cat: src:: Is a directory" + Configurations.NEWLINE + 
+          "cat: test-files-basic:: Is a directory" + Configurations.NEWLINE +
+          "cat: als.txt:: No such file or directory" + Configurations.NEWLINE, stdout.toString());
+    }
 }

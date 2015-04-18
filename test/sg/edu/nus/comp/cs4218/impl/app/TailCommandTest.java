@@ -27,6 +27,7 @@ import org.junit.rules.ExpectedException;
 import sg.edu.nus.comp.cs4218.Configurations;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.HeadException;
 import sg.edu.nus.comp.cs4218.exception.TailException;
 
 public class TailCommandTest {
@@ -766,4 +767,53 @@ public class TailCommandTest {
 		tailCommand.run(args, stdin, stdout);
 		Assert.assertEquals(expected, stdout.toString());
 	}
+	
+    @Test
+    public void multipleFilesMoreThan3() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "a.txt", "b.txt" };
+        stdout = new ByteArrayOutputStream();
+        tailCommand.run(args, null, stdout);
+        Assert.assertEquals("==>a.txt<==" + Configurations.NEWLINE +
+                              "this is a" + Configurations.NEWLINE +
+                              "==>b.txt<==" + Configurations.NEWLINE +
+                              "this is a" + Configurations.NEWLINE +
+                               "<a.txt" + Configurations.NEWLINE, stdout.toString());
+    }
+    
+    @Test (expected = TailException.class)
+    public void nNegativeNumber() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "-15" , "a.txt", "b.txt" };
+        stdout = new ByteArrayOutputStream();
+        tailCommand.run(args, null, stdout);
+    }
+        
+    @Test (expected = TailException.class)
+    public void nNegativeNumber0file() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "-5"};
+        stdout = new ByteArrayOutputStream();
+        tailCommand.run(args, null, stdout);
+    }
+    
+    @Test
+    public void doesNotExistFile() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "alo.txt", "bas.txt" };
+        stdout = new ByteArrayOutputStream();
+        tailCommand.run(args, null, stdout);
+        Assert.assertEquals( "tail: alo.txt:: No such file or directory" + Configurations.NEWLINE + 
+            "tail: bas.txt:: No such file or directory" + Configurations.NEWLINE, stdout.toString());
+    }
+    
+    @Test
+    public void headADirectory() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "test-files-basic", "src" };
+        stdout = new ByteArrayOutputStream();
+        tailCommand.run(args, null, stdout);
+        Assert.assertEquals( "tail: test-files-basic:: Is a directory" + Configurations.NEWLINE + 
+            "tail: src:: Is a directory" + Configurations.NEWLINE, stdout.toString());
+    }
 }

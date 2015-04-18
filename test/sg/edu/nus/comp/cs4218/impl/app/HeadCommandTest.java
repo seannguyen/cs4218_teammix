@@ -714,4 +714,60 @@ public class HeadCommandTest {
         headCommand.run(args, stdin, stdout);
         Assert.assertEquals(expected, stdout.toString());
     }
+    
+    @Test
+    public void multipleFilesMoreThan3() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "a.txt", "b.txt" };
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+        Assert.assertEquals("==>a.txt<==" + Configurations.NEWLINE +
+                              "this is a" + Configurations.NEWLINE +
+                              "==>b.txt<==" + Configurations.NEWLINE +
+                               "<a.txt" + Configurations.NEWLINE, stdout.toString());
+    }
+    
+    @Test (expected = HeadException.class)
+    public void nNegativeNumber() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "-15" , "a.txt", "b.txt" };
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+    }
+    
+    @Test (expected = HeadException.class)
+    public void nNonNumber() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "error" , "alo.txt", "bas.txt" };
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+    }
+    
+    @Test (expected = HeadException.class)
+    public void nNegativeNumber0file() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "-5"};
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+    }
+    
+    @Test
+    public void doesNotExistFile() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "alo.txt", "bas.txt" };
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+        Assert.assertEquals( "head: alo.txt:: No such file or directory" + Configurations.NEWLINE + 
+            "head: bas.txt:: No such file or directory" + Configurations.NEWLINE, stdout.toString());
+    }
+    
+    @Test
+    public void headADirectory() throws AbstractApplicationException {
+        
+        String[] args = new String[] { "-n" , "15" , "test-files-basic", "src" };
+        stdout = new ByteArrayOutputStream();
+        headCommand.run(args, null, stdout);
+        Assert.assertEquals( "head: test-files-basic:: Is a directory" + Configurations.NEWLINE + 
+            "head: src:: Is a directory" + Configurations.NEWLINE, stdout.toString());
+    }
 }
