@@ -51,6 +51,10 @@ public class EchoCommand implements Application{
 		BufferedReader bufferedReader = null;
 		
 		try { 
+			if(stdin == null) {				
+				stdout.write(String.format("%n").getBytes());
+				return;
+			}
 			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
 			while ((line = bufferedReader.readLine()) != null) {
 				line = line + String.format("%n");
