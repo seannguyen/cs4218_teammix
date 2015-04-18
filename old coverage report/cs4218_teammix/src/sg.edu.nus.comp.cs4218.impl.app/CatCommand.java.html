@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>CatCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">CatCommand.java</span></div><h1>CatCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
+
+<span class="fc" id="L19">public class CatCommand implements Application{</span>
+<span class="fc" id="L20">	private String ERROR_MSG_DIRECTORY = &quot;%1$s%2$s: Is a directory&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L21">	private String ERROR_MSG = &quot;%1$s%2$s: No such file or directory&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L22">	boolean singleFileFlag = false;</span>
+	/**
+	 * Perform cat command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout) throws CatException {
+<span class="fc" id="L35">		String fileName = &quot;&quot;;		</span>
+<span class="fc" id="L36">		singleFileFlag = false;</span>
+		
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if(args.length == 0) {</span>
+			//throw new CatException(&quot; &quot; + fileName + &quot;:&quot; + &quot; No argument(s)&quot;);
+<span class="fc" id="L40">			processInputStream(stdin, stdout);</span>
+<span class="fc" id="L41">			return;</span>
+		}
+		
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if(args.length == 1) {</span>
+<span class="fc" id="L45">			singleFileFlag = true;</span>
+		}
+	
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		for(int i = 0; i &lt; args.length; i++) {</span>
+<span class="fc" id="L49">			fileName = getAbsolutePath(args[i]);			</span>
+<span class="fc" id="L50">			File file = new File(fileName);</span>
+			
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			if(args[i].equals(&quot;&quot;)) {</span>
+<span class="fc" id="L53">				throw new CatException(&quot; &quot; + fileName + &quot;:&quot; + &quot; Null argument(s)&quot;);</span>
+			}
+			
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">			if(doesFileExist(file)) {</span>
+				try {
+<span class="fc" id="L58">					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));</span>
+					String line;
+					try {						
+<span class="fc bfc" id="L61" title="All 2 branches covered.">						while((line = bufferedReader.readLine()) != null) {	</span>
+<span class="fc" id="L62">							String newLine = line + String.format(&quot;%n&quot;);														</span>
+<span class="fc" id="L63">							stdout.write(newLine.getBytes());</span>
+						}
+<span class="pc" id="L65">					} catch (IOException e) {</span>
+<span class="nc" id="L66">						e.printStackTrace();</span>
+					}
+<span class="nc" id="L68">				} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L69">					e.printStackTrace();</span>
+				}
+<span class="nc bnc" id="L71" title="All 2 branches missed.">			} else if (isDirectory(file)) {</span>
+				// cat: sample/: Is a directory
+<span class="nc" id="L73">				printExceptions(ERROR_MSG_DIRECTORY, file.getName(), stdout);</span>
+<span class="nc" id="L74">			} else {</span>
+				// cat: sample.txt: No such file or directory	
+<span class="nc" id="L76">				printExceptions(ERROR_MSG, file.getName(), stdout);				</span>
+			}
+		}		
+<span class="fc" id="L79">	}</span>
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw WcException
+	 */
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws CatException {
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if(singleFileFlag) {			</span>
+<span class="fc" id="L94">			throw new CatException(String.format(msg, &quot;&quot;, fileName + &quot;:&quot;));</span>
+		} else {
+<span class="nc" id="L96">			String errorMsg = String.format(msg, &quot;cat: &quot;, fileName + &quot;:&quot;);</span>
+			try {
+<span class="nc" id="L98">				stdout.write(errorMsg.getBytes());</span>
+<span class="nc" id="L99">			} catch (IOException e) {</span>
+<span class="nc" id="L100">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc" id="L103">	}</span>
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws CatException 
+	 */
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws CatException {		 			
+<span class="fc" id="L115">		BufferedReader bufferedReader = null;</span>
+		String line;
+		
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if(stdin == null) {</span>
+<span class="fc" id="L119">			throw new CatException(&quot;Null stdin&quot;);</span>
+		}
+		try { 
+<span class="fc" id="L122">			bufferedReader = new BufferedReader(new InputStreamReader(stdin));</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			while ((line = bufferedReader.readLine()) != null) {</span>
+<span class="fc" id="L124">				String newLine = line + String.format(&quot;%n&quot;);</span>
+<span class="fc" id="L125">				stdout.write(newLine.getBytes());</span>
+			} 
+<span class="pc" id="L127">		} catch (IOException e) {</span>
+<span class="nc" id="L128">			e.printStackTrace();</span>
+<span class="nc" id="L129">		} finally {</span>
+<span class="pc bpc" id="L130" title="5 of 6 branches missed.">			if (bufferedReader != null) {</span>
+				try {
+<span class="pc" id="L132">					bufferedReader.close();</span>
+<span class="pc" id="L133">				} catch (IOException e) {</span>
+<span class="nc" id="L134">					e.printStackTrace();</span>
+				}
+			}
+<span class="nc" id="L137">		}</span>
+<span class="fc" id="L138">		return;</span>
+	}
+	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
+	public String getAbsolutePath(String filePath) {				
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">		if(filePath.startsWith(Environment.currentDirectory)) {</span>
+<span class="nc" id="L149">			return filePath;</span>
+		}
+<span class="fc" id="L151">		return Environment.currentDirectory + File.separator + filePath;</span>
+	}
+	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L161" title="All 4 branches covered.">		if(file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L162">			return true;</span>
+		}
+<span class="fc" id="L164">		return false;</span>
+	}
+	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		if(file.isDirectory()) {</span>
+<span class="fc" id="L175">			return true;</span>
+		}
+<span class="fc" id="L177">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

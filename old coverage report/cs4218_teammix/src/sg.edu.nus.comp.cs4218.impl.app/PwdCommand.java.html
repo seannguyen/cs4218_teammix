@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>PwdCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">PwdCommand.java</span></div><h1>PwdCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.PwdException;
+
+<span class="fc" id="L13">public class PwdCommand implements Application {</span>
+
+	/**
+	 * Perform print working directory command
+	 *
+	 * @param args
+	 *            [] input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws PwdException {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		if (args.length == 0) {</span>
+			try {
+<span class="fc" id="L30">				stdout.write(verifyDirectory(Environment.currentDirectory)</span>
+<span class="fc" id="L31">						.getBytes());</span>
+<span class="pc" id="L32">			} catch (IOException e) {</span>
+<span class="nc" id="L33">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L35">		} else {</span>
+<span class="fc" id="L36">			throw new PwdException(&quot;Invalid Arguments&quot;);</span>
+		}
+<span class="fc" id="L38">	}</span>
+	
+	/**
+	 * Check if directory is null, exist and isDirectory.
+	 *
+	 * @param directory
+	 *            a directory to be checked
+	 */
+	protected String verifyDirectory(String directory) throws PwdException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (directory == null) {</span>
+<span class="fc" id="L48">			throw new PwdException(&quot;Cannot find working directory&quot;);</span>
+		}
+<span class="fc" id="L50">		File checkDirectory = new File(directory);</span>
+		// Error Handling
+<span class="pc bpc" id="L52" title="1 of 4 branches missed.">		if (checkDirectory == null || !checkDirectory.exists()</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">				|| !checkDirectory.isDirectory()) {</span>
+<span class="fc" id="L54">			throw new PwdException(&quot;Cannot find working directory&quot;);</span>
+		}
+<span class="fc" id="L56">		return directory;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

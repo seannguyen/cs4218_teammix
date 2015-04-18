@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>GrepCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">GrepCommand.java</span></div><h1>GrepCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.GrepException;
+
+<span class="fc" id="L17">public class GrepCommand implements Application{</span>
+	/**
+	 * Perform grep command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout) throws GrepException {
+<span class="fc" id="L30">		String absFileName = &quot;&quot;;</span>
+<span class="fc" id="L31">		String fileName = &quot;&quot;;</span>
+<span class="fc" id="L32">		String pattern = &quot;&quot;;</span>
+		
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if(args.length == 0) {</span>
+<span class="fc" id="L35">			throw new GrepException(&quot;No argument.&quot;);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		} else if(args.length == 1) {</span>
+<span class="fc" id="L37">			pattern = args[0];</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">			if(pattern.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L39">				throw new GrepException(&quot;No pattern.&quot;);</span>
+			}
+<span class="fc" id="L41">			processStdin(pattern, stdin, stdout);</span>
+<span class="fc" id="L42">		} else {</span>
+<span class="fc" id="L43">			pattern = args[0];</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">			if(pattern.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L45">				throw new GrepException(&quot;No pattern.&quot;);</span>
+			}
+<span class="fc" id="L47">			int numOfFiles = args.length - 1;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			if(numOfFiles == 1) {</span>
+<span class="fc" id="L49">				fileName = args[1];</span>
+<span class="fc" id="L50">				absFileName = getAbsolutePath(fileName);</span>
+<span class="fc" id="L51">				processFile(pattern, absFileName, fileName, stdin, stdout);</span>
+<span class="fc" id="L52">			} else {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">				for(int i = 1; i &lt; args.length; i++) {</span>
+<span class="fc" id="L54">					fileName = args[i];</span>
+<span class="fc" id="L55">					absFileName = getAbsolutePath(fileName);			</span>
+<span class="fc" id="L56">					processFiles(pattern, absFileName, fileName, stdin, stdout);</span>
+				}
+			}
+		}
+		
+<span class="fc" id="L61">	}</span>
+	
+	/**
+	 * process a single file
+	 *
+	 * @param pattern
+	 *            string of pattern
+	 * @param absFileName
+	 *            absolute file name
+	 * @param fileName
+	 *            input file name      
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	public void processFile(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
+<span class="fc" id="L78">		File file = new File(absFileName);	</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if(doesFileExist(file)) {</span>
+			try {
+<span class="fc" id="L81">				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));</span>
+				String line;
+				try {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">					while((line = bufferedReader.readLine()) != null) {							</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">						if(line.contains(pattern)) {</span>
+<span class="fc" id="L86">							line = line + String.format(&quot;%n&quot;);						</span>
+<span class="fc" id="L87">							stdout.write(line.getBytes());						</span>
+						}
+						
+					}
+<span class="pc" id="L91">				} catch (IOException e) {</span>
+<span class="nc" id="L92">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L94">			} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L95">				e.printStackTrace();</span>
+			}
+<span class="pc bfc" id="L97" title="All 2 branches covered.">		} else if(isDirectory(file)) {							</span>
+<span class="fc" id="L98">			throw new GrepException(fileName + &quot;:&quot; + &quot; Is a directory&quot; + Configurations.NEWLINE);</span>
+		} else {
+<span class="fc" id="L100">           throw new GrepException(fileName + &quot;:&quot; + &quot; No such file or directory&quot; + Configurations.NEWLINE);</span>
+		}
+<span class="fc" id="L102">	}</span>
+	
+	/**
+	 * process multiple files
+	 *
+	 * @param pattern
+	 *            string of pattern
+	 * @param absFileName
+	 *            absolute file name
+	 * @param fileName
+	 *            input file name      
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	public void processFiles(String pattern, String absFileName, String fileName, InputStream stdin, OutputStream stdout) throws GrepException {				
+<span class="fc" id="L119">		File file = new File(absFileName);	</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if(doesFileExist(file)) {</span>
+			try {
+<span class="fc" id="L122">				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));</span>
+				String line;
+				try {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">					while((line = bufferedReader.readLine()) != null) {							</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">						if(line.contains(pattern)) {</span>
+<span class="fc" id="L127">							line = fileName + &quot;:&quot; + line + String.format(&quot;%n&quot;);						</span>
+<span class="fc" id="L128">							stdout.write(line.getBytes());						</span>
+						}
+						
+					}
+<span class="pc" id="L132">				} catch (IOException e) {</span>
+<span class="nc" id="L133">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L135">			} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L136">				e.printStackTrace();</span>
+			}
+<span class="pc bfc" id="L138" title="All 2 branches covered.">		} else if(isDirectory(file)) {						</span>
+			//throw new GrepException(&quot; &quot; + fileName + &quot;:&quot; + &quot; Is a directory&quot;);
+<span class="fc" id="L140">			String msg = &quot;grep: &quot; + fileName + &quot;: Is a directory&quot; + Configurations.NEWLINE;</span>
+			try {
+<span class="fc" id="L142">				stdout.write(msg.getBytes());</span>
+<span class="pc" id="L143">			} catch (IOException e) {</span>
+<span class="nc" id="L144">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L146">		} else {</span>
+           //throw new GrepException(&quot; &quot; + fileName + &quot;:&quot; + &quot; No such file or directory&quot;);
+<span class="fc" id="L148">			String msg = &quot;grep: &quot; + fileName + &quot;: No such file or directory&quot; + Configurations.NEWLINE;</span>
+			try {
+<span class="fc" id="L150">				stdout.write(msg.getBytes());</span>
+<span class="pc" id="L151">			} catch (IOException e) {</span>
+<span class="nc" id="L152">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L155">	}</span>
+	
+	public void processStdin(String pattern, InputStream stdin, OutputStream stdout) throws GrepException {
+<span class="fc" id="L158">		BufferedReader bufferedReader = null;</span>
+		String line;
+		
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if(stdin == null) {</span>
+<span class="fc" id="L162">			throw new GrepException(&quot;Null stdin&quot;);</span>
+		}
+		try { 
+<span class="fc" id="L165">			bufferedReader = new BufferedReader(new InputStreamReader(stdin));</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			while ((line = bufferedReader.readLine()) != null) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">				if(line.contains(pattern)) {</span>
+<span class="fc" id="L168">					line = line + String.format(&quot;%n&quot;);</span>
+<span class="fc" id="L169">					stdout.write(line.getBytes());</span>
+				}
+			} 			
+<span class="pc" id="L172">		} catch (IOException e) {</span>
+<span class="nc" id="L173">			e.printStackTrace();</span>
+<span class="nc" id="L174">		} finally {</span>
+<span class="pc bpc" id="L175" title="5 of 6 branches missed.">			if (bufferedReader != null) {</span>
+				try {
+<span class="pc" id="L177">					bufferedReader.close();</span>
+<span class="pc" id="L178">				} catch (IOException e) {</span>
+<span class="nc" id="L179">					e.printStackTrace();</span>
+				}
+			}
+<span class="nc" id="L182">		}</span>
+<span class="fc" id="L183">		return;</span>
+	}	
+	
+	public String getAbsolutePath(String filePath) {
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">		if (filePath.startsWith(Environment.currentDirectory)) {</span>
+<span class="nc" id="L188">			return filePath;</span>
+		}
+<span class="fc" id="L190">		return Environment.currentDirectory + File.separator + filePath;</span>
+	}
+
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L200" title="All 4 branches covered.">		if (file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L201">			return true;</span>
+		}
+<span class="fc" id="L203">		return false;</span>
+	}
+
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (file.isDirectory()) {</span>
+<span class="fc" id="L214">			return true;</span>
+		}
+<span class="fc" id="L216">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

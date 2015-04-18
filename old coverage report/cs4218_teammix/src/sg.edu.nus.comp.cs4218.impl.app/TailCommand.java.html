@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>TailCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">TailCommand.java</span></div><h1>TailCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.TailException;
+
+<span class="fc" id="L19">public class TailCommand implements Application{</span>
+<span class="fc" id="L20">	private boolean singleFileFlag = false;</span>
+<span class="fc" id="L21">	private String ERROR_MSG_DIRECTORY = &quot;%1$s%2$s: Is a directory&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L22">	private String ERROR_MSG = &quot;%1$s%2$s: No such file or directory&quot; + Configurations.NEWLINE;</span>
+	public static final int DEFAULT_DISPLAY_LINES = 10;
+	
+	/**
+	 * Perform Tail command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout) throws TailException {
+<span class="fc" id="L37">		ArrayList&lt;String&gt; listOfLines = new ArrayList&lt;String&gt;();		</span>
+<span class="fc" id="L38">		String fileName = &quot;&quot;;</span>
+<span class="fc" id="L39">		int numOfLines = 0;</span>
+<span class="fc" id="L40">		int numOfFiles = 0;</span>
+<span class="fc" id="L41">		int index = 0;</span>
+<span class="fc" id="L42">		singleFileFlag = false;</span>
+
+<span class="fc bfc" id="L44" title="All 6 branches covered.">		if(args.length &gt; 0 &amp;&amp; args[0].startsWith(&quot;-&quot;) &amp;&amp; !args[0].equals(&quot;-n&quot;)) {</span>
+<span class="fc" id="L45">			throw new TailException(&quot;illegal option -- &quot; + args[0]);</span>
+		}
+		
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">		if(args.length &gt; 3 &amp;&amp; args[0].equals(&quot;-n&quot;)) {</span>
+			try {
+<span class="fc" id="L50">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">				if(numOfLines &lt; 0) {</span>
+<span class="nc" id="L52">					throw new TailException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}
+<span class="nc" id="L54">			} catch(NumberFormatException e) {</span>
+<span class="nc" id="L55">				e.printStackTrace();</span>
+			}
+<span class="fc" id="L57">			numOfFiles = args.length - 2;</span>
+<span class="fc" id="L58">			index = 2;</span>
+<span class="fc bfc" id="L59" title="All 4 branches covered.">		} else if (args.length == 3 &amp;&amp; args[0].equals(&quot;-n&quot;)) {			</span>
+<span class="fc" id="L60">			singleFileFlag = true;</span>
+			try {
+<span class="fc" id="L62">				numOfFiles = 1;</span>
+<span class="fc" id="L63">				index = 2;</span>
+<span class="fc" id="L64">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				if(numOfLines &lt; 0) {</span>
+<span class="fc" id="L66">					throw new TailException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}
+<span class="nc" id="L68">			} catch(NumberFormatException e) {</span>
+<span class="nc" id="L69">				e.printStackTrace();</span>
+			}
+<span class="pc bpc" id="L71" title="1 of 4 branches missed.">		} else if (args.length == 1 &amp;&amp; !args[0].equals(&quot;-n&quot;)) {</span>
+<span class="fc" id="L72">			singleFileFlag = true;</span>
+<span class="fc" id="L73">			numOfFiles = 1;			</span>
+<span class="fc" id="L74">			numOfLines = DEFAULT_DISPLAY_LINES;</span>
+<span class="fc" id="L75">			index = 0;			</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">		} else if(args.length &gt; 0 &amp;&amp; !args[0].equals(&quot;-n&quot;)) { </span>
+<span class="fc" id="L77">			index = 0;</span>
+<span class="fc" id="L78">			numOfFiles = args.length;</span>
+<span class="fc" id="L79">			numOfLines = DEFAULT_DISPLAY_LINES;</span>
+<span class="fc" id="L80">		}else {</span>
+			//throw new TailException(&quot;Incorrect argument(s)&quot;);
+<span class="pc bpc" id="L82" title="3 of 4 branches missed.">			if(args.length == 2 &amp;&amp; args[0].equals(&quot;-n&quot;)) {</span>
+<span class="nc" id="L83">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">				if(numOfLines &lt; 0) {</span>
+					//illegal line count -- numOfLines
+<span class="nc" id="L86">					throw new TailException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}
+<span class="nc" id="L88">				processInputStream(listOfLines, numOfLines, stdin, stdout);</span>
+<span class="nc" id="L89">			} else {</span>
+<span class="fc" id="L90">				processInputStream(listOfLines, DEFAULT_DISPLAY_LINES, stdin, stdout);</span>
+			}
+		}
+		/*
+		if(fileName.equals(&quot;&quot;)) {
+			throw new TailException(&quot;Null argument(s)&quot;);
+		}
+		*/
+<span class="fc" id="L98">		String[] arrayOfFiles = new String[numOfFiles];</span>
+<span class="fc" id="L99">		System.arraycopy(args, index, arrayOfFiles, 0, numOfFiles);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		for(int i = 0; i &lt; numOfFiles; i++) { </span>
+<span class="fc" id="L101">			processFiles(stdout, listOfLines, arrayOfFiles[i], numOfLines);</span>
+		}
+<span class="fc" id="L103">	}</span>
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws TailException 
+	 */
+	public void processInputStream(ArrayList&lt;String&gt; listOfLines, int numOfLines, InputStream stdin, OutputStream stdout) throws TailException {		 			
+<span class="fc" id="L115">		BufferedReader bufferedReader = null;</span>
+		String line;
+		
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if(stdin == null) {</span>
+<span class="fc" id="L119">			throw new TailException(&quot;Null stdin&quot;);</span>
+		}
+		try { 			
+<span class="fc" id="L122">			listOfLines = addLinesToArrayListFromInputStream(listOfLines, numOfLines, stdin);</span>
+<span class="fc" id="L123">			outputLines(stdout, listOfLines, numOfLines);			</span>
+<span class="pc" id="L124">		} catch (IOException e) {</span>
+<span class="nc" id="L125">			e.printStackTrace();</span>
+<span class="nc" id="L126">		} finally {</span>
+<span class="pc bpc" id="L127" title="5 of 6 branches missed.">			if (bufferedReader != null) {</span>
+				try {
+<span class="nc" id="L129">					bufferedReader.close();</span>
+<span class="nc" id="L130">				} catch (IOException e) {</span>
+<span class="nc" id="L131">					e.printStackTrace();</span>
+				}
+			}
+<span class="nc" id="L134">		}</span>
+<span class="fc" id="L135">		return;</span>
+	}
+	
+	private ArrayList&lt;String&gt; addLinesToArrayListFromInputStream(			
+			ArrayList&lt;String&gt; listOfLines, int numOfLines, InputStream stdin) {
+<span class="fc" id="L140">		BufferedReader bufferedReader = null;</span>
+<span class="fc" id="L141">		bufferedReader = new BufferedReader(new InputStreamReader(stdin));</span>
+		String line;
+		try {
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			while ((line = bufferedReader.readLine()) != null) {						</span>
+<span class="fc" id="L145">				listOfLines.add(line);</span>
+			}
+<span class="pc" id="L147">		} catch (IOException e) {</span>
+<span class="nc" id="L148">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L150">		return listOfLines;</span>
+	}
+
+	public void processFiles(OutputStream stdout,
+			ArrayList&lt;String&gt; listOfLines, String fileName, int numOfLines)
+			throws TailException {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		if(fileName.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L157">			throw new TailException(&quot;Empty argument&quot;);</span>
+		}
+<span class="fc" id="L159">		fileName = getAbsolutePath(fileName);</span>
+<span class="fc" id="L160">		File file = new File(fileName);</span>
+
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (doesFileExist(file)) {</span>
+<span class="fc" id="L163">			listOfLines = addLinesToArrayListFromFile(listOfLines, numOfLines, file);</span>
+			try {
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				if(!singleFileFlag) {</span>
+<span class="fc" id="L166">					String title = &quot;==&gt;&quot; + file.getName()+ &quot;&lt;==&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L167">					stdout.write(title.getBytes());</span>
+				}
+<span class="fc" id="L169">				outputLines(stdout, listOfLines, numOfLines);</span>
+<span class="pc" id="L170">			} catch (IOException e) {				</span>
+<span class="nc" id="L171">				e.printStackTrace();</span>
+			}
+<span class="pc bfc" id="L173" title="All 2 branches covered.">		} else if (isDirectory(file)) {</span>
+			// head: sample/: Is a directory
+<span class="fc" id="L175">			printExceptions(ERROR_MSG_DIRECTORY, file.getName(), stdout);</span>
+<span class="fc" id="L176">		} else {</span>
+			// head: sample.txt: No such file or directory
+<span class="fc" id="L178">			printExceptions(ERROR_MSG, file.getName(), stdout);</span>
+		}
+<span class="fc" id="L180">	}</span>
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw TailException
+	 */
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws TailException {
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		if(singleFileFlag) {			</span>
+<span class="fc" id="L195">			throw new TailException(String.format(msg, &quot;&quot;, fileName + &quot;:&quot;));</span>
+		} else {
+<span class="fc" id="L197">			String errorMsg = String.format(msg, &quot;tail: &quot;, fileName + &quot;:&quot;);</span>
+			try {
+<span class="fc" id="L199">				stdout.write(errorMsg.getBytes());</span>
+<span class="pc" id="L200">			} catch (IOException e) {</span>
+<span class="nc" id="L201">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L204">	}</span>
+
+	/**
+	 * Write to outputStream the lines(numOfLines) starting from the bottom of Arraylist.
+	 *
+	 * @param stdout
+	 *            outputStream
+	 * @param listOfLines
+	 * 			  lines from file
+	 * @param numOfLines
+	 * 			  number of lines to be displayed from bottom      
+	 *  
+	 */
+	public void outputLines(OutputStream stdout, ArrayList&lt;String&gt; listOfLines, int numOfLines) throws IOException {
+<span class="fc" id="L218">		int numLineToDisplay = listOfLines.size() - numOfLines;</span>
+		
+<span class="fc bfc" id="L220" title="All 2 branches covered.">		if(numLineToDisplay &lt; 0) {</span>
+<span class="fc" id="L221">			numLineToDisplay = 0;</span>
+		}
+		
+<span class="fc bfc" id="L224" title="All 2 branches covered.">		for(;numLineToDisplay &lt; listOfLines.size(); numLineToDisplay++) {</span>
+<span class="fc" id="L225">			String newLine = listOfLines.get(numLineToDisplay) + String.format(&quot;%n&quot;);</span>
+<span class="fc" id="L226">			stdout.write(newLine.getBytes());</span>
+		}
+<span class="fc" id="L228">	}</span>
+
+	/**
+	 * Read from a given File and add each line in the file to an arraylist
+	 *
+	 * @param listOfLines
+	 *            list to store lines from file
+	 * @param numOflines
+	 * 			  number of lines to add to arraylist
+	 * @param file
+	 * 			  file to read from      
+	 *  
+	 */
+	public ArrayList&lt;String&gt; addLinesToArrayListFromFile(ArrayList&lt;String&gt; listOfLines, int numOfLines, File file) {
+		try {
+<span class="fc" id="L243">			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));</span>
+			String line;
+			try {
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				while ((line = bufferedReader.readLine()) != null) {						</span>
+<span class="fc" id="L247">					listOfLines.add(line);</span>
+				}
+<span class="pc" id="L249">			} catch (IOException e) {</span>
+<span class="nc" id="L250">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L252">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L253">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L255">		return listOfLines;</span>
+	}
+	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
+	public String getAbsolutePath(String filePath) {				
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">		if(filePath.startsWith(Environment.currentDirectory)) {</span>
+<span class="nc" id="L266">			return filePath;</span>
+		}
+<span class="fc" id="L268">		return Environment.currentDirectory + File.separator + filePath;</span>
+	}
+	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L278" title="All 4 branches covered.">		if(file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L279">			return true;</span>
+		}
+<span class="fc" id="L281">		return false;</span>
+	}
+	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">		if(file.isDirectory()) {</span>
+<span class="fc" id="L292">			return true;</span>
+		}
+<span class="fc" id="L294">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>FindCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">FindCommand.java</span></div><h1>FindCommand.java</h1><pre class="source lang-java linenums"><span class="fc" id="L1">package sg.edu.nus.comp.cs4218.impl.app;</span>
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.CdException;
+import sg.edu.nus.comp.cs4218.exception.FindException;
+
+<span class="fc" id="L27">public class FindCommand implements Application {</span>
+	protected final static String NOTHING = &quot;&quot;;
+	protected final static String RELATIVE = &quot;.&quot;;
+	protected final static String RELATIVE_INPUT = &quot;.\\\\&quot;;
+	protected final static String FILE_SEPARATOR = &quot;file.separator&quot;;
+<span class="fc" id="L32">	protected boolean singleFlag = false;</span>
+<span class="fc" id="L33">	protected String splitter = &quot;/&quot;;</span>
+<span class="fc" id="L34">	protected int error = 0;</span>
+	/**
+	 * Perform find command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws FindException {
+<span class="fc" id="L48">		Vector&lt;String&gt; results = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L49">		String pattern = NOTHING, root = NOTHING;</span>
+<span class="fc" id="L50">		singleFlag = false;</span>
+<span class="fc" id="L51">		error = 0;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (args.length == 2) {</span>
+<span class="fc" id="L53">			checkNameArg(args[0]);</span>
+<span class="fc" id="L54">			root = Environment.currentDirectory;</span>
+<span class="fc" id="L55">			pattern = args[1].replaceFirst(RELATIVE_INPUT, NOTHING);</span>
+<span class="fc" id="L56">			pattern = pattern.replace(&quot;*&quot;, &quot;**&quot;);</span>
+<span class="fc" id="L57">			pattern = formatPattern(pattern);</span>
+<span class="fc" id="L58">			pattern = formatWildCard(pattern);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		} else if (args.length == 3) {</span>
+<span class="fc" id="L60">			checkNameArg(args[1]);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if(!doesFileExist(new File(args[0]))) {</span>
+<span class="fc" id="L62">			  throw new FindException(args[0] + &quot;: Does not exist&quot;);</span>
+			}
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if(!isDirectory(new File(args[0]))) {</span>
+<span class="fc" id="L65">			  throw new FindException(args[0] + &quot;: Is not a directory&quot;);</span>
+			}
+<span class="fc" id="L67">			root = new File(args[0]).getAbsolutePath();</span>
+<span class="fc" id="L68">			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);</span>
+<span class="fc" id="L69">			pattern = pattern.replace(&quot;*&quot;, &quot;**&quot;);</span>
+<span class="fc" id="L70">			pattern = formatPattern(pattern);</span>
+<span class="fc" id="L71">			pattern = formatWildCard(pattern);</span>
+<span class="fc" id="L72">		} else {</span>
+<span class="fc" id="L73">			throw new FindException(&quot;Invalid Arguments&quot;);</span>
+		}
+
+<span class="fc" id="L76">		results = getResults(pattern, root);</span>
+<span class="fc" id="L77">		checkErrorStatus(error);</span>
+<span class="fc" id="L78">		root = formatFileSeparator(root);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (String result : results) {</span>
+			try {
+<span class="fc" id="L81">				String outString = result.replaceFirst(formatFileSeparator(Environment.currentDirectory), RELATIVE)</span>
+<span class="fc" id="L82">						+ Configurations.NEWLINE;</span>
+<span class="fc" id="L83">				String tmd[] = outString.split(splitter);</span>
+<span class="fc" id="L84">				String last = tmd[tmd.length - 1];</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">				if (singleFlag) {</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				  if (last.startsWith(pattern.replace(&quot;*&quot;, NOTHING)) &amp;&amp;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">				      last.length() == pattern.replace(&quot;*&quot;, NOTHING).length() + 2 ||</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				      last.length() == pattern.replace(&quot;*&quot;, NOTHING).length() + 1){</span>
+<span class="nc" id="L89">					  stdout.write(outString.getBytes());</span>
+				  }
+<span class="nc" id="L91">				} else {</span>
+<span class="fc" id="L92">				  stdout.write(outString.getBytes());</span>
+				}
+<span class="pc" id="L94">			} catch (IOException e) {</span>
+<span class="nc" id="L95">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L98">	}</span>
+
+	 /**
+     * Check if given file is a directory
+     *
+     * @param file
+     *            file to be check for directory
+     */
+    public boolean isDirectory(File file) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if(file.isDirectory()) {</span>
+<span class="fc" id="L108">            return true;</span>
+        }
+<span class="fc" id="L110">        return false;</span>
+    }
+    
+    /**
+     * Checks if given file exist
+     *
+     * @param file
+     *            file to be checked
+     */
+    public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if(file.exists()) {</span>
+<span class="fc" id="L121">            return true;</span>
+        }
+<span class="fc" id="L123">        return false;</span>
+    }
+    
+	/**
+	 * Format root base on OS file separator
+	 * 
+	 * @param root
+	 * 			pattern matching root
+	 */
+	private String formatFileSeparator(String root) {
+<span class="fc" id="L133">		String newRoot = root;</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (System.getProperty(FILE_SEPARATOR) != null</span>
+<span class="fc" id="L135">				&amp;&amp; System.getProperty(FILE_SEPARATOR).equals(</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">						Configurations.W_FILESEPARATOR)) {</span>
+<span class="fc" id="L137">			newRoot = root.replace(&quot;\\&quot;, &quot;\\\\&quot;);</span>
+<span class="fc" id="L138">			splitter = &quot;\\\\&quot;;</span>
+		}
+<span class="fc" id="L140">		return newRoot;</span>
+	}
+
+	/**
+	 * Gets results from pattern matching of file names
+	 * Sets error index if error happens
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private Vector&lt;String&gt; getResults(String pattern, String root) {
+<span class="fc" id="L151">		Vector&lt;String&gt; results = new Vector&lt;String&gt;();</span>
+		try {
+<span class="fc" id="L153">			results = getFilesFromPattern(root, pattern);</span>
+<span class="pc" id="L154">		} catch (IOException e) {</span>
+<span class="nc" id="L155">			error = 1;</span>
+<span class="nc" id="L156">		} catch (InvalidPathException e) {</span>
+<span class="nc" id="L157">			error = 2;</span>
+		}
+<span class="fc" id="L159">		return results;</span>
+	}
+
+	/**
+	 * Formats the pattern so as to recurse into directories
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private String formatPattern(String pattern) {
+<span class="fc" id="L169">		String newPattern = pattern;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if(!pattern.startsWith(&quot;*&quot;)) {</span>
+<span class="fc" id="L171">			newPattern =  &quot;**&quot; + pattern;</span>
+		}
+<span class="fc" id="L173">		return newPattern;</span>
+	}
+
+	/**
+	 * Formats the wildcard in pattern so as to allow pattern matching to work
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	private String formatWildCard(String pattern) {
+<span class="fc" id="L183">		String newPattern = pattern;</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">		if (!pattern.contains(&quot;*&quot;)) {</span>
+<span class="nc" id="L185">		    newPattern = &quot;**&quot; + pattern + &quot;**&quot;;</span>
+<span class="nc" id="L186">		    singleFlag = true;</span>
+		}
+<span class="fc" id="L188">		return newPattern;</span>
+	}
+
+	/**
+	 * Finds files with matching pattern in given starting directory
+	 * 
+	 * @param start
+	 *            start directory
+	 * 
+	 * @param pattern
+	 *            pattern to be matched
+	 */
+	protected Vector&lt;String&gt; getFilesFromPattern(String start, String pattern)
+			throws IOException {
+<span class="fc" id="L202">		final Vector&lt;String&gt; results = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L203">		String root = start + File.separator;</span>
+<span class="fc" id="L204">		Path startDir = Paths.get(root);</span>
+<span class="fc" id="L205">		FileSystem fileSystem = FileSystems.getDefault();</span>
+<span class="fc" id="L206">		String globPattern = &quot;glob:&quot; + root + pattern;</span>
+		
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">		if (System.getProperty(FILE_SEPARATOR) != null</span>
+<span class="fc" id="L209">				&amp;&amp; System.getProperty(FILE_SEPARATOR).equals(</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">						Configurations.W_FILESEPARATOR)) {</span>
+<span class="fc" id="L211">			globPattern = globPattern.replace(&quot;\\&quot;, &quot;\\\\&quot;);</span>
+		}
+<span class="fc" id="L213">		final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);</span>
+<span class="fc" id="L214">		FileVisitor&lt;Path&gt; matcherVisitor = new SimpleFileVisitor&lt;Path&gt;() {</span>
+			@Override
+			public FileVisitResult visitFile(Path file,
+					BasicFileAttributes attribs) {
+<span class="fc" id="L218">				return checkFileName(file);</span>
+			}
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path file,
+					BasicFileAttributes attribs) {
+<span class="fc" id="L224">				return checkFileName(file);</span>
+			}
+
+			private FileVisitResult checkFileName(Path file) {
+<span class="fc bfc" id="L228" title="All 2 branches covered.">				if (matcher.matches(file)) {</span>
+<span class="fc" id="L229">					results.add(file.toString());</span>
+				}
+<span class="fc" id="L231">				return FileVisitResult.CONTINUE;</span>
+			}
+		};
+<span class="fc" id="L234">		Files.walkFileTree(startDir, matcherVisitor);</span>
+<span class="fc" id="L235">		return results;</span>
+	}
+
+	/**
+	 * Checks if token is &quot;-name&quot; if token is not &quot;-name&quot; throw find exception
+	 *
+	 * @param token
+	 *            token to be check
+	 */
+	protected void checkNameArg(String token) throws FindException {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		if (!(&quot;-name&quot;).equals(token)) {</span>
+<span class="fc" id="L246">			throw new FindException(&quot;Missing -name&quot;);</span>
+		}
+<span class="fc" id="L248">	}</span>
+
+	/**
+	 * Checks if the globing function has any errors Throws Exception if error
+	 * != 0
+	 *
+	 * @param error
+	 *            error = 0 means no error error = 1 means File Not file error =
+	 *            2 means Invalid Directory
+	 */
+	protected void checkErrorStatus(int error) throws FindException {
+<span class="fc bfc" id="L259" title="All 2 branches covered.">		if (error == 1) {</span>
+<span class="fc" id="L260">			throw new FindException(Configurations.MESSGE_E_MISSF);</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">		} else if (error == 2) {</span>
+<span class="fc" id="L262">			throw new FindException(&quot;Invalid Directory&quot;);</span>
+		}
+<span class="fc" id="L264">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

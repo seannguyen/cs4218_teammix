@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>LsCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">LsCommand.java</span></div><h1>LsCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.LsException;
+
+<span class="fc" id="L18">public class LsCommand implements Application {</span>
+<span class="fc" id="L19">	protected Boolean skipNewLine = true;</span>
+<span class="fc" id="L20">	protected int numOfDirectories = 0;</span>
+<span class="fc" id="L21">	protected Boolean multiple = false;</span>
+
+	/**
+	 * Perform List directory command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws LsException {
+<span class="fc" id="L36">		multiple = false;</span>
+<span class="fc" id="L37">		List&lt;File&gt; files = null;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (args.length &gt; 1) {</span>
+<span class="fc" id="L39">			multiple = true;</span>
+<span class="fc" id="L40">			int count = 0;</span>
+<span class="fc" id="L41">			printNonDirectory(stdout, args);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (String arg : args) {</span>
+<span class="fc" id="L43">				File targetDirectory = new File(arg.replaceAll(</span>
+<span class="fc" id="L44">						Configurations.NEWLINE, &quot;&quot;));</span>
+				try {
+<span class="fc" id="L46">					files = getFiles(targetDirectory);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">					if (isDirectory(targetDirectory)) {</span>
+<span class="fc" id="L48">						printNewLine(stdout);</span>
+<span class="fc" id="L49">						count++;</span>
+					}
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">					if (!targetDirectory.getName().startsWith(&quot;.&quot;)</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">							&amp;&amp; files != null) {</span>
+<span class="fc" id="L53">						stdout.write((targetDirectory.getName() + &quot;:&quot;)</span>
+<span class="fc" id="L54">								.getBytes());</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">						if (!files.isEmpty() &amp;&amp; count &lt; numOfDirectories) {</span>
+<span class="nc" id="L56">							stdout.write((Configurations.NEWLINE).getBytes());</span>
+						}
+<span class="pc bpc" id="L58" title="2 of 4 branches missed.">						if (!files.isEmpty() &amp;&amp; count == numOfDirectories) {</span>
+<span class="fc" id="L59">							stdout.write((Configurations.NEWLINE).getBytes());</span>
+						}
+<span class="fc" id="L61">						printResults(stdout, files);</span>
+<span class="pc bpc" id="L62" title="3 of 4 branches missed.">						if (count &lt; numOfDirectories &amp;&amp; !files.isEmpty()) {</span>
+<span class="nc" id="L63">							stdout.write((Configurations.NEWLINE).getBytes());</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">						} else if (count &lt; numOfDirectories) {</span>
+<span class="nc" id="L65">							stdout.write((Configurations.NEWLINE).getBytes());</span>
+						}
+					}
+<span class="nc" id="L68">				} catch (IOException e) {</span>
+<span class="nc" id="L69">					e.printStackTrace();</span>
+<span class="fc" id="L70">				} catch (LsException e) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">					if (!doesFileExist(targetDirectory)) {</span>
+						try {
+<span class="fc" id="L73">							stdout.write((Configurations.NEWLINE</span>
+<span class="fc" id="L74">									+ targetDirectory.getName() + &quot;: Does not exist&quot;)</span>
+<span class="fc" id="L75">									.getBytes());</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">							if (count &lt; numOfDirectories) {</span>
+<span class="fc" id="L77">								stdout.write((Configurations.NEWLINE)</span>
+<span class="fc" id="L78">										.getBytes());</span>
+							}
+<span class="pc" id="L80">						} catch (IOException e2) {</span>
+<span class="nc" id="L81">							e.printStackTrace();</span>
+						}
+					}
+				}
+			}
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		} else if (args.length == 1) {</span>
+<span class="fc" id="L87">			File targetDirectory = new File(args[0].replaceAll(</span>
+<span class="fc" id="L88">					Configurations.NEWLINE, &quot;&quot;));</span>
+<span class="fc" id="L89">			files = getFiles(targetDirectory);</span>
+<span class="fc" id="L90">			printResults(stdout, files);</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		} else if (args.length == 0) {</span>
+<span class="fc" id="L92">			File currentDirectory = new File(Environment.currentDirectory);</span>
+<span class="fc" id="L93">			files = getFiles(currentDirectory);</span>
+<span class="fc" id="L94">			printResults(stdout, files);</span>
+<span class="fc" id="L95">		} else {</span>
+<span class="nc" id="L96">			throw new LsException(&quot;Invalid arguments&quot;);</span>
+		}
+
+<span class="fc" id="L99">	}</span>
+
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="pc bpc" id="L108" title="1 of 4 branches missed.">		if (file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L109">			return true;</span>
+		}
+<span class="fc" id="L111">		return false;</span>
+	}
+
+	/**
+	 * Helper Method to print non directory files
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdout
+	 *            outputStream
+	 */
+	void printNonDirectory(OutputStream stdout, String... args) {
+<span class="fc" id="L123">		skipNewLine = true;</span>
+<span class="fc" id="L124">		numOfDirectories = 0;</span>
+<span class="fc" id="L125">		List&lt;File&gt; nonDirectoryFiles = new ArrayList&lt;File&gt;();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (String arg : args) {</span>
+<span class="fc" id="L127">			File file = new File(arg.replaceAll(Configurations.NEWLINE, &quot;&quot;));</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (Files.exists(file.toPath())) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (isDirectory(file)) {</span>
+<span class="fc" id="L130">					numOfDirectories++;</span>
+<span class="fc" id="L131">				} else {</span>
+<span class="fc" id="L132">					nonDirectoryFiles.add(file);</span>
+				}
+			}
+		}
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (!nonDirectoryFiles.isEmpty()) {</span>
+<span class="fc" id="L137">			skipNewLine = false;</span>
+		}
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (!nonDirectoryFiles.isEmpty()) {</span>
+<span class="fc" id="L140">			printResults(stdout, nonDirectoryFiles);</span>
+		}
+<span class="fc" id="L142">	}</span>
+
+	/**
+	 * Helper Method to print newline
+	 */
+	void printNewLine(OutputStream stdout) {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (!skipNewLine) {</span>
+<span class="fc" id="L149">			String newLines = Configurations.NEWLINE;</span>
+			try {
+<span class="fc" id="L151">				stdout.write(newLines.getBytes());</span>
+<span class="pc" id="L152">			} catch (IOException e) {</span>
+<span class="nc" id="L153">				e.printStackTrace();</span>
+			}
+<span class="fc" id="L155">			skipNewLine = true;</span>
+		}
+<span class="fc" id="L157">	}</span>
+
+	/**
+	 * Retrieves the list of files and print to stdout in a given format
+	 *
+	 * @param list
+	 *            of files
+	 */
+	private void printResults(OutputStream stdout, List&lt;File&gt; files) {
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (files != null) {</span>
+			try {
+<span class="fc" id="L168">				stdout.write(convertFilesToString(files).getBytes());</span>
+<span class="fc" id="L169">				stdout.write(Configurations.NEWLINE.getBytes());</span>
+<span class="pc" id="L170">			} catch (IOException e) {</span>
+<span class="nc" id="L171">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L174">	}</span>
+
+	/**
+	 * Retrieves the list of files in the given directory
+	 *
+	 * @param directory
+	 *            a directory path
+	 * @return list of files in directory
+	 * @throws LsException
+	 */
+	protected List&lt;File&gt; getFiles(File directory) throws LsException {
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (Files.exists(directory.toPath())) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (isDirectory(directory)) {</span>
+<span class="fc" id="L187">				File[] files = directory.listFiles();</span>
+<span class="fc" id="L188">				return Arrays.asList(files);</span>
+			} else {
+<span class="fc" id="L190">				throw new LsException(directory.getName().replace(</span>
+<span class="fc" id="L191">						Configurations.NEWLINE, &quot;&quot;)</span>
+<span class="fc" id="L192">						+ &quot;: Not a directory&quot;);</span>
+			}
+		} else {
+<span class="fc" id="L195">			throw new LsException(&quot;No such file or directory&quot;);</span>
+		}
+	}
+
+	/**
+	 * Converts the a list of files into formatted string for printing
+	 *
+	 * @param files
+	 *            a list of files
+	 * @return a string of all the files in the list
+	 */
+	protected String convertFilesToString(List&lt;File&gt; files) {
+<span class="fc" id="L207">		String returnable = null;</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">		if (files != null) {</span>
+<span class="fc" id="L209">			StringBuilder stringBuilder = new StringBuilder();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (File file : files) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">				if (!file.getName().startsWith(&quot;.&quot;)) {</span>
+<span class="fc" id="L212">					stringBuilder.append(file.getName());</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">					if (file.isDirectory()) {</span>
+<span class="fc" id="L214">						stringBuilder.append(File.separator);</span>
+					}
+<span class="fc" id="L216">					stringBuilder.append('\t');</span>
+				}
+			}
+<span class="fc" id="L219">			returnable = stringBuilder.toString();</span>
+		}
+<span class="fc" id="L221">		return returnable;</span>
+	}
+
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (file.isDirectory()) {</span>
+<span class="fc" id="L232">			return true;</span>
+		}
+<span class="fc" id="L234">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

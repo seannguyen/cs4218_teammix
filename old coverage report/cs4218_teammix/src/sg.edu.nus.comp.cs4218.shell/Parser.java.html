@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Parser.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.shell</a> &gt; <span class="el_source">Parser.java</span></div><h1>Parser.java</h1><pre class="source lang-java linenums"><span class="fc" id="L1">package sg.edu.nus.comp.cs4218.shell;</span>
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Stack;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import sg.edu.nus.comp.cs4218.Command;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.ShellException;
+
+<span class="fc" id="L27">public class Parser {</span>
+
+	public Command parseCommandLine(String commandLine) throws ShellException,
+			AbstractApplicationException {
+<span class="pc bpc" id="L31" title="1 of 4 branches missed.">		if (commandLine == null || commandLine.length() == 0) {</span>
+<span class="nc" id="L32">			error();</span>
+		}
+<span class="fc" id="L34">		refreshParser();</span>
+<span class="fc" id="L35">		Vector&lt;String&gt; preprocessedLine = splitLine(commandLine);</span>
+<span class="fc" id="L36">		return parseSequence(preprocessedLine);</span>
+	}
+
+	// PROTECTED CORE METHODS
+	protected Vector&lt;String&gt; splitLine(Vector&lt;String&gt; input)
+			throws ShellException {
+<span class="fc" id="L42">		Vector&lt;String&gt; result = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int i = 0; i &lt; input.size(); i++) {</span>
+<span class="fc" id="L44">			result.addAll(splitLine(input.get(i)));</span>
+		}
+<span class="fc" id="L46">		return result;</span>
+	}
+
+	protected Vector&lt;String&gt; splitLine(String input) throws ShellException {
+<span class="fc" id="L50">		Vector&lt;String&gt; result = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">		if (input == null || input.length() == 0) {</span>
+<span class="fc" id="L52">			return result;</span>
+		}
+
+<span class="fc" id="L55">		Vector&lt;Boolean&gt; quoteFlags = new Vector&lt;Boolean&gt;();</span>
+<span class="fc" id="L56">		quoteFlags = markQuotes(input);</span>
+<span class="fc" id="L57">		int lastStop = -1;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int i = 0; i &lt; input.length(); i++) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (input.charAt(i) == Configurations.SPACE_CHAR</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">					|| input.charAt(i) == Configurations.TAB_CHAR) {</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (quoteFlags.get(i)) {</span>
+<span class="fc" id="L62">					continue;</span>
+				}
+<span class="fc" id="L64">				String element = input.substring(lastStop + 1, i);</span>
+<span class="fc" id="L65">				result.add(element);</span>
+<span class="fc" id="L66">				lastStop = i;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			} else if (input.charAt(i) == Configurations.PIPE_TOKEN.charAt(0)</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">					|| input.charAt(i) == Configurations.SEMICOLON_TOKEN</span>
+<span class="fc" id="L69">							.charAt(0)</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">					|| input.charAt(i) == Configurations.IN_REIO_TOKEN</span>
+<span class="fc" id="L71">							.charAt(0)</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">					|| input.charAt(i) == Configurations.OUT_REIO_TOKEN</span>
+<span class="fc" id="L73">							.charAt(0)) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (quoteFlags.get(i)) {</span>
+<span class="fc" id="L75">					continue;</span>
+				}
+<span class="fc" id="L77">				String element = input.substring(lastStop + 1, i);</span>
+<span class="fc" id="L78">				String token = input.substring(i, i + 1);</span>
+<span class="fc" id="L79">				result.add(element);</span>
+<span class="fc" id="L80">				result.add(token);</span>
+<span class="fc" id="L81">				lastStop = i;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			} else if (!quoteFlags.get(i)</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">					&amp;&amp; preprocessSedCommand(input.substring(i)).length() &gt; 0) {</span>
+				// process sed
+<span class="fc" id="L85">				String sedCommandLine = preprocessSedCommand(input.substring(i));</span>
+<span class="fc" id="L86">				i += sedCommandLine.length() - 1;</span>
+<span class="fc" id="L87">				lastStop = i;</span>
+<span class="fc" id="L88">				result.add(Configurations.APPNAME_SED);</span>
+<span class="fc" id="L89">				result.add(sedCommandLine.substring(Configurations.APPNAME_SED</span>
+<span class="fc" id="L90">						.length()));</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			} else if (i &lt; input.length() - Configurations.NEWLINE.length()) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (quoteFlags.get(i)) {</span>
+<span class="fc" id="L93">					continue;</span>
+				}
+<span class="fc" id="L95">				String consideredText = input.substring(i);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				if (consideredText.startsWith(Configurations.NEWLINE)) {</span>
+<span class="fc" id="L97">					String element = input.substring(lastStop + 1, i);</span>
+<span class="fc" id="L98">					result.add(element);</span>
+<span class="fc" id="L99">					i += Configurations.NEWLINE.length() - 1;</span>
+<span class="fc" id="L100">					lastStop = i;</span>
+				}
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			} else if (i == input.length() - 1) {</span>
+<span class="fc" id="L103">				String element = input.substring(lastStop + 1, i + 1);</span>
+<span class="fc" id="L104">				result.add(element);</span>
+			}
+		}
+
+		// remove empty elements
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int i = 0; i &lt; result.size(); i++) {</span>
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">			if (result == null || result.get(i).length() == 0) {</span>
+<span class="fc" id="L111">				result.remove(i);</span>
+<span class="fc" id="L112">				i--;</span>
+			}
+		}
+<span class="fc" id="L115">		return result;</span>
+	}
+
+	protected CallCommand parseCall(Vector&lt;String&gt; callLine)
+			throws ShellException, AbstractApplicationException {
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (callLine.isEmpty()) {</span>
+<span class="nc" id="L121">			error();</span>
+		}
+<span class="fc" id="L123">		Vector&lt;String&gt; elements = callLine;</span>
+		// process IO redirection first
+<span class="fc" id="L125">		Vector&lt;String&gt; ioRedirectories = getIoRedirectories(elements);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		if (elements.isEmpty()) {</span>
+<span class="nc" id="L127">			error();</span>
+		}
+
+		// then process command substitution and globing
+<span class="fc" id="L131">		elements = substituteCommand(elements);</span>
+<span class="fc" id="L132">		Vector&lt;String&gt; namePart = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L133">		namePart.add(elements.get(0));</span>
+<span class="fc" id="L134">		elements.remove(0);</span>
+<span class="fc" id="L135">		namePart = removeQuoteTokens(namePart);</span>
+<span class="fc" id="L136">		namePart = splitLine(namePart.firstElement());</span>
+
+		try {
+<span class="fc" id="L139">			namePart = getFilesByGlob(namePart);</span>
+<span class="pc" id="L140">		} catch (IOException e) {</span>
+<span class="nc" id="L141">			e.printStackTrace();</span>
+		}
+<span class="pc bpc" id="L143" title="1 of 4 branches missed.">		if (namePart == null || namePart.isEmpty()) {</span>
+<span class="nc" id="L144">			error();</span>
+		}
+<span class="fc" id="L146">		String appName = namePart.get(0);</span>
+<span class="fc" id="L147">		appName = appName.toLowerCase();</span>
+<span class="fc" id="L148">		namePart.remove(0);</span>
+
+<span class="fc" id="L150">		elements = splitLine(elements);</span>
+<span class="fc" id="L151">		elements = removeQuoteTokens(elements);</span>
+<span class="fc" id="L152">		Vector&lt;String&gt; args = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (!appName.equals(Configurations.APPNAME_FIND)) {</span>
+			try {
+<span class="fc" id="L155">				elements = getFilesByGlob(elements);</span>
+<span class="pc" id="L156">			} catch (IOException e) {</span>
+<span class="nc" id="L157">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L160">		args.addAll(namePart);</span>
+<span class="fc" id="L161">		args.addAll(elements);</span>
+<span class="fc" id="L162">		CallCommand command = new CallCommand(appName, ioRedirectories.get(0),</span>
+<span class="fc" id="L163">				ioRedirectories.get(1), args);</span>
+<span class="fc" id="L164">		return command;</span>
+	}
+
+	protected Vector&lt;String&gt; substituteCommand(Vector&lt;String&gt; input)
+			throws ShellException, AbstractApplicationException {
+<span class="fc" id="L169">		Vector&lt;String&gt; result = new Vector&lt;String&gt;();</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (input == null) {</span>
+<span class="nc" id="L171">			return result;</span>
+		}
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (String element : input) {</span>
+<span class="fc" id="L175">			Stack&lt;Character&gt; quotes = new Stack&lt;Character&gt;();</span>
+<span class="fc" id="L176">			int lastQuotePos = -1;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			for (int i = element.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (isQuote(element.charAt(i))) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">					if (quotes.isEmpty()) {</span>
+<span class="fc" id="L180">						quotes.push(element.charAt(i));</span>
+<span class="fc" id="L181">						lastQuotePos = i;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">					} else if (quotes.peek() == Configurations.QUOTE_DOUBLE</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">							&amp;&amp; element.charAt(i) == Configurations.QUOTE_BACK) {</span>
+<span class="fc" id="L184">						quotes.push(Configurations.QUOTE_BACK);</span>
+<span class="fc" id="L185">						lastQuotePos = i;</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">					} else if (element.charAt(i) == quotes.peek()) {</span>
+<span class="fc" id="L187">						quotes.pop();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">						if (element.charAt(i) == Configurations.QUOTE_BACK) {</span>
+<span class="fc" id="L189">							String subCommandLine = element.substring(i + 1,</span>
+<span class="fc" id="L190">									lastQuotePos);</span>
+<span class="fc" id="L191">							Command subCmd = parseCommandLine(subCommandLine);</span>
+<span class="fc" id="L192">							ByteArrayOutputStream outStream = new ByteArrayOutputStream();</span>
+<span class="fc" id="L193">							subCmd.evaluate(null, outStream);</span>
+<span class="fc" id="L194">							String evaluatedResult = outStream.toString();</span>
+<span class="fc" id="L195">							String firstHalf = element.substring(0, i);</span>
+<span class="fc" id="L196">							String secondHalf = element</span>
+<span class="fc" id="L197">									.substring(lastQuotePos + 1);</span>
+<span class="fc" id="L198">							element = firstHalf + evaluatedResult + secondHalf;</span>
+						}
+					}
+				}
+			}
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">			if (quotes.size() != 0) {</span>
+<span class="nc" id="L204">				error();</span>
+			}
+<span class="fc" id="L206">			result.add(element);</span>
+		}
+<span class="fc" id="L208">		return result;</span>
+	}
+
+	protected Vector&lt;String&gt; getFilesByGlob(Vector&lt;String&gt; input)
+			throws IOException {
+<span class="fc" id="L213">		Vector&lt;String&gt; finalResults = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (int i = 0; i &lt; input.size(); i++) {</span>
+<span class="fc" id="L215">			final Vector&lt;String&gt; results = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L216">			String root = Environment.currentDirectory + File.separator;</span>
+<span class="fc" id="L217">			Path startDir = Paths.get(root);</span>
+
+<span class="fc" id="L219">			FileSystem fileSystem = FileSystems.getDefault();</span>
+<span class="fc" id="L220">			String globPattern = &quot;glob:&quot; + root + input.get(i);</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (System.getProperty(&quot;file.separator&quot;) != null</span>
+<span class="fc" id="L222">					&amp;&amp; System.getProperty(&quot;file.separator&quot;).equals(</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">							Configurations.W_FILESEPARATOR)) {</span>
+<span class="fc" id="L224">				globPattern = globPattern.replace(&quot;\\&quot;, &quot;\\\\&quot;);</span>
+			}
+<span class="fc" id="L226">			final PathMatcher matcher = fileSystem.getPathMatcher(globPattern);</span>
+
+<span class="fc" id="L228">			FileVisitor&lt;Path&gt; matcherVisitor = new SimpleFileVisitor&lt;Path&gt;() {</span>
+				@Override
+				public FileVisitResult visitFile(Path file,
+						BasicFileAttributes attribs) {
+<span class="fc" id="L232">					return checkFileName(file);</span>
+				}
+
+				@Override
+				public FileVisitResult preVisitDirectory(Path file,
+						BasicFileAttributes attribs) {
+<span class="fc" id="L238">					return checkFileName(file);</span>
+				}
+
+				private FileVisitResult checkFileName(Path file) {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">					if (matcher.matches(file)) {</span>
+<span class="fc" id="L243">						results.add(file.toString());</span>
+					}
+<span class="fc" id="L245">					return FileVisitResult.CONTINUE;</span>
+				}
+			};
+<span class="fc" id="L248">			Files.walkFileTree(startDir, matcherVisitor);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			for (int j = 0; j &lt; results.size(); j++) {</span>
+<span class="fc" id="L250">				int originalLevelDeep = countOccurrences(root + input.get(i),</span>
+<span class="fc" id="L251">						File.separator);</span>
+<span class="fc" id="L252">				int resultLevelDeep = countOccurrences(results.get(j),</span>
+<span class="fc" id="L253">						File.separator);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">				if (originalLevelDeep != resultLevelDeep) {</span>
+<span class="fc" id="L255">					results.remove(j);</span>
+<span class="fc" id="L256">					j--;</span>
+				}
+			}
+
+			// remove prefix in file name
+<span class="fc" id="L261">			int prefixLength = (Environment.currentDirectory + File.separator)</span>
+<span class="fc" id="L262">					.length();</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			for (int j = 0; j &lt; results.size(); j++) {</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">				if (results.get(j).length() &gt;= prefixLength) {</span>
+<span class="fc" id="L265">					String newResult = results.get(j).substring(prefixLength);</span>
+<span class="fc" id="L266">					results.remove(j);</span>
+<span class="fc" id="L267">					results.insertElementAt(newResult, j);</span>
+				}
+			}
+
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			if (!results.isEmpty()) {</span>
+<span class="fc" id="L272">				finalResults.addAll(results);</span>
+<span class="fc" id="L273">			} else {</span>
+<span class="fc" id="L274">				finalResults.add(input.get(i));</span>
+			}
+		}
+<span class="fc" id="L277">		return finalResults;</span>
+	}
+
+	protected Vector&lt;String&gt; getIoRedirectories(Vector&lt;String&gt; input)
+			throws ShellException, AbstractApplicationException {
+<span class="fc" id="L282">		String inputRedirectory = &quot;&quot;, outputRedirectory = &quot;&quot;;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">		for (int i = 0; i &lt; input.size(); i++) {</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">			if (input.get(i).equals((Configurations.IN_REIO_TOKEN))) {</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">				if (inputRedirectory.length() &gt; 0) {</span>
+<span class="nc" id="L286">					error();</span>
+				}
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">				if (i == input.size() - 1) {</span>
+<span class="nc" id="L289">					input.remove(i);</span>
+<span class="nc" id="L290">					continue;</span>
+				}
+<span class="fc" id="L292">				inputRedirectory = input.get(i + 1);</span>
+<span class="fc" id="L293">				input.remove(i);</span>
+<span class="fc" id="L294">				input.remove(i);</span>
+<span class="fc" id="L295">				inputRedirectory = substituteCommand(inputRedirectory);</span>
+<span class="fc" id="L296">				i--;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">			} else if (input.get(i).equals((Configurations.OUT_REIO_TOKEN))) {</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">				if (outputRedirectory.length() &gt; 0) {</span>
+<span class="nc" id="L299">					error();</span>
+				}
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">				if (i == input.size() - 1) {</span>
+<span class="nc" id="L302">					input.remove(i);</span>
+<span class="nc" id="L303">					continue;</span>
+				}
+<span class="fc" id="L305">				outputRedirectory = input.get(i + 1);</span>
+<span class="fc" id="L306">				input.remove(i);</span>
+<span class="fc" id="L307">				input.remove(i);</span>
+<span class="fc" id="L308">				outputRedirectory = substituteCommand(outputRedirectory);</span>
+<span class="fc" id="L309">				i--;</span>
+			}
+		}
+<span class="fc" id="L312">		Vector&lt;String&gt; result = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L313">		result.add(inputRedirectory);</span>
+<span class="fc" id="L314">		result.add(outputRedirectory);</span>
+<span class="fc" id="L315">		result = removeQuoteTokens(result);</span>
+<span class="fc" id="L316">		return result;</span>
+	}
+
+	protected Vector&lt;String&gt; removeQuoteTokens(Vector&lt;String&gt; input)
+			throws ShellException {
+<span class="fc" id="L321">		Vector&lt;String&gt; result = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">		for (String element : input) {</span>
+<span class="fc" id="L323">			Stack&lt;Character&gt; quotes = new Stack&lt;Character&gt;();</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">			for (int i = element.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">				if (isQuote(element.charAt(i))) {</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">					if (quotes.isEmpty()) {</span>
+<span class="fc" id="L327">						quotes.push(element.charAt(i));</span>
+<span class="fc" id="L328">						element = removeCharFromString(element, i);</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">					} else if (quotes.peek() == Configurations.QUOTE_DOUBLE</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">							&amp;&amp; element.charAt(i) == Configurations.QUOTE_BACK) {</span>
+<span class="fc" id="L331">						quotes.push(Configurations.QUOTE_BACK);</span>
+<span class="fc" id="L332">						element = removeCharFromString(element, i);</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">					} else if (element.charAt(i) == quotes.peek()) {</span>
+<span class="fc" id="L334">						quotes.pop();</span>
+<span class="fc" id="L335">						element = removeCharFromString(element, i);</span>
+					}
+				}
+			}
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">			if (quotes.size() != 0) {</span>
+<span class="nc" id="L340">				error();</span>
+			}
+<span class="fc" id="L342">			result.add(element);</span>
+		}
+<span class="fc" id="L344">		return result;</span>
+	}
+
+	protected String preprocessSedCommand(String input) throws ShellException {
+<span class="fc" id="L348">		String result = &quot;&quot;;</span>
+<span class="fc" id="L349">		String token = getFirstSymbol(input);</span>
+<span class="fc" id="L350">		input += Configurations.WHITESPACE;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">		if (token == null</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">				|| token.length() == 0</span>
+<span class="fc" id="L353">				|| (!input.startsWith(Configurations.APPNAME_SED</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">						+ Configurations.WHITESPACE) &amp;&amp; !input</span>
+<span class="fc" id="L355">							.startsWith(Configurations.APPNAME_SED</span>
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">									+ Configurations.TAB_CHAR))) {</span>
+<span class="fc" id="L357">			return &quot;&quot;;</span>
+		}
+<span class="fc" id="L359">		Pattern p = Pattern.compile(Configurations.APPNAME_SED</span>
+<span class="fc" id="L360">				+ Configurations.WHITESPACEREGEX + &quot;+s[&quot; + token + &quot;][^ &quot;</span>
+<span class="fc" id="L361">				+ token + &quot;]*[&quot; + token + &quot;][^ &quot; + token + &quot;]*[&quot; + token</span>
+<span class="fc" id="L362">				+ &quot;][^ &quot; + token + &quot;]*&quot; + Configurations.WHITESPACEREGEX,</span>
+<span class="fc" id="L363">				Pattern.CASE_INSENSITIVE);</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">		for (int i = 0; i &lt; input.length(); i++) {</span>
+<span class="fc" id="L365">			result = input.substring(0, i + 1);</span>
+<span class="fc" id="L366">			Matcher m = p.matcher(result);</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">			if (m.find()) {</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">				if (result.equals(input)) {</span>
+<span class="fc" id="L369">					return result.substring(0, result.length() - 1);</span>
+				} else {
+<span class="fc" id="L371">					return result;</span>
+				}
+			}
+		}
+<span class="nc" id="L375">		return &quot;&quot;;</span>
+	}
+
+	// PRIVATE HELPER METHODS (This methods are trivial, so no need test cases
+	// for this)
+
+	private boolean containSymbol(String input) {
+<span class="fc" id="L382">		Pattern p = Pattern.compile(&quot;[^a-z0-9 ]&quot;, Pattern.CASE_INSENSITIVE);</span>
+<span class="fc" id="L383">		Matcher m = p.matcher(input);</span>
+<span class="fc" id="L384">		return m.find();</span>
+	}
+
+	private String getFirstSymbol(String input) {
+<span class="fc bfc" id="L388" title="All 2 branches covered.">		for (int i = 0; i &lt; input.length(); i++) {</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">			if (containSymbol(input.substring(i, i + 1))) {</span>
+<span class="fc" id="L390">				return input.substring(i, i + 1);</span>
+			}
+		}
+<span class="fc" id="L393">		return null;</span>
+	}
+
+	private SequenceCommand parseSequence(Vector&lt;String&gt; input)
+			throws ShellException, AbstractApplicationException {
+<span class="fc" id="L398">		SequenceCommand seqCommand = new SequenceCommand();</span>
+<span class="fc" id="L399">		Vector&lt;Vector&lt;String&gt;&gt; pipes = splitByToken(input,</span>
+<span class="fc" id="L400">				Configurations.SEMICOLON_TOKEN);</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">		for (Vector&lt;String&gt; pipe : pipes) {</span>
+<span class="fc" id="L402">			PipeCommand pipeCmd = parsePipe(pipe);</span>
+<span class="fc" id="L403">			seqCommand.addCommand(pipeCmd);</span>
+		}
+<span class="fc" id="L405">		return seqCommand;</span>
+	}
+
+	private PipeCommand parsePipe(Vector&lt;String&gt; input) throws ShellException,
+			AbstractApplicationException {
+<span class="fc" id="L410">		PipeCommand pipeCommand = new PipeCommand();</span>
+<span class="fc" id="L411">		Vector&lt;Vector&lt;String&gt;&gt; calls = splitByToken(input,</span>
+<span class="fc" id="L412">				Configurations.PIPE_TOKEN);</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">		for (Vector&lt;String&gt; call : calls) {</span>
+<span class="fc" id="L414">			CallCommand callCmd = parseCall(call);</span>
+<span class="fc" id="L415">			pipeCommand.addCommand(callCmd);</span>
+		}
+<span class="fc" id="L417">		return pipeCommand;</span>
+	}
+
+	private void error() throws ShellException {
+<span class="fc" id="L421">		throw new ShellException(Configurations.MESSAGE_E_PARSING);</span>
+	}
+
+	private boolean isQuote(char token) {
+<span class="fc bfc" id="L425" title="All 2 branches covered.">		if (token == Configurations.QUOTE_SINGLE</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">				|| token == Configurations.QUOTE_DOUBLE</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">				|| token == Configurations.QUOTE_BACK) {</span>
+<span class="fc" id="L428">			return true;</span>
+		}
+<span class="fc" id="L430">		return false;</span>
+	}
+
+	private int countOccurrences(String input, String token) {
+<span class="fc" id="L434">		int counter = 0;</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">		for (int i = 0; i &lt; input.length(); i++) {</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">			if (String.valueOf(input.charAt(i)).equals(token)) {</span>
+<span class="fc" id="L437">				counter++;</span>
+			}
+		}
+<span class="fc" id="L440">		return counter;</span>
+	}
+
+	private void refreshParser() {
+<span class="fc" id="L444">	}</span>
+
+	private Vector&lt;Vector&lt;String&gt;&gt; splitByToken(Vector&lt;String&gt; input,
+			String token) {
+<span class="fc" id="L448">		Vector&lt;Vector&lt;String&gt;&gt; result = new Vector&lt;Vector&lt;String&gt;&gt;();</span>
+<span class="fc" id="L449">		int lastToken = -1;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">		for (int i = 0; i &lt; input.size(); i++) {</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">			if (input.get(i).equals(token)) {</span>
+<span class="fc" id="L452">				Vector&lt;String&gt; subList = new Vector&lt;String&gt;();</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">				if (lastToken &gt;= 0) {</span>
+<span class="fc" id="L454">					subList = new Vector&lt;String&gt;(</span>
+<span class="fc" id="L455">							input.subList(lastToken + 1, i));</span>
+<span class="fc" id="L456">				} else {</span>
+<span class="fc" id="L457">					subList = new Vector&lt;String&gt;(input.subList(0, i));</span>
+				}
+<span class="fc" id="L459">				lastToken = i;</span>
+<span class="fc" id="L460">				result.add(subList);</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">			} else if (i == input.size() - 1) {</span>
+				Vector&lt;String&gt; subList;
+<span class="fc" id="L463">				subList = new Vector&lt;String&gt;(input.subList(lastToken + 1,</span>
+<span class="fc" id="L464">						input.size()));</span>
+<span class="fc" id="L465">				result.add(subList);</span>
+			}
+		}
+<span class="fc" id="L468">		return result;</span>
+	}
+
+	private String substituteCommand(String input) throws ShellException,
+			AbstractApplicationException {
+<span class="fc" id="L473">		Vector&lt;String&gt; vectorInput = new Vector&lt;String&gt;();</span>
+<span class="fc" id="L474">		vectorInput.add(input);</span>
+<span class="fc" id="L475">		Vector&lt;String&gt; results = substituteCommand(vectorInput);</span>
+<span class="fc" id="L476">		String result = &quot;&quot;;</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">		for (String string : results) {</span>
+<span class="fc" id="L478">			result += string;</span>
+		}
+<span class="fc" id="L480">		return result;</span>
+	}
+
+	private String removeCharFromString(String input, int index) {
+<span class="fc" id="L484">		StringBuilder stringBuilder = new StringBuilder(input);</span>
+<span class="fc" id="L485">		stringBuilder.deleteCharAt(index);</span>
+<span class="fc" id="L486">		return stringBuilder.toString();</span>
+	}
+
+	private Vector&lt;Boolean&gt; markQuotes(String input) throws ShellException {
+<span class="fc" id="L490">		Stack&lt;Character&gt; quotes = new Stack&lt;Character&gt;();</span>
+<span class="fc" id="L491">		Vector&lt;Boolean&gt; quoteFlags = new Vector&lt;Boolean&gt;();</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">		for (int i = 0; i &lt; input.length(); i++) {</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">			if (isQuote(input.charAt(i))) {</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">				if (quotes.isEmpty()) {</span>
+<span class="fc" id="L495">					quotes.push(input.charAt(i));</span>
+<span class="fc" id="L496">					quoteFlags.add(true);</span>
+<span class="fc bfc" id="L497" title="All 2 branches covered.">				} else if (quotes.peek() == Configurations.QUOTE_DOUBLE</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">						&amp;&amp; input.charAt(i) == Configurations.QUOTE_BACK) {</span>
+<span class="fc" id="L499">					quotes.push(Configurations.QUOTE_BACK);</span>
+<span class="fc" id="L500">					quoteFlags.add(true);</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">				} else if (input.charAt(i) == quotes.peek()) {</span>
+<span class="fc" id="L502">					quotes.pop();</span>
+<span class="fc" id="L503">					quoteFlags.add(true);</span>
+<span class="fc" id="L504">				} else {</span>
+<span class="fc" id="L505">					quoteFlags.add(false);</span>
+				}
+<span class="fc" id="L507">			} else {</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">				if (quotes.isEmpty()) {</span>
+<span class="fc" id="L509">					quoteFlags.add(false);</span>
+<span class="fc" id="L510">				} else {</span>
+<span class="fc" id="L511">					quoteFlags.add(true);</span>
+				}
+			}
+		}
+<span class="pc bpc" id="L515" title="1 of 2 branches missed.">		if (quotes.size() != 0) {</span>
+<span class="nc" id="L516">			error();</span>
+		}
+<span class="fc" id="L518">		return quoteFlags;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

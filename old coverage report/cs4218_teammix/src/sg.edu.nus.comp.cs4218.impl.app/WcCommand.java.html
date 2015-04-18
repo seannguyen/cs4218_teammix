@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>WcCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">WcCommand.java</span></div><h1>WcCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.WcException;
+
+<span class="fc" id="L16">public class WcCommand implements Application {</span>
+	private String fileName;
+<span class="fc" id="L18">	protected int lineCount = 0;</span>
+<span class="fc" id="L19">	protected int wordCount = 0;</span>
+<span class="fc" id="L20">	protected int charCount = 0;</span>
+<span class="fc" id="L21">	protected int totalLineCount = 0;</span>
+<span class="fc" id="L22">	protected int totalWordCount = 0;</span>
+<span class="fc" id="L23">	protected int totalCharCount = 0;</span>
+<span class="fc" id="L24">	protected boolean lineFlag = false;</span>
+<span class="fc" id="L25">	protected boolean wordFlag = false;</span>
+<span class="fc" id="L26">	protected boolean charFlag = false;</span>
+<span class="fc" id="L27">	private boolean argFlag = false;</span>
+<span class="fc" id="L28">	private boolean singleFileFlag = false;</span>
+<span class="fc" id="L29">	private String ERROR_MSG_DIRECTORY = &quot;%1$s%2$s: Is a directory&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L30">	private String ERROR_MSG = &quot;%1$s%2$s: No such file or directory&quot; + Configurations.NEWLINE;</span>
+	
+	/**
+	 * Perform Wc command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 * @throws WcException 
+	 */	
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout)
+			throws WcException {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if(args.length == 0) {</span>
+<span class="fc" id="L47">			processInputStream(stdin, stdout);</span>
+<span class="fc" id="L48">			resetAllCounters();</span>
+<span class="fc" id="L49">			return;</span>
+		}
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int i = 0; i &lt; args.length; i++) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			if(args[i].equals(&quot;&quot;)) {</span>
+<span class="fc" id="L53">				resetAllCounters();</span>
+<span class="fc" id="L54">				throw new WcException(&quot;Null argument(s)&quot;);</span>
+			}
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (args[i].equals(&quot;-l&quot;)) { // Print only the newline counts</span>
+<span class="fc" id="L57">				lineFlag = true;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			} else if (args[i].equals(&quot;-w&quot;)) { // Print only the word counts</span>
+<span class="fc" id="L59">				wordFlag = true;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			} else if (args[i].equals(&quot;-m&quot;)) { // Print only the character</span>
+												// counts
+<span class="fc" id="L62">				charFlag = true;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			} else if (args[i].charAt(0) == '-') {</span>
+				// wc: illegal option -- z
+<span class="fc" id="L65">				resetAllCounters();</span>
+<span class="fc" id="L66">				throw new WcException(&quot;illegal option &quot; + args[i]);</span>
+			} else {			
+<span class="fc" id="L68">				argFlag = true;</span>
+<span class="fc" id="L69">				int numOfFiles = args.length - i;</span>
+<span class="fc" id="L70">				String[] arrayOfFiles = new String[numOfFiles];</span>
+<span class="fc" id="L71">				System.arraycopy(args, i, arrayOfFiles, 0, numOfFiles);</span>
+<span class="fc" id="L72">				processFiles(arrayOfFiles, stdin, stdout);</span>
+<span class="fc" id="L73">				break;</span>
+			}
+		}
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (!argFlag) {</span>
+			//resetAllCounters();
+			//throw new WcException(&quot;Null stdin&quot;);
+<span class="fc" id="L79">			processInputStream(stdin, stdout);</span>
+<span class="fc" id="L80">			resetAllCounters();</span>
+<span class="fc" id="L81">			return;</span>
+		}
+<span class="fc" id="L83">	}</span>
+
+	/**
+	 * Write to outputStream the lines(numOfLines) starting from the bottom of Arraylist.
+	 *
+	 * @param args
+	 *            args storing file names
+	 * @param stdin
+	 * 			  inputStream
+	 * @param stdout
+	 * 			  outputStream     
+	 *  
+	 */
+	public void processFiles(String args[], InputStream stdin,
+			OutputStream stdout) throws WcException {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if(args.length == 0) {</span>
+<span class="fc" id="L99">			resetAllCounters();</span>
+<span class="fc" id="L100">			throw new WcException(&quot;No argument(s)&quot;);</span>
+		}
+		
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if(args.length == 1) {</span>
+<span class="fc" id="L104">			singleFileFlag = true;</span>
+		}
+		
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int i = 0; i &lt; args.length; i++) {</span>
+<span class="fc" id="L108">			fileName = getAbsolutePath(args[i]);</span>
+<span class="fc" id="L109">			File file = new File(fileName);</span>
+
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			if (doesFileExist(file)) {</span>
+				try {
+<span class="fc" id="L113">					BufferedReader bufferedReader = new BufferedReader(</span>
+<span class="fc" id="L114">							new FileReader(file));</span>
+					String line;
+<span class="fc bfc" id="L116" title="All 2 branches covered.">					while ((line = bufferedReader.readLine()) != null) {</span>
+<span class="fc" id="L117">						lineCount++;</span>
+<span class="fc" id="L118">						wordCount += line.trim().split(&quot;\\s+&quot;).length;</span>
+<span class="fc" id="L119">						charCount += line.length() + 1;</span>
+					}
+<span class="fc" id="L121">					totalLineCount += lineCount;</span>
+<span class="fc" id="L122">					totalWordCount += wordCount;</span>
+<span class="fc" id="L123">					totalCharCount += charCount;</span>
+<span class="fc" id="L124">					printResults(args[i], stdout);</span>
+<span class="fc" id="L125">					resetCounters();</span>
+<span class="pc" id="L126">				} catch (IOException e) {</span>
+<span class="nc" id="L127">					e.printStackTrace();</span>
+				}
+<span class="nc bnc" id="L129" title="All 2 branches missed.">			} else if (isDirectory(file)) {</span>
+				// cat: sample/: Is a directory
+<span class="nc" id="L131">				printExceptions(ERROR_MSG_DIRECTORY, fileName, stdout);</span>
+<span class="nc" id="L132">			} else {</span>
+				// cat: sample.txt: No such file or directory	
+<span class="nc" id="L134">				printExceptions(ERROR_MSG, fileName, stdout);				</span>
+			}			
+		}
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (args.length &gt; 1) {</span>
+<span class="fc" id="L138">			printTotalResults(stdout);</span>
+		}
+<span class="fc" id="L140">		resetAllCounters();</span>
+<span class="fc" id="L141">	}</span>
+	
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw WcException
+	 */
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws WcException {
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">		if(singleFileFlag) {</span>
+<span class="fc" id="L157">			resetAllCounters();</span>
+<span class="fc" id="L158">			throw new WcException(String.format(msg, &quot;&quot;, fileName + &quot;:&quot;));</span>
+		} else {
+<span class="nc" id="L160">			String errorMsg = String.format(msg, &quot;wc: &quot;, fileName + &quot;:&quot;);</span>
+			try {
+<span class="nc" id="L162">				stdout.write(errorMsg.getBytes());</span>
+<span class="nc" id="L163">			} catch (IOException e) {</span>
+<span class="nc" id="L164">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc" id="L167">	}</span>
+	
+	
+
+	/**
+	 * Reset all counters to zero
+	 */
+	public void resetAllCounters() {
+<span class="fc" id="L175">		lineCount = 0;</span>
+<span class="fc" id="L176">		wordCount = 0;</span>
+<span class="fc" id="L177">		charCount = 0;</span>
+<span class="fc" id="L178">		totalLineCount = 0;</span>
+<span class="fc" id="L179">		totalWordCount = 0;</span>
+<span class="fc" id="L180">		totalCharCount = 0;</span>
+<span class="fc" id="L181">		lineFlag = false;</span>
+<span class="fc" id="L182">		wordFlag = false;</span>
+<span class="fc" id="L183">		charFlag = false;</span>
+<span class="fc" id="L184">		singleFileFlag = false;</span>
+<span class="fc" id="L185">	}</span>
+
+	/**
+	 * Reset line, word and char counters to zero
+	 */
+	public void resetCounters() {
+<span class="fc" id="L191">		lineCount = 0;</span>
+<span class="fc" id="L192">		wordCount = 0;</span>
+<span class="fc" id="L193">		charCount = 0;</span>
+<span class="fc" id="L194">	}</span>
+
+	/**
+	 * Print Totalresults to stdout
+	 * 
+	 * @param stdout
+	 * 			outputStream
+	 */
+	public void printTotalResults(OutputStream stdout) {
+		try {
+<span class="fc bfc" id="L204" title="All 6 branches covered.">			if (!lineFlag &amp;&amp; !wordFlag &amp;&amp; !charFlag) {</span>
+				// print all in the following order: newline, word, character
+<span class="fc" id="L206">				stdout.write(String.valueOf(totalLineCount).getBytes());</span>
+<span class="fc" id="L207">				stdout.write(&quot;\t&quot;.getBytes());</span>
+<span class="fc" id="L208">				stdout.write(String.valueOf(totalWordCount).getBytes());</span>
+<span class="fc" id="L209">				stdout.write(&quot;\t&quot;.getBytes());</span>
+<span class="fc" id="L210">				stdout.write(String.valueOf(totalCharCount).getBytes());</span>
+<span class="fc" id="L211">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			if (lineFlag) {</span>
+<span class="fc" id="L215">				stdout.write(String.valueOf(totalLineCount).getBytes());</span>
+<span class="fc" id="L216">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			if (wordFlag) {</span>
+<span class="fc" id="L220">				stdout.write(String.valueOf(totalWordCount).getBytes());</span>
+<span class="fc" id="L221">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (charFlag) {</span>
+<span class="fc" id="L225">				stdout.write(String.valueOf(totalCharCount).getBytes());</span>
+<span class="fc" id="L226">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc" id="L229">			stdout.write(&quot;total&quot;.getBytes());</span>
+<span class="pc" id="L230">		} catch (IOException e) {</span>
+<span class="nc" id="L231">			resetAllCounters();</span>
+<span class="nc" id="L232">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L234">	}</span>
+
+	/**
+	 * Print Results to stdout
+	 * 
+	 * @param file
+	 * 			name of file
+	 * @param stdout
+	 * 			outputStream
+	 */
+	public void printResults(String fileName, OutputStream stdout) {
+		try {
+<span class="fc bfc" id="L246" title="All 6 branches covered.">			if (!lineFlag &amp;&amp; !wordFlag &amp;&amp; !charFlag) {</span>
+				// print all in the following order: newline, word, character
+<span class="fc" id="L248">				stdout.write(String.valueOf(lineCount).getBytes());</span>
+<span class="fc" id="L249">				stdout.write(&quot;\t&quot;.getBytes());</span>
+<span class="fc" id="L250">				stdout.write(String.valueOf(wordCount).getBytes());</span>
+<span class="fc" id="L251">				stdout.write(&quot;\t&quot;.getBytes());</span>
+<span class="fc" id="L252">				stdout.write(String.valueOf(charCount).getBytes());</span>
+<span class="fc" id="L253">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			if (lineFlag) {</span>
+<span class="fc" id="L257">				stdout.write(String.valueOf(lineCount).getBytes());</span>
+<span class="fc" id="L258">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L261" title="All 2 branches covered.">			if (wordFlag) {</span>
+<span class="fc" id="L262">				stdout.write(String.valueOf(wordCount).getBytes());</span>
+<span class="fc" id="L263">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			if (charFlag) {</span>
+<span class="fc" id="L267">				stdout.write(String.valueOf(charCount).getBytes());</span>
+<span class="fc" id="L268">				stdout.write(&quot;\t&quot;.getBytes());</span>
+			}
+
+<span class="fc" id="L271">			stdout.write(fileName.getBytes());</span>
+<span class="fc" id="L272">			stdout.write(String.format(&quot;%n&quot;).getBytes());			</span>
+<span class="pc" id="L273">		} catch (IOException e) {	</span>
+<span class="nc" id="L274">			resetAllCounters();</span>
+<span class="nc" id="L275">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L277">	}</span>
+
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
+	public String getAbsolutePath(String filePath) {
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">		if (filePath.startsWith(Environment.currentDirectory)) {</span>
+<span class="nc" id="L287">			return filePath;</span>
+		}
+<span class="fc" id="L289">		return Environment.currentDirectory + File.separator + filePath;</span>
+	}
+
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L299" title="All 4 branches covered.">		if (file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L300">			return true;</span>
+		}
+<span class="fc" id="L302">		return false;</span>
+	}
+
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L312" title="All 2 branches covered.">		if (file.isDirectory()) {</span>
+<span class="fc" id="L313">			return true;</span>
+		}
+<span class="fc" id="L315">		return false;</span>
+	}
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws WcException 
+	 */
+	public void processInputStream(InputStream stdin, OutputStream stdout) throws WcException {		 			
+<span class="fc" id="L328">		BufferedReader bufferedReader = null;</span>
+		String line;
+		
+<span class="fc bfc" id="L331" title="All 2 branches covered.">		if(stdin == null) {</span>
+<span class="fc" id="L332">			throw new WcException(&quot;Null stdin&quot;);</span>
+		}
+		try { 
+<span class="fc" id="L335">			bufferedReader = new BufferedReader(new InputStreamReader(stdin));</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">			while ((line = bufferedReader.readLine()) != null) {</span>
+<span class="fc" id="L337">				lineCount++;</span>
+<span class="fc" id="L338">				wordCount += line.trim().split(&quot;\\s+&quot;).length;</span>
+<span class="fc" id="L339">				charCount += line.length() + 1;</span>
+			} 
+<span class="fc" id="L341">			printResults(&quot;&quot;, stdout);</span>
+<span class="pc" id="L342">		} catch (IOException e) {</span>
+<span class="nc" id="L343">			e.printStackTrace();</span>
+<span class="nc" id="L344">		} finally {</span>
+<span class="pc bpc" id="L345" title="5 of 6 branches missed.">			if (bufferedReader != null) {</span>
+				try {
+<span class="pc" id="L347">					bufferedReader.close();</span>
+<span class="pc" id="L348">				} catch (IOException e) {</span>
+<span class="nc" id="L349">					e.printStackTrace();</span>
+				}
+			}
+<span class="nc" id="L352">		}</span>
+<span class="fc" id="L353">		return;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>HeadCommand.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">cs4218_teammix (Apr 18, 2015 4:48:51 PM)</a> &gt; <a href="../../index.html" class="el_group">cs4218_teammix</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">sg.edu.nus.comp.cs4218.impl.app</a> &gt; <span class="el_source">HeadCommand.java</span></div><h1>HeadCommand.java</h1><pre class="source lang-java linenums">package sg.edu.nus.comp.cs4218.impl.app;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Configurations;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.exception.HeadException;
+import sg.edu.nus.comp.cs4218.exception.WcException;
+
+<span class="fc" id="L19">public class HeadCommand implements Application{</span>
+<span class="fc" id="L20">	private boolean singleFileFlag = false;</span>
+<span class="fc" id="L21">	private String ERROR_MSG_DIRECTORY = &quot;%1$s%2$s: Is a directory&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L22">	private String ERROR_MSG = &quot;%1$s%2$s: No such file or directory&quot; + Configurations.NEWLINE;</span>
+	public static final int DEFAULT_NUM_OF_LINES = 10;	
+	
+	/**
+	 * Perform Head command
+	 *
+	 * @param args
+	 *            input arguments
+	 * @param stdin
+	 *            inputStream
+	 * @param stdout
+	 *            outputStream
+	 */	
+	@Override
+	public void run(String[] args, InputStream stdin, OutputStream stdout) throws HeadException {
+<span class="fc" id="L37">		String fileName = &quot;&quot;;</span>
+<span class="fc" id="L38">		int numOfLines = 0;</span>
+<span class="fc" id="L39">		int numOfFiles = 0;</span>
+<span class="fc" id="L40">		int index = 0;</span>
+<span class="fc" id="L41">		singleFileFlag = false;</span>
+<span class="fc bfc" id="L42" title="All 6 branches covered.">		if(args.length &gt; 0 &amp;&amp; args[0].startsWith(&quot;-&quot;) &amp;&amp; !args[0].equals(&quot;-n&quot;)) {</span>
+<span class="fc" id="L43">			throw new HeadException(&quot;illegal line count -- &quot; + args[0] );</span>
+		}
+<span class="pc bpc" id="L45" title="3 of 4 branches missed.">		if(args.length &gt; 3 &amp;&amp; args[0].equals(&quot;-n&quot;)) {</span>
+			try {				
+<span class="nc" id="L47">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">				if(numOfLines &lt; 0) {</span>
+					//illegal line count -- numOfLines
+<span class="nc" id="L50">					throw new HeadException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}								
+<span class="nc" id="L52">			} catch(NumberFormatException e) {</span>
+<span class="nc" id="L53">				e.printStackTrace();</span>
+			}
+			//fileName = args[2];
+<span class="nc" id="L56">			numOfFiles = args.length - 2;</span>
+<span class="nc" id="L57">			index = 2;</span>
+<span class="pc bfc" id="L58" title="All 4 branches covered.">		} else if (args.length == 3 &amp;&amp; args[0].equals(&quot;-n&quot;)) {	</span>
+<span class="fc" id="L59">			singleFileFlag = true;</span>
+			try {
+<span class="fc" id="L61">				numOfFiles = 1;</span>
+<span class="fc" id="L62">				index = 2;</span>
+<span class="fc" id="L63">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				if(numOfLines &lt; 0) {</span>
+					//illegal line count -- numOfLines
+<span class="fc" id="L66">					throw new HeadException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}								
+<span class="nc" id="L68">			} catch(NumberFormatException e) {</span>
+<span class="nc" id="L69">				e.printStackTrace();</span>
+			}			
+<span class="pc bpc" id="L71" title="1 of 4 branches missed.">		} else if (args.length == 1 &amp;&amp; !args[0].equals(&quot;-n&quot;) ) {</span>
+<span class="fc" id="L72">			singleFileFlag = true;</span>
+<span class="fc" id="L73">			numOfLines = DEFAULT_NUM_OF_LINES;			</span>
+<span class="fc" id="L74">			numOfFiles = 1;</span>
+<span class="fc" id="L75">			index = 0;</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">		} else if(args.length &gt; 0 &amp;&amp; !args[0].equals(&quot;-n&quot;)) {			</span>
+<span class="fc" id="L77">			index = 0;</span>
+<span class="fc" id="L78">			numOfFiles = args.length;</span>
+<span class="fc" id="L79">			numOfLines = DEFAULT_NUM_OF_LINES;</span>
+<span class="fc" id="L80">		} else {</span>
+			//throw new HeadException(&quot;Incorrect argument(s)&quot;);
+<span class="pc bpc" id="L82" title="1 of 4 branches missed.">			if(args.length == 2 &amp;&amp; args[0].equals(&quot;-n&quot;)) {</span>
+<span class="fc" id="L83">				numOfLines = Integer.parseInt(args[1]);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">				if(numOfLines &lt; 0) {</span>
+					//illegal line count -- numOfLines
+<span class="nc" id="L86">					throw new HeadException(&quot;illegal line count -- &quot; + numOfLines);</span>
+				}
+<span class="fc" id="L88">				processInputStream(numOfLines, stdin, stdout);</span>
+<span class="fc" id="L89">			} else {</span>
+<span class="fc" id="L90">				processInputStream(DEFAULT_NUM_OF_LINES, stdin, stdout);</span>
+			}
+		}
+		
+<span class="fc" id="L94">		String[] arrayOfFiles = new String[numOfFiles];</span>
+<span class="fc" id="L95">		System.arraycopy(args, index, arrayOfFiles, 0, numOfFiles);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		for(int i = 0; i &lt; numOfFiles; i++) {</span>
+<span class="fc" id="L97">			processFiles(stdout, arrayOfFiles[i], numOfLines);</span>
+		}
+<span class="fc" id="L99">	}</span>
+	
+	public void processFiles(OutputStream stdout, String fileName,
+			int numOfLines) throws HeadException {		
+<span class="fc" id="L103">		fileName = getAbsolutePath(fileName);</span>
+<span class="fc" id="L104">		File file = new File(fileName);</span>
+
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		if (doesFileExist(file)) {</span>
+			try {
+<span class="fc" id="L108">				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));</span>
+				String line;
+				try {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					if(!singleFileFlag) {</span>
+<span class="fc" id="L112">						String title = &quot;==&gt;&quot; + file.getName() + &quot;&lt;==&quot; + Configurations.NEWLINE;</span>
+<span class="fc" id="L113">						stdout.write(title.getBytes());</span>
+					}
+<span class="fc bfc" id="L115" title="All 4 branches covered.">					while ((line = bufferedReader.readLine()) != null &amp;&amp; numOfLines-- &gt; 0) {</span>
+<span class="fc" id="L116">						String newLine = line + String.format(&quot;%n&quot;);</span>
+<span class="fc" id="L117">						stdout.write(newLine.getBytes());</span>
+					}
+<span class="pc" id="L119">				} catch (IOException e) {</span>
+<span class="nc" id="L120">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L122">			} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L123">				e.printStackTrace();</span>
+			}
+<span class="nc bnc" id="L125" title="All 2 branches missed.">		} else if (isDirectory(file)) {</span>
+			// head: sample/: Is a directory
+<span class="nc" id="L127">			printExceptions(ERROR_MSG_DIRECTORY, file.getName(), stdout);</span>
+<span class="nc" id="L128">		} else {</span>
+			// head: sample.txt: No such file or directory
+<span class="nc" id="L130">			printExceptions(ERROR_MSG, file.getName(), stdout);</span>
+		}
+<span class="fc" id="L132">	}</span>
+	
+	/**
+	 * print exceptions
+	 * @param msg
+	 * 			error msg
+	 * @param fileName
+	 * 			file name of the test file
+	 * @param stdout
+	 * 			OutputStream
+	 * 
+	 * throw HeadException
+	 */
+	public void printExceptions(String msg, String fileName, OutputStream stdout) throws HeadException {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">		if(singleFileFlag) {			</span>
+<span class="fc" id="L147">			throw new HeadException(String.format(msg, &quot;&quot;, fileName + &quot;:&quot;));</span>
+		} else {
+<span class="nc" id="L149">			String errorMsg = String.format(msg, &quot;head: &quot;, fileName + &quot;:&quot;);</span>
+			try {
+<span class="nc" id="L151">				stdout.write(errorMsg.getBytes());</span>
+<span class="nc" id="L152">			} catch (IOException e) {</span>
+<span class="nc" id="L153">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc" id="L156">	}</span>
+	
+	/**
+	 * Print stdin to stdout
+	 * 
+	 * @param stdin
+	 * 			InputStream
+	 * @param stdout
+	 * 			OutputStream
+	 * @throws HeadException 
+	 */
+	public void processInputStream(int numOfLines, InputStream stdin, OutputStream stdout) throws HeadException {		 			
+<span class="fc" id="L168">		BufferedReader bufferedReader = null;</span>
+		String line;
+		
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		if(stdin == null) {</span>
+<span class="fc" id="L172">			throw new HeadException(&quot;Null stdin&quot;);</span>
+		}
+		try { 
+<span class="fc" id="L175">			bufferedReader = new BufferedReader(new InputStreamReader(stdin));</span>
+<span class="fc bfc" id="L176" title="All 4 branches covered.">			while ((line = bufferedReader.readLine()) != null &amp;&amp; numOfLines-- &gt; 0) {</span>
+<span class="fc" id="L177">				String newLine = line + String.format(&quot;%n&quot;);</span>
+<span class="fc" id="L178">				stdout.write(newLine.getBytes());</span>
+			} 
+<span class="pc" id="L180">		} catch (IOException e) {</span>
+<span class="nc" id="L181">			e.printStackTrace();</span>
+<span class="nc" id="L182">		} finally {</span>
+<span class="pc bpc" id="L183" title="5 of 6 branches missed.">			if (bufferedReader != null) {</span>
+				try {
+<span class="pc" id="L185">					bufferedReader.close();</span>
+<span class="pc" id="L186">				} catch (IOException e) {</span>
+<span class="nc" id="L187">					e.printStackTrace();</span>
+				}
+			}
+<span class="nc" id="L190">		}</span>
+<span class="fc" id="L191">		return;</span>
+	}
+	
+	/**
+	 * Get absolute path of given filePath
+	 *
+	 * @param filePath
+	 *            filePath to get absolute
+	 */
+	public String getAbsolutePath(String filePath) {				
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">		if(filePath.startsWith(Environment.currentDirectory)) {</span>
+<span class="nc" id="L202">			return filePath;</span>
+		}
+<span class="fc" id="L204">		return Environment.currentDirectory + File.separator + filePath;</span>
+	}
+	
+	/**
+	 * Checks if given file exist
+	 *
+	 * @param file
+	 *            file to be checked
+	 */
+	public boolean doesFileExist(File file) {
+<span class="fc bfc" id="L214" title="All 4 branches covered.">		if(file.exists() &amp;&amp; !file.isDirectory()) {</span>
+<span class="fc" id="L215">			return true;</span>
+		}
+<span class="fc" id="L217">		return false;</span>
+	}
+	
+	/**
+	 * Check if given file is a directory
+	 *
+	 * @param file
+	 *            file to be check for directory
+	 */
+	public boolean isDirectory(File file) {
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if(file.isDirectory()) {</span>
+<span class="fc" id="L228">			return true;</span>
+		}
+<span class="fc" id="L230">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>cs4218_teammix (Apr 18, 2015 4:48:51 PM)</div></body></html>
