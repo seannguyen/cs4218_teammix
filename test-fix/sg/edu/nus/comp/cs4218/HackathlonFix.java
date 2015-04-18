@@ -116,6 +116,34 @@ public class HackathlonFix {
 		shell.parseAndEvaluate(cmd, stdout);
 	}
 	
+	/**
+	 * An application with capital letter should be considered as invalid.
+	 * Also discussed in forum on 16/01/2015: "Character Case handling"
+	 * 
+	 * BUG_ID:  testAppNameForCaseSensitive()
+	 * fix location in: Parser, remove line 146
+	 */
+	@Test(expected = ShellException.class)
+	public void testAppNameForCaseSensitiveInCmdSubstitude() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "`echo 'eCHo'` hello";
+		shell.parseAndEvaluate(cmd, stdout);
+	}
+	
+	/**
+	 * An application with capital letter should be considered as invalid.
+	 * Also discussed in forum on 16/01/2015: "Character Case handling"
+	 * 
+	 * BUG_ID:  testAppNameForCaseSensitive()
+	 * fix location in: Parser, remove line 146
+	 */
+	@Test(expected = ShellException.class)
+	public void testAppNameForCaseSensitiveInQuote() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "'ECho' hello";
+		shell.parseAndEvaluate(cmd, stdout);
+	}
+	
 	/** 
 	 * Command starting with semicolon should throw error in shell
 	 * Also tested with CYGWIN terminal
@@ -129,5 +157,48 @@ public class HackathlonFix {
 		cmd = ";echo hello";
 		shell.parseAndEvaluate(cmd, stdout);
 	}
+	
+	/** 
+	 * Command starting with semicolon should throw error in shell
+	 * Also tested with CYGWIN terminal
+	 * 
+	 * BUG_ID:  testCommandStartingWithSemiColon()
+	 * fix location in: Parser, added condition at line 409
+	 */
+	@Test(expected = ShellException.class)
+	public void testCommandStartingWithPipe() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "|echo hello";
+		shell.parseAndEvaluate(cmd, stdout);
+	}
+	
+	/** 
+	 * Command starting with semicolon should throw error in shell
+	 * Also tested with CYGWIN terminal
+	 * 
+	 * BUG_ID:  testCommandStartingWithSemiColon()
+	 * fix location in: Parser, added condition at line 409
+	 */
+	@Test(expected = ShellException.class)
+	public void testCommandEmptyPipe() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "echo hello ||";
+		shell.parseAndEvaluate(cmd, stdout);
+	}
+	
+	/** 
+	 * Command starting with semicolon should throw error in shell
+	 * Also tested with CYGWIN terminal
+	 * 
+	 * BUG_ID:  testCommandStartingWithSemiColon()
+	 * fix location in: Parser, added condition at line 409
+	 */
+	@Test(expected = ShellException.class)
+	public void testCommandEmptySequenceCmd() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "echo hello ;;";
+		shell.parseAndEvaluate(cmd, stdout);
+	}
+
 
 }
