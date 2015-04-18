@@ -50,7 +50,8 @@ public class HeadCommand implements Application{
 					throw new HeadException("illegal line count -- " + numOfLines);
 				}								
 			} catch(NumberFormatException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				throw new HeadException("illegal line count -- " + args[1]);
 			}
 			//fileName = args[2];
 			numOfFiles = args.length - 2;
@@ -66,7 +67,8 @@ public class HeadCommand implements Application{
 					throw new HeadException("illegal line count -- " + numOfLines);
 				}								
 			} catch(NumberFormatException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				throw new HeadException("illegal line count -- " + args[1]);
 			}			
 		} else if (args.length == 1 && !args[0].equals("-n") ) {
 			singleFileFlag = true;
