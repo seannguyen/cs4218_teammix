@@ -70,9 +70,13 @@ public class FindCommand implements Application {
 			}
 			root = new File(args[0]).getAbsolutePath();
 			pattern = args[2].replaceFirst(RELATIVE_INPUT, NOTHING);
-			pattern = pattern.replace("*", "**");
+			if(!pattern.startsWith("*") && !pattern.endsWith("*")) {
+              pattern = pattern.replace("*", "tmdla");
+            } else {
+            pattern = pattern.replace("*", "**");
+            }	
 			pattern = formatPattern(pattern);
-			pattern = formatWildCard(pattern);
+            pattern = formatWildCard(pattern);
 		} else {
 			throw new FindException("Invalid Arguments");
 		}
