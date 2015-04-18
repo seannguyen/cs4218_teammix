@@ -32,76 +32,136 @@ public class HackathlonFix {
 		Environment.currentDirectory = System.getProperty("user.dir");
 	}
 	
-	/**
-	 * Find application without *(asterisk) in the pattern should only
-	 * printout that exact filename if it present and not all the file
-	 * that contains the substring of the given filename
-	 * Also tested with CYGWIN terminal
-	 * 
-	 * BUG_ID:  testFindAppWithoutAsteriskInPattern()
-	 * fix location in: FindCommand.java line number 96 
-	 */
-	@Test
-	public void testFindAppWithoutAsteriskInPattern() 
-			throws ShellException, AbstractApplicationException {
-		String expected = "." + File.separator +"a.txt" + System.lineSeparator();
-		cmd = "find -name a.txt";
-		shell.parseAndEvaluate(cmd, stdout);
-		assertEquals(expected, stdout.toString());
-	}
-	
-	/**
-	 * When changing directory using ".." in path, going up the 
-	 * directory tree again leads to the wrong folder.
-	 * In the given test, after all the cd commands, the current 
-	 * directory should be test-files-ef1 where 5callop.txt133 is.
-	 * May be a problem only with Windows
-	 *
-	 * BUG_ID:  testCdRelativePathFromOneLevelAbove()
-	 * fix location in: FindCommand.java line number 106
-	 */
-	@Test
-	public void testCdRelativePathFromOneLevelAbove() throws AbstractApplicationException, ShellException {
-		cmd = "cd test-files-ef1/oyster1337/mussel7715/../mussel7715/; cd ..; cd ..; cat 5callop.txt133";
-		shell.parseAndEvaluate(cmd, stdout);
-		assertEquals("Scallops live in all the world's oceans." + System.lineSeparator(), stdout.toString());
-	}
+	  /**
+	   * Find application without *(asterisk) in the pattern should only printout
+	   * that exact filename if it present and not all the file that contains the
+	   * substring of the given filename Also tested with CYGWIN terminal
+	   * 
+	   * BUG_ID: testFindAppWithoutAsteriskInPattern() fix location in:
+	   * FindCommand.java line number 96
+	   */
+	  @Test
+	  public void testFindAppWithoutAsteriskInPattern() throws ShellException,
+	      AbstractApplicationException {
+	    String expected = "." + File.separator + "a.txt" + System.lineSeparator();
+	    cmd = "find -name a.txt";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals(expected, stdout.toString());
+	  }
 
-	/**
-	 * Only a directory should be given to a ls application.
-	 * File name pattern is not included according to project specification.
-	 * Ref spec page 9, Section Ls
-	 * 
-	 * BUG_ID:  testLsWithPattern()
-	 * fix location in: LScommand(), line 134
-	 */
-	@Test
-	public void testLsWithPattern() {
-		cmd = "ls *.txt";
-		try {
-			shell.parseAndEvaluate(cmd, stdout);
-			fail();
-		} catch (ShellException | AbstractApplicationException e) {
-			// pass
-		}
-	}
-	
-	/**
-	 * In find, the asterisk should not be treated as a wildcard
-	 * when in the middle of the file name/type
-	 * 
-	 * 
-	 * BUG_ID:  testFindAppAsteriskInMiddleOfName() 
-	 * fix location in: FindCommand(), line 97 to 99
-	 */
-	@Test
-	public void testFindAppAsteriskInMiddleOfName() 
-			throws ShellException, AbstractApplicationException {
-		cmd = "find -name 5*.txt";
-		shell.parseAndEvaluate(cmd, stdout);
-		assertEquals(System.lineSeparator(), stdout.toString());
-	}
-	
+	  @Test
+	  public void testFindWithExactFileNamePattern()
+	      throws AbstractApplicationException, ShellException {
+	    cmd = "find test-files-basic -name One.txt";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    String expected = "." + File.separator + "test-files-basic"
+	        + File.separator + "One.txt" + Configurations.NEWLINE;
+	    assertEquals(expected, stdout.toString());
+	  }
+
+	  @Test
+	  public void testFindWithExactFolderNamePattern()
+	      throws AbstractApplicationException, ShellException {
+	    cmd = "find test-files-basic -name NormalFolder";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    String expected = "." + File.separator + "test-files-basic"
+	        + File.separator + "NormalFolder" + Configurations.NEWLINE;
+	    assertEquals(expected, stdout.toString());
+	  }
+
+	  /**
+	   * When changing directory using ".." in path, going up the directory tree
+	   * again leads to the wrong folder. In the given test, after all the cd
+	   * commands, the current directory should be test-files-ef1 where
+	   * 5callop.txt133 is. May be a problem only with Windows
+	   *
+	   * BUG_ID: testCdRelativePathFromOneLevelAbove() fix location in:
+	   * FindCommand.java line number 106
+	   */
+	  @Test
+	  public void testCdRelativePathFromOneLevelAbove()
+	      throws AbstractApplicationException, ShellException {
+	    cmd = "cd test-files-ef1/oyster1337/mussel7715/../mussel7715/; cd ..; cd ..; cat 5callop.txt133";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals(
+	        "Scallops live in all the world's oceans." + System.lineSeparator(),
+	        stdout.toString());
+	  }
+
+	  @Test
+	  public void testCdRelativePathFromOneLevelAbove2()
+	      throws AbstractApplicationException, ShellException {
+	    cmd = "cd test-files-basic/NormalFolder/../.HideFolder/; cd ..; cat One.txt";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals("This is one.txt" + Configurations.NEWLINE
+	        + "Not two.txt or three.txt" + Configurations.NEWLINE
+	        + "Day 1 was a long day." + Configurations.NEWLINE
+	        + "Day 2 was a short day." + Configurations.NEWLINE
+	        + "Day 56 was great." + System.lineSeparator(), stdout.toString());
+	  }
+	  
+
+	  /**
+	   * Only a directory should be given to a ls application. File name pattern is
+	   * not included according to project specification. Ref spec page 9, Section
+	   * Ls
+	   * 
+	   * BUG_ID: testLsWithPattern() fix location in: LScommand(), line 134
+	   */
+	  @Test
+	  public void testLsWithPattern() {
+	    cmd = "ls *.txt";
+	    try {
+	      shell.parseAndEvaluate(cmd, stdout);
+	      fail();
+	    } catch (ShellException | AbstractApplicationException e) {
+	      // pass
+	    }
+	  }
+
+	  @Test
+	  public void testLsWithPattern2() {
+	    cmd = "ls *.md";
+	    try {
+	      shell.parseAndEvaluate(cmd, stdout);
+	      fail();
+	    } catch (ShellException | AbstractApplicationException e) {
+	      // pass
+	    }
+	  }
+	  
+	  /**
+	   * In find, the asterisk should not be treated as a wildcard when in the
+	   * middle of the file name/type
+	   * 
+	   * 
+	   * BUG_ID: testFindAppAsteriskInMiddleOfName() fix location in: FindCommand(),
+	   * line 97 to 99
+	   */
+	  @Test
+	  public void testFindAppAsteriskInMiddleOfName() throws ShellException,
+	      AbstractApplicationException {
+	    cmd = "find -name 5*.txt";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals(System.lineSeparator(), stdout.toString());
+	  }
+	  
+	  @Test
+	  public void testFindAppAsteriskInMiddleOfName2() throws ShellException,
+	      AbstractApplicationException {
+	    cmd = "find -name O*e.txt";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals(System.lineSeparator(), stdout.toString());
+	  }
+	  
+	  @Test
+	  public void testFindAppAsteriskInMiddleOfName3() throws ShellException,
+	      AbstractApplicationException {
+	    cmd = "find -name a.t*t";
+	    shell.parseAndEvaluate(cmd, stdout);
+	    assertEquals(System.lineSeparator(), stdout.toString());
+	  }
+	  
 	/**
 	 * An application with capital letter should be considered as invalid.
 	 * Also discussed in forum on 16/01/2015: "Character Case handling"
