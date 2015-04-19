@@ -3,19 +3,19 @@ Documentation for Hackathlon
 
 1.	public void testChangeDirectoryAndPrintPwdInSubCommand() 
 		
-2.	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd() FIXED
+2.	public void testSingleQuoteWithinDoubleQuoteWhichIsInSubCmd() 	FIXED
 			
 3.	public void testAppNameForCaseSensitive()  						FIXED
 		
-4.	public void testNumberLargerThanIntegerValue()
+4.	public void testNumberLargerThanIntegerValue()					FIXED
 	
 5.	public void testGlobbingAsteriskInQuotesForGrep() 
 		
 6.	public void testCommandStartingWithSemiColon() 
 	
-7.	public void testGrepWithFileNamesReadFromCatInSubCmd() 
+7.	public void testGrepWithFileNamesReadFromCatInSubCmd() 			FIXED
 		
-8.	public void testEchoAppWithoutArgument()
+8.	public void testEchoAppWithoutArgument()						FIXED
 		
 9.	public void testEchoAppWithStdin() 
 		

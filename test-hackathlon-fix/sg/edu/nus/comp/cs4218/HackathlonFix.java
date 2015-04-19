@@ -260,5 +260,143 @@ public class HackathlonFix {
 		shell.parseAndEvaluate(cmd, stdout);
 	}
 
+	/**
+	 * The last filename in a text file containing filenames is always not detected
+	 * as a file. In this case, filenames.txt contains filenames a.txt b.txt and c.txt.
+	 * c.txt is not found. NOTE this also applies if the filenames.txt only contain
+	 * 1 filename.
+	 * 
+	 * BUG_ID:  testGrepWithFileNamesReadFromCatInSubCmd()
+	 * fix location at: GrepCommand.java, added condition at line 54
+	 */
+	@Test
+	public void testGrepWithFileNamesReadFromCatInSubCmd() 
+			throws ShellException, AbstractApplicationException {
+		cmd = "grep a `cat test-hackathlon" + File.separator + "filenames.txt`";
+		String expected = "a.txt:this is a" + System.lineSeparator() 
+				+ "b.txt:<a.txt" + System.lineSeparator() + "c.txt:echo abc" 
+				+ System.lineSeparator();
+		shell.parseAndEvaluate(cmd, stdout);
+		assertEquals(expected, stdout.toString());
+	}
+	
+	/**
+	 * This bug is caused by NullPointerExeption in EchoCommand.java line 54.
+	 * This bug is caused by NullPointerExeption.
+	 * Calling echo application without arguments given should 
+	 * either print an empty line or throw Shell or Application exception
+	 * 
+	 * BUG_ID: testEchoAppWithoutArgument()
+	 * fix location at: EchoCommand.java, added condition at line 54	 
+	 */
+	@Test
+	public void testEchoAppWithoutArgument() {
+		cmd = "echo";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			assertEquals(System.lineSeparator(), stdout.toString());
+		} catch (ShellException | AbstractApplicationException e) {
+			// catch exception
+		}
+	}
 
+	/**
+	 * Java exceptions should not be printed in stack traces. 
+	 * All the Java exception has to be wrapped into either Shell or
+	 * AbstractApplciationException.
+	 *  
+	 * Also discussed in forum on 31/3/2015: exception not wrapped in shell or 
+	 * application exception
+	 * 
+	 * BUG_ID: testNumberLargerThanIntegerValue()
+	 * fix location at: HeadCommand.java, added condition at line 54 & 71
+	 */
+	@Test
+	public void testNumberLargerThanIntegerValue() {
+		cmd = "head -n 10000000000 a.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (ShellException | AbstractApplicationException e) {
+			// pass
+		}
+
+		cmd = "head -n m a.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (AbstractApplicationException | ShellException e) {
+			//pass
+		}
+	}
+	
+	@Test
+	public void testNumberLargerThanIntegerValueMultipleFilesForHead() {
+		cmd = "head -n 10000000000 a.txt b.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (ShellException | AbstractApplicationException e) {
+			// pass
+		}
+
+		cmd = "head -n m a.txt b.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (AbstractApplicationException | ShellException e) {
+			//pass
+		}
+	}
+	
+	/**
+	 * Java exceptions should not be printed in stack traces. 
+	 * All the Java exception has to be wrapped into either Shell or
+	 * AbstractApplciationException.
+	 *  
+	 * Also discussed in forum on 31/3/2015: exception not wrapped in shell or 
+	 * application exception
+	 * 
+	 * Discovered and corrected at HeadCommand and TailCommand
+	 * 
+	 * BUG_ID: testNumberLargerThanIntegerValue()
+	 * fix location at: TailCommand.java, added condition at line 56 & 71
+	 */
+	@Test
+	public void testNumberLargerThanIntegerValueForTail() {
+		cmd = "tail -n 10000000000 a.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (ShellException | AbstractApplicationException e) {
+			// pass
+		}
+
+		cmd = "tail -n m a.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (AbstractApplicationException | ShellException e) {
+			//pass
+		}
+	}
+	
+	@Test
+	public void testNumberLargerThanIntegerValueMultipleFilesForTail() {
+		cmd = "head -n 10000000000 a.txt b.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (ShellException | AbstractApplicationException e) {
+			// pass
+		}
+
+		cmd = "head -n m a.txt b.txt";
+		try {
+			shell.parseAndEvaluate(cmd, stdout);
+			fail();
+		} catch (AbstractApplicationException | ShellException e) {
+			//pass
+		}
+	}
 }
