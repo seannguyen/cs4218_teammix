@@ -164,7 +164,7 @@ public class GrepCommand implements Application{
 		}
 		try { 
 			bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-			while ((line = bufferedReader.readLine()) != null) {
+			while ((line = bufferedReader.readLine()) != null) {				
 				if(line.contains(pattern)) {
 					line = line + String.format("%n");
 					stdout.write(line.getBytes());

@@ -52,7 +52,8 @@ public class TailCommand implements Application{
 					throw new TailException("illegal line count -- " + numOfLines);
 				}
 			} catch(NumberFormatException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				throw new TailException("illegal line count -- " + args[1]);
 			}
 			numOfFiles = args.length - 2;
 			index = 2;
@@ -66,7 +67,8 @@ public class TailCommand implements Application{
 					throw new TailException("illegal line count -- " + numOfLines);
 				}
 			} catch(NumberFormatException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				throw new TailException("illegal line count -- " + args[1]);
 			}
 		} else if (args.length == 1 && !args[0].equals("-n")) {
 			singleFileFlag = true;
